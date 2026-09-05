@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #222;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .welcome h1 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 15px;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #2878ff;
+        }
+
+        input[type="file"] {
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .post-button {
+            margin-top: 12px;
+            background: #2878ff;
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .post-button:hover {
+            background: #155ed0;
+        }
+
+        .post-card {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 50%;
+            background: #2878ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .post-user {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .post-date {
+            color: #888;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .caption {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .post-media {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .counts {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 13px;
+            padding: 5px 2px 10px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+
+        .action-form {
+            flex: 1;
+        }
+
+        .action-button {
+            width: 100%;
+            background: white;
+            border: none;
+            padding: 10px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-button:hover {
+            background: #f1f3f7;
+        }
+
+        .like-button {
+            color: #e53935;
+        }
+
+        .liked {
+            background: #fff0f0;
+            font-weight: bold;
+        }
+
+        .comment-button {
+            color: #2878ff;
+            flex: 1;
+        }
+
+        .share-button {
+            color: #16a05d;
+            flex: 1;
+        }
+
+        .comment-area {
+            margin-top: 15px;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            min-width: 0;
+        }
+
+        .comment-input:focus {
+            border-color: #2878ff;
+        }
+
+        .comment-submit {
+            background: #2878ff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .comment-submit:hover {
+            background: #155ed0;
+        }
+
+        .comments-list {
+            margin-top: 15px;
+        }
+
+        .comment-item {
+            background: #f5f6f8;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .comment-user {
+            font-weight: bold;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .comment-date {
+            color: #888;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .no-comments {
+            color: #888;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .no-posts {
+            text-align: center;
+            color: #777;
+            padding: 25px;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 5px;
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            text-decoration: none;
+            color: #2878ff;
+            font-size: 14px;
+        }
+
+        .logout {
+            color: #e53935 !important;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 95%;
+                margin-top: 15px;
+            }
+
+            .card,
+            .post-card {
+                padding: 15px;
+            }
+
+            .action-button {
+                font-size: 13px;
+            }
+
+            .counts {
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- WELCOME -->
+
+    <div class="card welcome">
+
+        <h1>
+            Welcome 👋
+        </h1>
+
+        <p>
+            Connect with people and share your thoughts.
+        </p>
+
+    </div>
+
+
+    <!-- CREATE POST -->
+
+    <div class="card">
+
+        <h2 class="section-title">
+            ➕ Create Post
+        </h2>
+
+        <form
+            action="{{ url_for('create_post') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            <textarea
+                name="caption"
+                placeholder="What's on your mind?"
+            ></textarea>
+
+            <input
+                type="file"
+                name="media"
+                accept="image/*,video/*"
+            >
+
+            <button
+                type="submit"
+                class="post-button"
+            >
+                📤 Post
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- COMMUNITY -->
+
+    <div class="card">
+
+        <h2 class="section-title">
+            👥 Community
+        </h2>
+
+
+        {% if posts %}
+
+
+            {% for post in posts %}
+
+
+                <div
+                    class="post-card"
+                    id="post-{{ post.id }}"
+                >
+
+
+                    <!-- POST HEADER -->
+
+                    <div class="post-header">
+
+                        <div class="avatar">
+                            {{ post.name[0]|upper }}
+                        </div>
+
+                        <div>
+
+                            <div class="post-user">
+                                {{ post.name }}
+                            </div>
+
+                            <div class="post-date">
+                                {{ post.created_at }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CAPTION -->
+
+                    {% if post.caption %}
+
+                        <div class="caption">
+                            {{ post.caption }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- MEDIA -->
+
+                    {% if post.media %}
+
+                        {% set extension =
+                            post.media.split('.')[-1].lower()
+                        %}
+
+
+                        {% if extension in ['mp4', 'webm'] %}
+
+                            <video
+                                class="post-media"
+                                controls
+                            >
+
+                                <source
+                                    src="{{ url_for(
+                                        'static',
+                                        filename='uploads/' + post.media
+                                    ) }}"
+                                >
+
+                                Your browser does not support video.
+
+                            </video>
+
+                        {% else %}
+
+                            <img
+                                class="post-media"
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + post.media
+                                ) }}"
+                                alt="Post image"
+                            >
+
+                        {% endif %}
+
+                    {% endif %}
+
+
+                    <!-- COUNTS -->
+
+                    <div class="counts">
+
+                        <span>
+                            ❤️ {{ post.like_count }} Likes
+                        </span>
+
+                        <span>
+                            💬 {{ post.comment_count }} Comments
+                        </span>
+
+                    </div>
+
+
+                    <!-- ACTION BUTTONS -->
+
+                    <div class="actions">
+
+
+                        <!-- LIKE -->
+
+                        <form
+                            class="action-form"
+                            action="{{ url_for(
+                                'like',
+                                post_id=post.id
+                            ) }}"
+                            method="POST"
+                        >
+
+                            <button
+                                type="submit"
+                                class="action-button like-button {% if post.user_liked %}liked{% endif %}"
+                            >
+
+                                {% if post.user_liked %}
+
+                                    ❤️ Liked
+
+                                {% else %}
+
+                                    🤍 Like
+
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+
+                        <!-- COMMENT -->
+
+                        <button
+                            type="button"
+                            class="action-button comment-button"
+                            onclick="openComment({{ post.id }})"
+                        >
+
+                            💬 Comment
+
+                        </button>
+
+
+                        <!-- SHARE -->
+
+                        <button
+                            type="button"
+                            class="action-button share-button"
+                            onclick="sharePost({{ post.id }})"
+                        >
+
+                            ↗️ Share
+
+                        </button>
+
+
+                    </div>
+
+
+                    <!-- COMMENT AREA -->
+
+                    <div
+                        class="comment-area"
+                        id="comment-box-{{ post.id }}"
+                        style="display: none;"
+                    >
+
+
+                        <!-- COMMENT FORM -->
+
+                        <form
+                            class="comment-form"
+                            action="{{ url_for(
+                                'comment',
+                                post_id=post.id
+                            ) }}"
+                            method="POST"
+                        >
+
+                            <input
+                                type="text"
+                                name="comment"
+                                class="comment-input"
+                                placeholder="Write a comment..."
+                                maxlength="500"
+                                required
+                            >
+
+                            <button
+                                type="submit"
+                                class="comment-submit"
+                            >
+                                Send
+                            </button>
+
+                        </form>
+
+
+                        <!-- COMMENTS LIST -->
+
+                        <div class="comments-list">
+
+
+                            {% if post.comments %}
+
+
+                                {% for item in post.comments %}
+
+
+                                    <div class="comment-item">
+
+
+                                        <div class="comment-user">
+                                            {{ item.name }}
+                                        </div>
+
+
+                                        <div class="comment-text">
+                                            {{ item.comment }}
+                                        </div>
+
+
+                                        <div class="comment-date">
+                                            {{ item.created_at }}
+                                        </div>
+
+
+                                    </div>
+
+
+                                {% endfor %}
+
+
+                            {% else %}
+
+
+                                <div class="no-comments">
+                                    No comments yet.
+                                </div>
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="no-posts">
+
+                No posts yet.
+                Be the first to post! 🎉
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+<!-- BOTTOM NAVIGATION -->
+
+<div class="bottom-nav">
+
+
+    <a href="{{ url_for('find_people') }}">
+        🔍 Search
+    </a>
+
+
+    <a href="{{ url_for('messages') }}">
+        💬 Messages
+    </a>
+
+
+    <a href="{{ url_for('profile') }}">
+        👤 Profile
+    </a>
+
+
+    <a
+        href="{{ url_for('logout') }}"
+        class="logout"
+    >
+        🚪 Logout
+    </a>
+
+
+</div>
+
+
+<script>
+
+
+// ============================================
+// OPEN COMMENT BOX
+// ============================================
+
+function openComment(postId) {
+
+    const box = document.getElementById(
+        "comment-box-" + postId
+    );
+
+    if (!box) {
+
+        alert("Comment box not found!");
+
+        return;
+    }
+
+    box.style.display = "block";
+
+
+    const input =
+        box.querySelector(".comment-input");
+
+
+    if (input) {
+
+        input.focus();
+
+    }
+
+}
+
+
+// ============================================
+// SHARE POST
+// ============================================
+
+async function sharePost(postId) {
+
+    try {
+
+        const response = await fetch(
+            "/share/" + postId,
+            {
+                method: "POST"
+            }
+        );
+
+
+        if (!response.ok) {
+
+
+            if (response.status === 401) {
+
+                alert("Please login first.");
+
+                return;
+            }
+
+
+            alert("Unable to share this post.");
+
+            return;
+        }
+
+
+        const data = await response.json();
+
+
+        if (!data.success || !data.url) {
+
+            alert(
+                data.error ||
+                "Unable to share this post."
+            );
+
+            return;
+        }
+
+
+        const shareUrl = data.url;
+
+
+        // ==========================================
+        // REAL DEVICE SHARE MENU
+        // ==========================================
+
+        if (
+            navigator.share &&
+            navigator.canShare
+        ) {
+
+            try {
+
+                const shareData = {
+
+                    title: "PrivateConnect",
+
+                    text:
+                        "Check out this post on PrivateConnect!",
+
+                    url: shareUrl
+
+                };
+
+
+                if (
+                    navigator.canShare(
+                        shareData
+                    )
+                ) {
+
+                    await navigator.share(
+                        shareData
+                    );
+
+                    return;
+                }
+
+
+            } catch (error) {
+
+
+                if (
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    return;
+                }
+
+
+                console.log(
+                    "Device sharing unavailable:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // CLIPBOARD FALLBACK
+        // ==========================================
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            await navigator.clipboard.writeText(
+                shareUrl
+            );
+
+
+            alert(
+                "Post link copied!\n\n" +
+                "You can paste it in WhatsApp, " +
+                "Instagram, Messages, etc."
+            );
+
+
+            return;
+        }
+
+
+        // ==========================================
+        // OLD BROWSER FALLBACK
+        // ==========================================
+
+        const textArea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textArea.value = shareUrl;
+
+
+        textArea.style.position =
+            "fixed";
+
+        textArea.style.left =
+            "-9999px";
+
+
+        document.body.appendChild(
+            textArea
+        );
+
+
+        textArea.focus();
+
+        textArea.select();
+
+
+        const copied =
+            document.execCommand(
+                "copy"
+            );
+
+
+        document.body.removeChild(
+            textArea
+        );
+
+
+        if (copied) {
+
+            alert(
+                "Post link copied!\n\n" +
+                "You can paste it anywhere."
+            );
+
+        } else {
+
+            alert(
+                "Copy this link:\n\n" +
+                shareUrl
+            );
+
+        }
+
+
+    } catch (error) {
+
+
+        console.error(
+            "Share error:",
+            error
+        );
+
+
+        alert(
+            "Something went wrong while sharing."
+        );
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

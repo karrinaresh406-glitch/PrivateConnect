@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Find People - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        .search button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 7px;
+            background: #222;
+            color: white;
+            cursor: pointer;
+        }
+
+        .person {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-picture {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .default-picture {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .email {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .view-button,
+        .connect-button {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 7px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .view-button {
+            background: #ddd;
+            color: #222;
+        }
+
+        .connect-button {
+            background: #222;
+            color: white;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .navigation a {
+            margin: 5px;
+            color: #222;
+        }
+
+        .empty {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            color: #777;
+        }
+
+        @media (max-width: 600px) {
+
+            .person {
+                align-items: flex-start;
+            }
+
+            .search input {
+                width: 65%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>👥 Find People</h1>
+
+
+    <!-- SEARCH -->
+
+    <div class="search">
+
+        <form method="GET" action="{{ url_for('find_people') }}">
+
+            <input
+                type="text"
+                name="q"
+                placeholder="Search by name or email..."
+                value="{{ search }}"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- PEOPLE -->
+
+    {% if people %}
+
+        {% for person in people %}
+
+            {% if person["id"] != session["user_id"] %}
+
+            <div class="person">
+
+                {% if person["profile_picture"] %}
+
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                        class="profile-picture"
+                        alt="Profile Picture"
+                    >
+
+                {% else %}
+
+                    <div class="default-picture">
+                        👤
+                    </div>
+
+                {% endif %}
+
+
+                <div class="info">
+
+                    <div class="name">
+                        {{ person["name"] }}
+                    </div>
+
+                    <div class="email">
+                        {{ person["email"] }}
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('user_profile', user_id=person['id']) }}"
+                        class="view-button"
+                    >
+                        View Profile
+                    </a>
+
+
+                    <form
+                        action="{{ url_for('send_request', user_id=person['id']) }}"
+                        method="POST"
+                        style="display:inline;"
+                    >
+
+                        <button
+                            type="submit"
+                            class="connect-button"
+                        >
+                            ➕ Connect
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            No people found.
+        </div>
+
+    {% endif %}
+
+
+    <!-- NAVIGATION -->
+
+    <div class="navigation">
+
+        <a href="{{ url_for('requests') }}">
+            📩 Connection Requests
+        </a>
+
+        <br><br>
+
+        <a href="{{ url_for('connections') }}">
+            👥 My Connections
+        </a>
+
+        <br><br>
+
+        <a href="{{ url_for('dashboard') }}">
+            🏠 Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

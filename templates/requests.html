@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Connection Requests - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .request {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .profile-picture {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .default-picture {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .email {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .buttons {
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .accept {
+            background: #222;
+            color: white;
+        }
+
+        .reject {
+            background: #ddd;
+            color: #222;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Connection Requests</h1>
+
+    {% if requests %}
+
+        {% for person in requests %}
+
+        <div class="request">
+
+            {% if person["profile_picture"] %}
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                    class="profile-picture"
+                    alt="Profile Picture"
+                >
+
+            {% else %}
+
+                <div class="default-picture">
+                    👤
+                </div>
+
+            {% endif %}
+
+
+            <div class="info">
+
+                <div class="name">
+                    {{ person["name"] }}
+                </div>
+
+                <div class="email">
+                    {{ person["email"] }}
+                </div>
+
+
+                <div class="buttons">
+
+                    <form
+                        action="{{ url_for('accept_request', request_id=person['id']) }}"
+                        method="POST"
+                        style="display:inline;"
+                    >
+
+                        <button
+                            type="submit"
+                            class="accept"
+                        >
+                            Accept
+                        </button>
+
+                    </form>
+
+
+                    <form
+                        action="{{ url_for('reject_request', request_id=person['id']) }}"
+                        method="POST"
+                        style="display:inline;"
+                    >
+
+                        <button
+                            type="submit"
+                            class="reject"
+                        >
+                            Reject
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+            No connection requests yet.
+        </div>
+
+    {% endif %}
+
+
+    <a
+        href="{{ url_for('find_people') }}"
+        class="back"
+    >
+        ← Back to Find People
+    </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Messages</title>
+</head>
+
+<body>
+
+    <h1>Messages</h1>
+
+    {% if people %}
+
+        {% for person in people %}
+
+            <div>
+                <h3>{{ person[1] }}</h3>
+                <p>{{ person[2] }}</p>
+
+                <a href="{{ url_for('conversation', user_id=person[0]) }}">
+                    Open Chat
+                </a>
+            </div>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No conversations yet.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{{ url_for('find_people') }}">
+        Find People
+    </a>
+
+    <br><br>
+
+    <a href="{{ url_for('dashboard') }}">
+        Dashboard
+    </a>
+
+</body>
+</html>

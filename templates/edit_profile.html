@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile - PrivateConnect</title>
+</head>
+
+<body>
+
+    <h1>Edit Profile</h1>
+
+    <form method="POST">
+
+        <label>Name:</label><br>
+        <input
+            type="text"
+            name="name"
+            value="{{ person[1] }}"
+            required
+        >
+
+        <br><br>
+
+        <label>Email:</label><br>
+        <input
+            type="email"
+            name="email"
+            value="{{ person[2] }}"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Save Changes
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{{ url_for('profile') }}">
+        Cancel
+    </a>
+
+</body>
+</html>

@@ -1,196 +1,1233 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Chat - PrivateConnect</title>
 
+
     <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
         body {
+
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            margin: 0;
+
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 10% 0%,
+                    rgba(59, 130, 246, 0.12),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 100% 100%,
+                    rgba(239, 68, 68, 0.08),
+                    transparent 30%
+                ),
+                #020617;
+
+            color: #f8fafc;
+
+            padding-bottom: 90px;
+
         }
 
-        .chat {
-            width: 90%;
-            max-width: 650px;
-            margin: 30px auto;
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
+
+        /* =================================
+           CHAT HEADER
+        ================================= */
+
+        .chat-header {
+
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 14px 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e293b
+                );
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.1);
+
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.25);
+
         }
 
-        .header {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 15px;
+
+        .back-btn {
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            text-decoration: none;
+
+            color: white;
+
+            font-size: 22px;
+
+            background:
+                rgba(255,255,255,0.06);
+
+            transition: 0.2s;
+
         }
 
-        .header h1 {
-            margin: 0;
+
+        .back-btn:hover {
+
+            background:
+                rgba(59,130,246,0.20);
+
+            transform: translateX(-2px);
+
         }
 
-        .messages {
-            height: 500px;
-            overflow-y: auto;
-            padding: 15px 5px;
+
+        .header-avatar {
+
+            width: 46px;
+            height: 46px;
+
+            min-width: 46px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            border:
+                2px solid rgba(255,255,255,0.15);
+
         }
+
+
+        .header-avatar-fallback {
+
+            width: 46px;
+            height: 46px;
+
+            min-width: 46px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #475569
+                );
+
+            font-weight: bold;
+
+            font-size: 18px;
+
+        }
+
+
+        .header-info {
+
+            min-width: 0;
+
+        }
+
+
+        .header-name {
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            color: #f8fafc;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .status {
+
+            margin-top: 3px;
+
+            font-size: 12px;
+
+            color: #22c55e;
+
+        }
+
+
+        .status-dot {
+
+            display: inline-block;
+
+            width: 7px;
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            margin-right: 5px;
+
+            box-shadow:
+                0 0 7px rgba(34,197,94,0.5);
+
+        }
+
+
+        /* =================================
+           MESSAGES
+        ================================= */
+
+        .messages-container {
+
+            width: 100%;
+
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            padding: 20px 15px 110px;
+
+        }
+
 
         .message {
-            padding: 10px 14px;
-            margin: 10px 0;
-            max-width: 70%;
-            border-radius: 15px;
-            word-wrap: break-word;
-        }
 
-        .other {
-            background: #e5e5e5;
-            margin-right: auto;
-        }
-
-        .you {
-            background: #222;
-            color: white;
-            margin-left: auto;
-        }
-
-        .sender {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .time {
-            font-size: 10px;
-            opacity: 0.6;
-            margin-top: 5px;
-        }
-
-        .send {
             display: flex;
-            gap: 10px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
+
+            margin-bottom: 13px;
+
         }
 
-        .send input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
+
+        .message.sent {
+
+            justify-content: flex-end;
+
         }
 
-        .send button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            background: #222;
+
+        .message.received {
+
+            justify-content: flex-start;
+
+        }
+
+
+        .bubble {
+
+            max-width: 72%;
+
+            padding: 11px 14px;
+
+            border-radius: 17px;
+
+            word-wrap: break-word;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.18);
+
+        }
+
+
+        .sent .bubble {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            border-bottom-right-radius: 5px;
+
             color: white;
+
         }
 
-        .back {
-            display: block;
-            margin-top: 15px;
-            text-align: center;
+
+        .received .bubble {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #1e293b
+                );
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-bottom-left-radius: 5px;
+
+            color: #e2e8f0;
+
         }
+
+
+        .sender-name {
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+            opacity: 0.75;
+
+        }
+
+
+        .message-text {
+
+            font-size: 15px;
+
+            line-height: 1.45;
+
+        }
+
+
+        .message-time {
+
+            display: block;
+
+            text-align: right;
+
+            margin-top: 5px;
+
+            font-size: 9px;
+
+            opacity: 0.55;
+
+        }
+
+
+        /* =================================
+           COMPOSER
+        ================================= */
+
+        .composer-area {
+
+            position: fixed;
+
+            left: 50%;
+
+            bottom: 0;
+
+            transform: translateX(-50%);
+
+            width: 100%;
+
+            max-width: 900px;
+
+            padding: 10px 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(15,23,42,0.97),
+                    rgba(30,41,59,0.97)
+                );
+
+            border-top:
+                1px solid rgba(255,255,255,0.1);
+
+            box-shadow:
+                0 -8px 30px rgba(0,0,0,0.30);
+
+            backdrop-filter: blur(14px);
+
+            z-index: 1000;
+
+        }
+
+
+        .message-form {
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 7px;
+
+            width: 100%;
+
+        }
+
+
+        /* =================================
+           ICON BUTTON
+        ================================= */
+
+        .icon-btn {
+
+            width: 42px;
+            height: 42px;
+
+            min-width: 42px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            background:
+                rgba(255,255,255,0.05);
+
+            color: #cbd5e1;
+
+            font-size: 18px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+        }
+
+
+        .icon-btn:hover {
+
+            background:
+                rgba(59,130,246,0.18);
+
+            border-color:
+                rgba(96,165,250,0.35);
+
+            transform: translateY(-2px);
+
+        }
+
+
+        /* =================================
+           INPUT
+        ================================= */
+
+        .input-wrapper {
+
+            position: relative;
+
+            flex: 1;
+
+            min-width: 0;
+
+        }
+
+
+        #messageInput {
+
+            width: 100%;
+
+            min-height: 42px;
+
+            max-height: 110px;
+
+            resize: none;
+
+            overflow-y: auto;
+
+            outline: none;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 22px;
+
+            padding:
+                11px 48px 11px 16px;
+
+            background:
+                #020617;
+
+            color: #f8fafc;
+
+            font-size: 15px;
+
+            font-family: Arial, sans-serif;
+
+            line-height: 20px;
+
+        }
+
+
+        #messageInput::placeholder {
+
+            color: #64748b;
+
+        }
+
+
+        #messageInput:focus {
+
+            border-color:
+                rgba(59,130,246,0.55);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(59,130,246,0.08);
+
+        }
+
+
+        /* =================================
+           CHARACTER COUNT
+        ================================= */
+
+        #counter {
+
+            position: absolute;
+
+            right: 12px;
+
+            bottom: 5px;
+
+            font-size: 9px;
+
+            color: #475569;
+
+            pointer-events: none;
+
+        }
+
+
+        /* =================================
+           SEND BUTTON
+        ================================= */
+
+        .send-btn {
+
+            width: 44px;
+            height: 44px;
+
+            min-width: 44px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            font-size: 20px;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            box-shadow:
+                0 5px 15px
+                rgba(37,99,235,0.30);
+
+            transition: 0.2s;
+
+        }
+
+
+        .send-btn:hover {
+
+            transform:
+                scale(1.08)
+                rotate(-5deg);
+
+            box-shadow:
+                0 8px 22px
+                rgba(37,99,235,0.40);
+
+        }
+
+
+        .send-btn:active {
+
+            transform: scale(0.94);
+
+        }
+
+
+        /* =================================
+           EMOJI PANEL
+        ================================= */
+
+        .emoji-picker {
+
+            position: absolute;
+
+            left: 12px;
+
+            bottom: 70px;
+
+            width: 285px;
+
+            padding: 12px;
+
+            display: none;
+
+            grid-template-columns:
+                repeat(6, 1fr);
+
+            gap: 5px;
+
+            background:
+                #0f172a;
+
+            border:
+                1px solid rgba(255,255,255,0.10);
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0,0,0,0.45);
+
+        }
+
+
+        .emoji-picker.show {
+
+            display: grid;
+
+        }
+
+
+        .emoji-picker button {
+
+            width: 38px;
+            height: 38px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: transparent;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            transition: 0.15s;
+
+        }
+
+
+        .emoji-picker button:hover {
+
+            background:
+                rgba(255,255,255,0.08);
+
+            transform: scale(1.15);
+
+        }
+
+
+        /* =================================
+           IMAGE PREVIEW
+        ================================= */
+
+        .image-preview {
+
+            display: none;
+
+            position: relative;
+
+            width: 85px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .image-preview img {
+
+            width: 85px;
+
+            height: 85px;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            border:
+                1px solid
+                rgba(255,255,255,0.10);
+
+        }
+
+
+        .remove-image {
+
+            position: absolute;
+
+            top: -7px;
+
+            right: -7px;
+
+            width: 23px;
+
+            height: 23px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: #ef4444;
+
+            color: white;
+
+            cursor: pointer;
+
+        }
+
+
+        /* =================================
+           MOBILE
+        ================================= */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding-bottom: 80px;
+
+            }
+
+
+            .chat-header {
+
+                padding:
+                    11px 12px;
+
+            }
+
+
+            .header-avatar,
+            .header-avatar-fallback {
+
+                width: 42px;
+                height: 42px;
+
+                min-width: 42px;
+
+            }
+
+
+            .header-name {
+
+                font-size: 16px;
+
+            }
+
+
+            .messages-container {
+
+                padding:
+                    15px 10px 100px;
+
+            }
+
+
+            .bubble {
+
+                max-width: 82%;
+
+            }
+
+
+            .composer-area {
+
+                padding:
+                    7px 7px;
+
+            }
+
+
+            .message-form {
+
+                gap: 5px;
+
+            }
+
+
+            .icon-btn {
+
+                width: 37px;
+                height: 37px;
+
+                min-width: 37px;
+
+                font-size: 16px;
+
+            }
+
+
+            .send-btn {
+
+                width: 40px;
+                height: 40px;
+
+                min-width: 40px;
+
+                font-size: 18px;
+
+            }
+
+
+            #messageInput {
+
+                min-height: 40px;
+
+                font-size: 14px;
+
+                padding:
+                    10px 43px 9px 14px;
+
+            }
+
+
+            .emoji-picker {
+
+                left: 5px;
+
+                bottom: 60px;
+
+                width: 255px;
+
+            }
+
+        }
+
     </style>
+
 </head>
+
 
 <body>
 
-<div class="chat">
 
-    <div class="header">
-        <h1>💬 Chat with {{ person["name"] }}</h1>
-        <p>{{ person["email"] }}</p>
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<div class="chat-header">
+
+
+    <a
+        href="{{ url_for('messages') }}"
+        class="back-btn"
+    >
+        ←
+    </a>
+
+
+    {% if user.profile_picture %}
+
+        <img
+            src="{{ url_for(
+                'static',
+                filename='uploads/' + user.profile_picture
+            ) }}"
+            class="header-avatar"
+            alt="{{ user.name }}"
+        >
+
+    {% else %}
+
+        <div class="header-avatar-fallback">
+
+            {{ user.name[0] | upper }}
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="header-info">
+
+        <div class="header-name">
+
+            {{ user.name }}
+
+        </div>
+
+        <div class="status">
+
+            <span class="status-dot"></span>
+
+            Online
+
+        </div>
+
     </div>
 
-    <div class="messages" id="messages">
+</div>
 
-        {% if messages %}
 
-            {% for message in messages %}
+<!-- =========================================
+     MESSAGES
+========================================= -->
 
-                {% if message["sender_id"] == session["user_id"] %}
+<div class="messages-container">
 
-                    <div class="message you">
+    {% if messages %}
 
-                        <div class="sender">
+        {% for message in messages %}
+
+            {% if message[1] == session['user_id'] %}
+
+                <div class="message sent">
+
+                    <div class="bubble">
+
+                        <div class="sender-name">
                             You
                         </div>
 
-                        <div>
-                            {{ message["message"] }}
+                        <div class="message-text">
+
+                            {{ message[3] }}
+
                         </div>
 
-                        <div class="time">
-                            {{ message["created_at"] }}
-                        </div>
+                        <span class="message-time">
+
+                            {{ message[4] }}
+
+                        </span>
 
                     </div>
 
-                {% else %}
+                </div>
 
-                    <div class="message other">
+            {% else %}
 
-                        <div class="sender">
-                            {{ message["name"] }}
+                <div class="message received">
+
+                    <div class="bubble">
+
+                        <div class="sender-name">
+
+                            {{ user.name }}
+
                         </div>
 
-                        <div>
-                            {{ message["message"] }}
+                        <div class="message-text">
+
+                            {{ message[3] }}
+
                         </div>
 
-                        <div class="time">
-                            {{ message["created_at"] }}
-                        </div>
+                        <span class="message-time">
+
+                            {{ message[4] }}
+
+                        </span>
 
                     </div>
 
-                {% endif %}
+                </div>
 
-            {% endfor %}
+            {% endif %}
 
-        {% else %}
+        {% endfor %}
 
-            <p style="text-align:center;">
-                No messages yet 👋
+    {% else %}
+
+        <div
+            style="
+                text-align:center;
+                padding:100px 20px;
+                color:#64748b;
+            "
+        >
+
+            <div
+                style="
+                    font-size:45px;
+                    margin-bottom:12px;
+                "
+            >
+                💬
+            </div>
+
+            <h3
+                style="
+                    color:#cbd5e1;
+                    margin-bottom:7px;
+                "
+            >
+                Start a conversation
+            </h3>
+
+            <p>
+                Send your first message.
             </p>
 
-        {% endif %}
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =========================================
+     MESSAGE COMPOSER
+========================================= -->
+
+<div class="composer-area">
+
+
+    <!-- IMAGE PREVIEW -->
+
+    <div
+        class="image-preview"
+        id="imagePreview"
+    >
+
+        <img
+            id="previewImage"
+            src=""
+            alt="Image preview"
+        >
+
+        <button
+            type="button"
+            class="remove-image"
+            onclick="removeImage()"
+        >
+            ✕
+        </button>
 
     </div>
 
 
-    <form method="POST" class="send">
+    <!-- EMOJI PICKER -->
 
-        <input
-            type="text"
-            name="message"
-            placeholder="Type your message..."
-            maxlength="1000"
-            required
+    <div
+        class="emoji-picker"
+        id="emojiPicker"
+    >
+
+        <button type="button"
+            onclick="addEmoji('😀')">😀</button>
+
+        <button type="button"
+            onclick="addEmoji('😂')">😂</button>
+
+        <button type="button"
+            onclick="addEmoji('😍')">😍</button>
+
+        <button type="button"
+            onclick="addEmoji('🥰')">🥰</button>
+
+        <button type="button"
+            onclick="addEmoji('😊')">😊</button>
+
+        <button type="button"
+            onclick="addEmoji('😎')">😎</button>
+
+        <button type="button"
+            onclick="addEmoji('🔥')">🔥</button>
+
+        <button type="button"
+            onclick="addEmoji('❤️')">❤️</button>
+
+        <button type="button"
+            onclick="addEmoji('👍')">👍</button>
+
+        <button type="button"
+            onclick="addEmoji('👏')">👏</button>
+
+        <button type="button"
+            onclick="addEmoji('🎉')">🎉</button>
+
+        <button type="button"
+            onclick="addEmoji('🙏')">🙏</button>
+
+        <button type="button"
+            onclick="addEmoji('💯')">💯</button>
+
+        <button type="button"
+            onclick="addEmoji('🤔')">🤔</button>
+
+        <button type="button"
+            onclick="addEmoji('🤣')">🤣</button>
+
+        <button type="button"
+            onclick="addEmoji('😢')">😢</button>
+
+        <button type="button"
+            onclick="addEmoji('😡')">😡</button>
+
+        <button type="button"
+            onclick="addEmoji('😘')">😘</button>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <form
+        method="POST"
+        id="messageForm"
+        class="message-form"
+    >
+
+
+        <!-- EMOJI -->
+
+        <button
+            type="button"
+            class="icon-btn"
+            onclick="toggleEmoji()"
         >
-
-        <button type="submit">
-            Send
+            😊
         </button>
 
-    </form>
 
-    <a href="{{ url_for('messages') }}" class="back">
-        ← Back to Messages
-    </a>
+        <!-- IMAGE -->
+
+        <label
+            for="imageInput"
+            class="icon-btn"
+            title="Attach image"
+        >
+            📎
+        </label>
+
+
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            hidden
+            onchange="previewSelectedImage(event)"
+        >
+
+
+        <!-- TEXT -->
+
+        <div class="input-wrapper">
+
+            <textarea
+                id="messageInput"
+                name="message"
+                placeholder="Type a message..."
+                maxlength="1000"
+                rows="1"
+                required
+            ></textarea>
+
+
+            <span id="counter">
+                0/1000
+            </span>
+
+        </div>
+
+
+        <!-- VOICE -->
+
+        <button
+            type="button"
+            class="icon-btn"
+            onclick="startVoice()"
+            title="Voice typing"
+        >
+            🎤
+        </button>
+
+
+        <!-- SEND -->
+
+        <button
+            type="submit"
+            class="send-btn"
+            title="Send message"
+        >
+            ➤
+        </button>
+
+
+    </form>
 
 </div>
 
 
 <script>
-    const box = document.getElementById("messages");
 
-    if (box) {
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
 
-</body>
-</html>
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+
+const counter =
+    document.getElementById(
+        "counter"
+    );
+
+
+/* =========================================
+   CHARACTER COUNTER + AUTO HEIGHT
+============

@@ -118,19 +118,27 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             name TEXT NOT NULL,
-
             email TEXT UNIQUE NOT NULL,
-
             password TEXT NOT NULL,
-
-            profile_picture TEXT
-
+            profile_picture TEXT,
+            bio TEXT DEFAULT ''
         )
     """)
+
+    # Add bio to older databases
+
+    try:
+
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN bio TEXT DEFAULT ''
+        """)
+
+    except sqlite3.OperationalError:
+
+        pass
 
 
     # Add profile_picture to older databases
@@ -209,6 +217,19 @@ def init_db():
         )
     """)
 
+    # =====================================================
+    # FRIENDS
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friends (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            friend_id INTEGER NOT NULL,
+            UNIQUE(user_id, friend_id)
+        )
+    """)
+
 
     # =====================================================
     # SHARES
@@ -282,26 +303,17 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            sender_id INTEGER NOT NULL,
-
-            receiver_id INTEGER NOT NULL,
-
-            message TEXT NOT NULL,
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
+            sender_id INTEGER,
+            receiver_id INTEGER,
+            message TEXT,
+            image TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
-
     conn.commit()
-
     conn.close()
-
 
 # =========================================================
 # HOME
@@ -775,6 +787,57 @@ def create_post():
         url_for("dashboard")
     )
 
+# =========================================================
+# DELETE POST
+# =========================================================
+
+@app.route("/delete-post/<int:post_id>", methods=["POST"])
+def delete_post(post_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check that this post belongs to the logged-in user
+    cursor.execute("""
+        SELECT media
+        FROM posts
+        WHERE id = ?
+        AND user_id = ?
+    """, (
+        post_id,
+        session["user_id"]
+    ))
+
+    post = cursor.fetchone()
+
+    if post is None:
+        conn.close()
+        return "Post not found or you don't have permission to delete it.", 404
+
+    # Delete likes for this post
+    cursor.execute("""
+        DELETE FROM likes
+        WHERE post_id = ?
+    """, (post_id,))
+
+    # Delete the post
+    cursor.execute("""
+        DELETE FROM posts
+        WHERE id = ?
+        AND user_id = ?
+    """, (
+        post_id,
+        session["user_id"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("profile"))
+
 
 # =========================================================
 # LIKE / UNLIKE
@@ -1055,52 +1118,98 @@ def share(post_id):
 def profile():
 
     if "user_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     conn = get_db()
-
     cursor = conn.cursor()
 
+    user_id = session["user_id"]
+
+    # =====================================================
+    # PROFILE
+    # =====================================================
 
     cursor.execute("""
         SELECT
-
             id,
-
             name,
-
             email,
-
             profile_picture
-
         FROM users
-
         WHERE id = ?
-
-    """, (
-        session["user_id"],
-    ))
-
+    """, (user_id,))
 
     person = cursor.fetchone()
 
-    conn.close()
-
-
     if person is None:
-
+        conn.close()
         return "User not found.", 404
 
+    # =====================================================
+    # MY POSTS + LIKE COUNT
+    # =====================================================
+
+    cursor.execute("""
+        SELECT
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at,
+            COUNT(likes.id) AS like_count
+        FROM posts
+        LEFT JOIN likes
+            ON likes.post_id = posts.id
+        WHERE posts.user_id = ?
+        GROUP BY
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at
+        ORDER BY posts.created_at DESC
+    """, (user_id,))
+
+    posts = cursor.fetchall()
+
+    # =====================================================
+    # MY CONNECTIONS / FRIENDS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT
+            users.id,
+            users.name,
+            users.profile_picture
+        FROM connections
+        JOIN users
+            ON users.id =
+                CASE
+                    WHEN connections.user1_id = ?
+                    THEN connections.user2_id
+                    ELSE connections.user1_id
+                END
+        WHERE
+            connections.user1_id = ?
+            OR
+            connections.user2_id = ?
+        ORDER BY connections.created_at DESC
+    """, (
+        user_id,
+        user_id,
+        user_id
+    ))
+
+    friends = cursor.fetchall()
+
+    conn.close()
 
     return render_template(
         "profile.html",
-        person=person
+        person=person,
+        posts=posts,
+        friends=friends
     )
-
 
 # =========================================================
 # EDIT PROFILE
@@ -1113,16 +1222,18 @@ def profile():
 def edit_profile():
 
     if "user_id" not in session:
-
         return redirect(
             url_for("login")
         )
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
+    user_id = session["user_id"]
+
+    # =====================================================
+    # SAVE CHANGES
+    # =====================================================
 
     if request.method == "POST":
 
@@ -1131,97 +1242,62 @@ def edit_profile():
             ""
         ).strip()
 
-        email = request.form.get(
-            "email",
+        bio = request.form.get(
+            "bio",
             ""
-        ).strip().lower()
+        ).strip()
 
-
-        if not name or not email:
-
-            conn.close()
-
-            return (
-                "Name and email are required.",
-                400
-            )
-
-
-        try:
-
-            cursor.execute("""
-                UPDATE users
-
-                SET
-
-                    name = ?,
-
-                    email = ?
-
-                WHERE id = ?
-
-            """, (
-                name,
-                email,
-                session["user_id"]
-            ))
-
-
-            conn.commit()
-
-
-        except sqlite3.IntegrityError:
+        if not name:
 
             conn.close()
 
             return (
-                "Email is already registered.",
+                "Name is required.",
                 400
             )
 
+        cursor.execute("""
+            UPDATE users
+            SET
+                name = ?,
+                bio = ?
+            WHERE id = ?
+        """, (
+            name,
+            bio,
+            user_id
+        ))
 
+        conn.commit()
         conn.close()
 
-
         session["user_name"] = name
-
-        session["user_email"] = email
-
 
         return redirect(
             url_for("profile")
         )
 
+    # =====================================================
+    # GET PROFILE DATA
+    # =====================================================
 
     cursor.execute("""
         SELECT
-
             id,
-
             name,
-
-            email,
-
-            profile_picture
-
+            bio
         FROM users
-
         WHERE id = ?
-
     """, (
-        session["user_id"],
+        user_id,
     ))
-
 
     person = cursor.fetchone()
 
     conn.close()
 
-
     if person is None:
-
         return "User not found.", 404
-
 
     return render_template(
         "edit_profile.html",
@@ -1230,7 +1306,7 @@ def edit_profile():
 
 
 # =========================================================
-# UPLOAD PROFILE PICTURE
+# UPLOAD / CROP PROFILE PICTURE
 # =========================================================
 
 @app.route(
@@ -1240,95 +1316,128 @@ def edit_profile():
 def upload_profile_picture():
 
     if "user_id" not in session:
-
         return redirect(
             url_for("login")
         )
 
+    # Get cropped image
+    cropped_image = request.form.get(
+        "cropped_image"
+    )
 
+    # Get original uploaded file
     file = request.files.get(
         "profile_picture"
     )
 
-
-    if not file or not file.filename:
-
-        return (
-            "Please select a profile picture.",
-            400
-        )
-
-
-    filename = secure_filename(
-        file.filename
-    )
-
-
-    if not filename:
-
-        return (
-            "Invalid filename.",
-            400
-        )
-
-
-    if not allowed_profile_picture(
-        filename
-    ):
-
-        return (
-            "Only JPG, JPEG, PNG, GIF and WEBP images are allowed.",
-            400
-        )
-
-
-    _, extension = os.path.splitext(
-        filename
-    )
-
-
     filename = (
-        f"profile_{session['user_id']}"
-        f"{extension.lower()}"
+        f"profile_{session['user_id']}.jpg"
     )
-
 
     filepath = os.path.join(
         app.config["UPLOAD_FOLDER"],
         filename
     )
 
+    # =====================================================
+    # SAVE CROPPED IMAGE
+    # =====================================================
 
-    file.save(filepath)
+    if cropped_image:
 
+        try:
+
+            import base64
+
+            # Example:
+            # data:image/jpeg;base64,/9j/4AAQ...
+            encoded = cropped_image.split(
+                ",",
+                1
+            )[1]
+
+            image_data = base64.b64decode(
+                encoded
+            )
+
+            with open(
+                filepath,
+                "wb"
+            ) as f:
+
+                f.write(image_data)
+
+        except Exception as e:
+
+            print(
+                "Crop error:",
+                e
+            )
+
+            return (
+                "Could not save cropped image.",
+                400
+            )
+
+    # =====================================================
+    # SAVE ORIGINAL IMAGE IF NO CROPPED IMAGE
+    # =====================================================
+
+    elif file and file.filename:
+
+        original_filename = secure_filename(
+            file.filename
+        )
+
+        if not original_filename:
+
+            return (
+                "Invalid filename.",
+                400
+            )
+
+        if not allowed_profile_picture(
+            original_filename
+        ):
+
+            return (
+                "Only JPG, JPEG, PNG, GIF and WEBP images are allowed.",
+                400
+            )
+
+        file.save(
+            filepath
+        )
+
+    else:
+
+        return (
+            "Please select a profile picture.",
+            400
+        )
+
+    # =====================================================
+    # UPDATE DATABASE
+    # =====================================================
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     cursor.execute("""
         UPDATE users
-
         SET profile_picture = ?
-
         WHERE id = ?
-
     """, (
         filename,
         session["user_id"]
     ))
 
-
     conn.commit()
-
     conn.close()
-
 
     return redirect(
         url_for("profile")
     )
-
 
 # =========================================================
 # FIND PEOPLE
@@ -1690,86 +1799,50 @@ def requests():
 def accept_request(request_id):
 
     if "user_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     cursor.execute("""
         SELECT
-
             id,
-
             sender_id,
-
             receiver_id,
-
             status
-
         FROM connection_requests
-
         WHERE id = ?
-
         AND receiver_id = ?
-
     """, (
         request_id,
         session["user_id"]
     ))
 
-
     connection_request = cursor.fetchone()
 
-
     if connection_request is None:
-
         conn.close()
-
         return "Request not found.", 404
 
-
     if connection_request["status"] != "pending":
-
         conn.close()
-
-        return redirect(
-            url_for("requests")
-        )
-
+        return redirect(url_for("requests"))
 
     sender_id = connection_request["sender_id"]
-
     receiver_id = connection_request["receiver_id"]
 
-
+    # Mark request as accepted
     cursor.execute("""
         UPDATE connection_requests
-
         SET status = 'accepted'
-
         WHERE id = ?
-
     """, (
         request_id,
     ))
 
-
-    user1 = min(
-        sender_id,
-        receiver_id
-    )
-
-    user2 = max(
-        sender_id,
-        receiver_id
-    )
-
+    # Store the friendship/connection
+    user1 = min(sender_id, receiver_id)
+    user2 = max(sender_id, receiver_id)
 
     cursor.execute("""
         INSERT OR IGNORE INTO connections
@@ -1777,24 +1850,16 @@ def accept_request(request_id):
             user1_id,
             user2_id
         )
-
         VALUES (?, ?)
-
     """, (
         user1,
         user2
     ))
 
-
     conn.commit()
-
     conn.close()
 
-
-    return redirect(
-        url_for("requests")
-    )
-
+    return redirect(url_for("requests"))
 
 # =========================================================
 # REJECT CONNECTION REQUEST
@@ -1931,67 +1996,75 @@ def connections():
 def messages():
 
     if "user_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     current_user = session["user_id"]
 
     conn = get_db()
-
     cursor = conn.cursor()
 
-
     cursor.execute("""
-        SELECT DISTINCT
+        SELECT
+            u.id,
+            u.name,
+            u.email,
+            u.profile_picture,
 
-            users.id,
+            (
+                SELECT m.message
+                FROM messages m
+                WHERE
+                    (m.sender_id = ? AND m.receiver_id = u.id)
+                    OR
+                    (m.sender_id = u.id AND m.receiver_id = ?)
+                ORDER BY m.id DESC
+                LIMIT 1
+            ) AS last_message,
 
-            users.name,
+            (
+                SELECT m.created_at
+                FROM messages m
+                WHERE
+                    (m.sender_id = ? AND m.receiver_id = u.id)
+                    OR
+                    (m.sender_id = u.id AND m.receiver_id = ?)
+                ORDER BY m.id DESC
+                LIMIT 1
+            ) AS last_time
 
-            users.email,
+        FROM users u
 
-            users.profile_picture
+        WHERE u.id IN (
 
-        FROM messages
+            SELECT
+                CASE
+                    WHEN sender_id = ?
+                    THEN receiver_id
+                    ELSE sender_id
+                END
 
-        JOIN users
+            FROM messages
 
-        ON users.id =
+            WHERE
+                sender_id = ?
+                OR receiver_id = ?
+        )
 
-            CASE
-
-                WHEN messages.sender_id = ?
-
-                THEN messages.receiver_id
-
-                ELSE messages.sender_id
-
-            END
-
-        WHERE
-
-            messages.sender_id = ?
-
-            OR
-
-            messages.receiver_id = ?
-
-        ORDER BY users.name
+        ORDER BY last_time DESC
 
     """, (
+        current_user,
+        current_user,
+        current_user,
+        current_user,
         current_user,
         current_user,
         current_user
     ))
 
-
     people = cursor.fetchall()
 
     conn.close()
-
 
     return render_template(
         "messages.html",
@@ -2009,6 +2082,10 @@ def messages():
 )
 def conversation(user_id):
 
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
+
     if "user_id" not in session:
 
         return redirect(
@@ -2018,6 +2095,10 @@ def conversation(user_id):
 
     current_user = session["user_id"]
 
+
+    # -----------------------------------------------------
+    # DON'T MESSAGE YOURSELF
+    # -----------------------------------------------------
 
     if current_user == user_id:
 
@@ -2030,6 +2111,191 @@ def conversation(user_id):
     conn = get_db()
 
     cursor = conn.cursor()
+
+
+    # -----------------------------------------------------
+    # GET USER
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            email,
+            profile_picture
+        FROM users
+        WHERE id = ?
+    """, (
+        user_id,
+    ))
+
+
+    user_row = cursor.fetchone()
+
+
+    if user_row is None:
+
+        conn.close()
+
+        return (
+            "User not found.",
+            404
+        )
+
+
+    # Create user dictionary
+    # This fixes: 'user' is undefined
+
+    user = {
+
+        "id": user_row["id"],
+
+        "name": user_row["name"],
+
+        "email": user_row["email"],
+
+        "profile_picture":
+            user_row["profile_picture"]
+
+    }
+
+
+    # -----------------------------------------------------
+    # CHECK CONNECTION
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        SELECT id
+        FROM connections
+        WHERE
+            (
+                user1_id = ?
+                AND user2_id = ?
+            )
+            OR
+            (
+                user1_id = ?
+                AND user2_id = ?
+            )
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+
+    connection = cursor.fetchone()
+
+
+    if connection is None:
+
+        conn.close()
+
+        return (
+            "You are not connected with this user.",
+            403
+        )
+
+
+    # -----------------------------------------------------
+    # SEND MESSAGE
+    # -----------------------------------------------------
+
+    if request.method == "POST":
+
+        message = request.form.get(
+            "message",
+            ""
+        ).strip()
+
+
+        if message:
+
+            # Limit message length
+
+            message = message[:1000]
+
+
+            cursor.execute("""
+                INSERT INTO messages
+                (
+                    sender_id,
+                    receiver_id,
+                    message
+                )
+                VALUES (?, ?, ?)
+            """, (
+                current_user,
+                user_id,
+                message
+            ))
+
+
+            conn.commit()
+
+
+        conn.close()
+
+
+        return redirect(
+            url_for(
+                "conversation",
+                user_id=user_id
+            )
+        )
+
+
+    # -----------------------------------------------------
+    # GET MESSAGES
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            id,
+            sender_id,
+            receiver_id,
+            message,
+            created_at
+        FROM messages
+
+        WHERE
+            (
+                sender_id = ?
+                AND receiver_id = ?
+            )
+
+            OR
+
+            (
+                sender_id = ?
+                AND receiver_id = ?
+            )
+
+        ORDER BY created_at ASC
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+
+    messages = cursor.fetchall()
+
+
+    conn.close()
+
+
+    # -----------------------------------------------------
+    # OPEN CHAT
+    # -----------------------------------------------------
+
+    return render_template(
+        "conversation.html",
+        user=user,
+        messages=messages
+    )
 
 
     # =====================================================

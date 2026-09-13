@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 import sqlite3
 import os
 import secrets
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -108,9 +109,7 @@ def allowed_profile_picture(filename):
 def init_db():
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     # =====================================================
     # USERS
@@ -123,37 +122,10 @@ def init_db():
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             profile_picture TEXT,
-            bio TEXT DEFAULT ''
+            bio TEXT DEFAULT '',
+            last_seen TEXT
         )
     """)
-
-    # Add bio to older databases
-
-    try:
-
-        cursor.execute("""
-            ALTER TABLE users
-            ADD COLUMN bio TEXT DEFAULT ''
-        """)
-
-    except sqlite3.OperationalError:
-
-        pass
-
-
-    # Add profile_picture to older databases
-
-    try:
-
-        cursor.execute("""
-            ALTER TABLE users
-            ADD COLUMN profile_picture TEXT
-        """)
-
-    except sqlite3.OperationalError:
-
-        pass
-
 
     # =====================================================
     # POSTS
@@ -161,21 +133,13 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS posts (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             user_id INTEGER NOT NULL,
-
             caption TEXT,
-
             media TEXT,
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
 
     # =====================================================
     # COMMENTS
@@ -183,21 +147,13 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             user_id INTEGER NOT NULL,
-
             post_id INTEGER NOT NULL,
-
             comment TEXT NOT NULL,
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
-
 
     # =====================================================
     # LIKES
@@ -205,15 +161,23 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS likes (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             user_id INTEGER NOT NULL,
-
             post_id INTEGER NOT NULL,
-
             UNIQUE(user_id, post_id)
+        )
+    """)
 
+    # =====================================================
+    # SHARES
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS shares (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            post_id INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -230,50 +194,20 @@ def init_db():
         )
     """)
 
-
-    # =====================================================
-    # SHARES
-    # =====================================================
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS shares (
-
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-            user_id INTEGER NOT NULL,
-
-            post_id INTEGER NOT NULL,
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP
-
-        )
-    """)
-
-
     # =====================================================
     # CONNECTION REQUESTS
     # =====================================================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS connection_requests (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             sender_id INTEGER NOT NULL,
-
             receiver_id INTEGER NOT NULL,
-
             status TEXT NOT NULL DEFAULT 'pending',
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP,
-
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(sender_id, receiver_id)
-
         )
     """)
-
 
     # =====================================================
     # CONNECTIONS
@@ -281,21 +215,13 @@ def init_db():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS connections (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             user1_id INTEGER NOT NULL,
-
             user2_id INTEGER NOT NULL,
-
-            created_at TIMESTAMP
-                DEFAULT CURRENT_TIMESTAMP,
-
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(user1_id, user2_id)
-
         )
     """)
-
 
     # =====================================================
     # MESSAGES
@@ -308,12 +234,437 @@ def init_db():
             receiver_id INTEGER,
             message TEXT,
             image TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            delivered_at TEXT,
+            read_at TEXT
         )
     """)
 
+    # =====================================================
+    # DATABASE MIGRATION
+    # For old users.db files
+    # =====================================================
+
+    # USERS - profile_picture
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN profile_picture TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # USERS - bio
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN bio TEXT DEFAULT ''
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # USERS - last_seen
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN last_seen TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # MESSAGES - image
+    try:
+        cursor.execute("""
+            ALTER TABLE messages
+            ADD COLUMN image TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # MESSAGES - delivered_at
+    try:
+        cursor.execute("""
+            ALTER TABLE messages
+            ADD COLUMN delivered_at TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # MESSAGES - read_at
+    try:
+        cursor.execute("""
+            ALTER TABLE messages
+            ADD COLUMN read_at TEXT
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # =====================================================
+    # SAVE DATABASE
+    # =====================================================
+
     conn.commit()
     conn.close()
+
+# =========================================================
+# ONLINE HEARTBEAT
+# =========================================================
+
+@app.route("/heartbeat", methods=["POST"])
+def heartbeat():
+
+    if "user_id" not in session:
+        return jsonify({"success": False}), 401
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET last_seen = ?
+        WHERE id = ?
+    """, (
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        session["user_id"]
+    ))
+
+    # Mark incoming messages as DELIVERED
+    cursor.execute("""
+        UPDATE messages
+        SET delivered_at = ?
+        WHERE receiver_id = ?
+        AND delivered_at IS NULL
+    """, (
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        session["user_id"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True})
+
+
+# =========================================================
+# CHECK USER ONLINE STATUS
+# =========================================================
+
+@app.route("/user-status/<int:user_id>")
+def user_status(user_id):
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT last_seen
+        FROM users
+        WHERE id = ?
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if not user or not user["last_seen"]:
+        return jsonify({"online": False})
+
+    try:
+
+        last_seen = datetime.strptime(
+            user["last_seen"],
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+        online = (
+            datetime.now() - last_seen
+            < timedelta(seconds=10)
+        )
+
+        return jsonify({
+            "online": online
+        })
+
+    except Exception:
+
+        return jsonify({
+            "online": False
+        })
+
+# =========================================================
+# UPLOAD REEL
+# =========================================================
+
+@app.route(
+    "/upload-reel",
+    methods=["POST"]
+)
+def upload_reel():
+
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+
+    # -----------------------------------------------------
+    # GET CAPTION
+    # -----------------------------------------------------
+
+    caption = request.form.get(
+        "caption",
+        ""
+    ).strip()
+
+
+    # -----------------------------------------------------
+    # GET VIDEO
+    # -----------------------------------------------------
+
+    file = request.files.get(
+        "reel"
+    )
+
+
+    if not file or not file.filename:
+
+        return (
+            "Please select a video.",
+            400
+        )
+
+
+    # -----------------------------------------------------
+    # SECURE FILENAME
+    # -----------------------------------------------------
+
+    original_filename = secure_filename(
+        file.filename
+    )
+
+
+    if not original_filename:
+
+        return (
+            "Invalid video filename.",
+            400
+        )
+
+
+    # -----------------------------------------------------
+    # ALLOWED REEL FORMATS
+    # -----------------------------------------------------
+
+    allowed_reel_extensions = (
+        ".mp4",
+        ".webm",
+        ".mov"
+    )
+
+
+    extension = os.path.splitext(
+        original_filename
+    )[1].lower()
+
+
+    if extension not in allowed_reel_extensions:
+
+        return (
+            "Only MP4, WEBM and MOV videos are allowed.",
+            400
+        )
+
+
+    # -----------------------------------------------------
+    # CREATE UNIQUE FILENAME
+    # -----------------------------------------------------
+
+    base, extension = os.path.splitext(
+        original_filename
+    )
+
+
+    filename = original_filename
+
+    counter = 1
+
+
+    while os.path.exists(
+        os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+    ):
+
+        filename = (
+            f"{base}_{counter}"
+            f"{extension}"
+        )
+
+        counter += 1
+
+
+    # -----------------------------------------------------
+    # SAVE VIDEO
+    # -----------------------------------------------------
+
+    file.save(
+        os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+    )
+
+
+    # -----------------------------------------------------
+    # SAVE REEL AS VIDEO POST
+    # -----------------------------------------------------
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+        INSERT INTO posts
+        (
+            user_id,
+            caption,
+            media
+        )
+
+        VALUES (?, ?, ?)
+    """, (
+        session["user_id"],
+        caption,
+        filename
+    ))
+
+
+    conn.commit()
+    conn.close()
+
+
+    # -----------------------------------------------------
+    # GO TO REELS
+    # -----------------------------------------------------
+
+    return redirect(
+        url_for("reels")
+    )
+
+# =========================================================
+# REELS
+# =========================================================
+
+@app.route("/reels")
+def reels():
+
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # -----------------------------------------------------
+    # GET ONLY VIDEO POSTS
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at,
+            users.name,
+            users.profile_picture,
+
+            (
+                SELECT COUNT(*)
+                FROM likes
+                WHERE likes.post_id = posts.id
+            ) AS like_count,
+
+            (
+                SELECT COUNT(*)
+                FROM comments
+                WHERE comments.post_id = posts.id
+            ) AS comment_count,
+
+            EXISTS (
+                SELECT 1
+                FROM likes
+                WHERE likes.post_id = posts.id
+                AND likes.user_id = ?
+            ) AS user_liked
+
+        FROM posts
+
+        JOIN users
+        ON users.id = posts.user_id
+
+        WHERE
+            LOWER(posts.media) LIKE '%.mp4'
+            OR LOWER(posts.media) LIKE '%.webm'
+
+        ORDER BY posts.created_at DESC
+
+    """, (
+        session["user_id"],
+    ))
+
+    reels_data = cursor.fetchall()
+
+    reels = []
+
+    # -----------------------------------------------------
+    # GET COMMENTS
+    # -----------------------------------------------------
+
+    for reel in reels_data:
+
+        cursor.execute("""
+            SELECT
+                comments.id,
+                comments.comment,
+                comments.created_at,
+                users.name
+            FROM comments
+
+            JOIN users
+            ON users.id = comments.user_id
+
+            WHERE comments.post_id = ?
+
+            ORDER BY comments.created_at ASC
+
+        """, (
+            reel["id"],
+        ))
+
+        comments = cursor.fetchall()
+
+        reel_dict = dict(reel)
+
+        reel_dict["comments"] = comments
+
+        reels.append(reel_dict)
+
+    conn.close()
+
+    # -----------------------------------------------------
+    # SEND REELS TO PAGE
+    # -----------------------------------------------------
+
+    return render_template(
+        "reels.html",
+        reels=reels
+    )
 
 # =========================================================
 # HOME
@@ -322,7 +673,17 @@ def init_db():
 @app.route("/")
 def home():
 
-    return render_template("index.html")
+    # If user is already logged in
+    if "user_id" in session:
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    # If user is not logged in
+    return redirect(
+        url_for("login")
+    )
 
 
 # =========================================================
@@ -547,16 +908,36 @@ def login():
 def dashboard():
 
     if "user_id" not in session:
-
         return redirect(
             url_for("login")
         )
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
+    # =====================================================
+    # GET OTHER USERS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            profile_picture,
+            bio,
+            last_seen
+        FROM users
+        WHERE id != ?
+        ORDER BY id DESC
+    """, (
+        session["user_id"],
+    ))
+
+    users = cursor.fetchall()
+
+    # =====================================================
+    # GET POSTS
+    # =====================================================
 
     cursor.execute("""
         SELECT
@@ -586,14 +967,12 @@ def dashboard():
             ) AS comment_count,
 
             EXISTS (
-
                 SELECT 1
                 FROM likes
 
                 WHERE likes.post_id = posts.id
 
                 AND likes.user_id = ?
-
             ) AS user_liked
 
         FROM posts
@@ -607,11 +986,13 @@ def dashboard():
         session["user_id"],
     ))
 
-
     posts_data = cursor.fetchall()
 
     posts = []
 
+    # =====================================================
+    # GET COMMENTS
+    # =====================================================
 
     for post in posts_data:
 
@@ -639,9 +1020,7 @@ def dashboard():
             post["id"],
         ))
 
-
         comments = cursor.fetchall()
-
 
         post_dict = dict(post)
 
@@ -649,12 +1028,15 @@ def dashboard():
 
         posts.append(post_dict)
 
-
     conn.close()
 
+    # =====================================================
+    # SEND USERS + POSTS TO DASHBOARD
+    # =====================================================
 
     return render_template(
         "dashboard.html",
+        users=users,
         posts=posts
     )
 
@@ -838,6 +1220,75 @@ def delete_post(post_id):
 
     return redirect(url_for("profile"))
 
+# =========================================================
+# DELETE REEL
+# =========================================================
+
+@app.route("/delete-reel/<int:post_id>", methods=["POST"])
+def delete_reel(post_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT media
+        FROM posts
+        WHERE id = ?
+        AND user_id = ?
+        AND (
+            LOWER(media) LIKE '%.mp4'
+            OR LOWER(media) LIKE '%.webm'
+            OR LOWER(media) LIKE '%.mov'
+        )
+    """, (
+        post_id,
+        session["user_id"]
+    ))
+
+    reel = cursor.fetchone()
+
+    if not reel:
+        conn.close()
+        return "You cannot delete this reel.", 403
+
+    if reel["media"]:
+
+        file_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            reel["media"]
+        )
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    cursor.execute(
+        "DELETE FROM likes WHERE post_id = ?",
+        (post_id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM comments WHERE post_id = ?",
+        (post_id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM shares WHERE post_id = ?",
+        (post_id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM posts WHERE id = ?",
+        (post_id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("reels"))
+
 
 # =========================================================
 # LIKE / UNLIKE
@@ -851,9 +1302,10 @@ def like(post_id):
 
     if "user_id" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        return jsonify({
+            "success": False,
+            "error": "Please login first."
+        }), 401
 
 
     conn = get_db()
@@ -861,7 +1313,9 @@ def like(post_id):
     cursor = conn.cursor()
 
 
-    # Check post
+    # =====================================================
+    # CHECK POST
+    # =====================================================
 
     cursor.execute("""
         SELECT id
@@ -871,7 +1325,6 @@ def like(post_id):
         post_id,
     ))
 
-
     post = cursor.fetchone()
 
 
@@ -879,42 +1332,50 @@ def like(post_id):
 
         conn.close()
 
-        return "Post not found.", 404
+        return jsonify({
+            "success": False,
+            "error": "Post not found."
+        }), 404
 
 
-    # Check existing like
+    # =====================================================
+    # CHECK EXISTING LIKE
+    # =====================================================
 
     cursor.execute("""
         SELECT id
         FROM likes
-
         WHERE user_id = ?
-
         AND post_id = ?
-
     """, (
         session["user_id"],
         post_id
     ))
 
-
     existing_like = cursor.fetchone()
 
+
+    # =====================================================
+    # UNLIKE
+    # =====================================================
 
     if existing_like:
 
         cursor.execute("""
             DELETE FROM likes
-
             WHERE user_id = ?
-
             AND post_id = ?
-
         """, (
             session["user_id"],
             post_id
         ))
 
+        liked = False
+
+
+    # =====================================================
+    # LIKE
+    # =====================================================
 
     else:
 
@@ -924,13 +1385,28 @@ def like(post_id):
                 user_id,
                 post_id
             )
-
             VALUES (?, ?)
-
         """, (
             session["user_id"],
             post_id
         ))
+
+        liked = True
+
+
+    # =====================================================
+    # GET NEW LIKE COUNT
+    # =====================================================
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM likes
+        WHERE post_id = ?
+    """, (
+        post_id,
+    ))
+
+    like_count = cursor.fetchone()[0]
 
 
     conn.commit()
@@ -938,9 +1414,19 @@ def like(post_id):
     conn.close()
 
 
-    return redirect(
-        url_for("dashboard")
-    )
+    # =====================================================
+    # RETURN JSON
+    # =====================================================
+
+    return jsonify({
+
+        "success": True,
+
+        "liked": liked,
+
+        "like_count": like_count
+
+    })
 
 
 # =========================================================
@@ -955,10 +1441,15 @@ def comment(post_id):
 
     if "user_id" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        return jsonify({
+            "success": False,
+            "error": "Please login first."
+        }), 401
 
+
+    # =====================================================
+    # GET COMMENT TEXT
+    # =====================================================
 
     comment_text = request.form.get(
         "comment",
@@ -966,25 +1457,38 @@ def comment(post_id):
     ).strip()
 
 
+    # =====================================================
+    # EMPTY COMMENT
+    # =====================================================
+
     if not comment_text:
 
-        return redirect(
-            url_for("dashboard")
-        )
+        return jsonify({
+            "success": False,
+            "error": "Comment cannot be empty."
+        }), 400
 
+
+    # =====================================================
+    # COMMENT LENGTH
+    # =====================================================
 
     if len(comment_text) > 500:
 
-        return (
-            "Comment is too long.",
-            400
-        )
+        return jsonify({
+            "success": False,
+            "error": "Comment is too long."
+        }), 400
 
 
     conn = get_db()
 
     cursor = conn.cursor()
 
+
+    # =====================================================
+    # CHECK POST
+    # =====================================================
 
     cursor.execute("""
         SELECT id
@@ -994,7 +1498,6 @@ def comment(post_id):
         post_id,
     ))
 
-
     post = cursor.fetchone()
 
 
@@ -1002,8 +1505,15 @@ def comment(post_id):
 
         conn.close()
 
-        return "Post not found.", 404
+        return jsonify({
+            "success": False,
+            "error": "Post not found."
+        }), 404
 
+
+    # =====================================================
+    # INSERT COMMENT
+    # =====================================================
 
     cursor.execute("""
         INSERT INTO comments
@@ -1012,9 +1522,7 @@ def comment(post_id):
             post_id,
             comment
         )
-
         VALUES (?, ?, ?)
-
     """, (
         session["user_id"],
         post_id,
@@ -1022,14 +1530,59 @@ def comment(post_id):
     ))
 
 
+    # =====================================================
+    # GET USER NAME
+    # =====================================================
+
+    cursor.execute("""
+        SELECT name
+        FROM users
+        WHERE id = ?
+    """, (
+        session["user_id"],
+    ))
+
+    user = cursor.fetchone()
+
+
+    user_name = user["name"] if user else "User"
+
+
+    # =====================================================
+    # GET COMMENT COUNT
+    # =====================================================
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM comments
+        WHERE post_id = ?
+    """, (
+        post_id,
+    ))
+
+    comment_count = cursor.fetchone()[0]
+
+
     conn.commit()
 
     conn.close()
 
 
-    return redirect(
-        url_for("dashboard")
-    )
+    # =====================================================
+    # RETURN JSON
+    # =====================================================
+
+    return jsonify({
+
+        "success": True,
+
+        "name": user_name,
+
+        "comment": comment_text,
+
+        "comment_count": comment_count
+
+    })
 
 
 # =========================================================
@@ -1123,10 +1676,22 @@ def profile():
     conn = get_db()
     cursor = conn.cursor()
 
-    user_id = session["user_id"]
+    current_user = session["user_id"]
 
     # =====================================================
-    # PROFILE
+    # GET PROFILE USER ID
+    # =====================================================
+
+    profile_id = request.args.get(
+        "user_id",
+        type=int
+    )
+
+    if profile_id is None:
+        profile_id = current_user
+
+    # =====================================================
+    # GET PROFILE
     # =====================================================
 
     cursor.execute("""
@@ -1134,10 +1699,12 @@ def profile():
             id,
             name,
             email,
-            profile_picture
+            profile_picture,
+            bio,
+            last_seen
         FROM users
         WHERE id = ?
-    """, (user_id,))
+    """, (profile_id,))
 
     person = cursor.fetchone()
 
@@ -1146,7 +1713,7 @@ def profile():
         return "User not found.", 404
 
     # =====================================================
-    # MY POSTS + LIKE COUNT
+    # USER POSTS + LIKE COUNT
     # =====================================================
 
     cursor.execute("""
@@ -1158,19 +1725,114 @@ def profile():
             posts.created_at,
             COUNT(likes.id) AS like_count
         FROM posts
+
         LEFT JOIN likes
             ON likes.post_id = posts.id
+
         WHERE posts.user_id = ?
+
         GROUP BY
             posts.id,
             posts.user_id,
             posts.caption,
             posts.media,
             posts.created_at
+
         ORDER BY posts.created_at DESC
-    """, (user_id,))
+    """, (profile_id,))
 
     posts = cursor.fetchall()
+
+    # =====================================================
+    # DEFAULT RELATIONSHIP STATUS
+    # =====================================================
+
+    relationship_status = "none"
+    pending_request_id = None
+
+    # =====================================================
+    # OWN PROFILE
+    # =====================================================
+
+    if profile_id == current_user:
+
+        relationship_status = "own"
+
+    else:
+
+        # =================================================
+        # CHECK IF ALREADY FRIENDS
+        # =================================================
+
+        cursor.execute("""
+            SELECT id
+            FROM connections
+            WHERE
+                (user1_id = ? AND user2_id = ?)
+                OR
+                (user1_id = ? AND user2_id = ?)
+        """, (
+            current_user,
+            profile_id,
+            profile_id,
+            current_user
+        ))
+
+        connection = cursor.fetchone()
+
+        if connection:
+
+            relationship_status = "friends"
+
+        else:
+
+            # =============================================
+            # CHECK OUTGOING REQUEST
+            # =============================================
+
+            cursor.execute("""
+                SELECT id
+                FROM connection_requests
+                WHERE
+                    sender_id = ?
+                    AND receiver_id = ?
+                    AND status = 'pending'
+            """, (
+                current_user,
+                profile_id
+            ))
+
+            outgoing_request = cursor.fetchone()
+
+            if outgoing_request:
+
+                relationship_status = "sent"
+                pending_request_id = outgoing_request["id"]
+
+            else:
+
+                # =========================================
+                # CHECK INCOMING REQUEST
+                # =========================================
+
+                cursor.execute("""
+                    SELECT id
+                    FROM connection_requests
+                    WHERE
+                        sender_id = ?
+                        AND receiver_id = ?
+                        AND status = 'pending'
+                """, (
+                    profile_id,
+                    current_user
+                ))
+
+                incoming_request = cursor.fetchone()
+
+                if incoming_request:
+
+                    relationship_status = "received"
+                    pending_request_id = incoming_request["id"]
 
     # =====================================================
     # MY CONNECTIONS / FRIENDS
@@ -1182,6 +1844,7 @@ def profile():
             users.name,
             users.profile_picture
         FROM connections
+
         JOIN users
             ON users.id =
                 CASE
@@ -1189,26 +1852,37 @@ def profile():
                     THEN connections.user2_id
                     ELSE connections.user1_id
                 END
+
         WHERE
             connections.user1_id = ?
             OR
             connections.user2_id = ?
+
         ORDER BY connections.created_at DESC
     """, (
-        user_id,
-        user_id,
-        user_id
+        profile_id,
+        profile_id,
+        profile_id
     ))
 
     friends = cursor.fetchall()
 
     conn.close()
 
+    # =====================================================
+    # SEND DATA TO PROFILE PAGE
+    # =====================================================
+
     return render_template(
         "profile.html",
         person=person,
         posts=posts,
-        friends=friends
+        friends=friends,
+        is_own_profile=(
+            profile_id == current_user
+        ),
+        relationship_status=relationship_status,
+        pending_request_id=pending_request_id
     )
 
 # =========================================================
@@ -1447,138 +2121,361 @@ def upload_profile_picture():
 def find_people():
 
     if "user_id" not in session:
+        return redirect(url_for("login"))
 
-        return redirect(
-            url_for("login")
-        )
+    current_user = session["user_id"]
 
-
-    search = request.args.get(
-        "q",
-        ""
-    ).strip()
-
+    search = request.args.get("q", "").strip()
 
     conn = get_db()
-
     cursor = conn.cursor()
-
 
     if search:
 
         cursor.execute("""
             SELECT
-
                 id,
-
                 name,
-
                 email,
-
                 profile_picture
-
             FROM users
-
             WHERE
-
-                name LIKE ?
-
-                OR email LIKE ?
-
+                (name LIKE ? OR email LIKE ?)
+                AND id != ?
             ORDER BY name
-
         """, (
             f"%{search}%",
-            f"%{search}%"
+            f"%{search}%",
+            current_user
         ))
-
 
     else:
 
         cursor.execute("""
             SELECT
-
                 id,
-
                 name,
-
                 email,
-
                 profile_picture
-
             FROM users
-
+            WHERE id != ?
             ORDER BY name
-
-        """)
-
+        """, (
+            current_user,
+        ))
 
     people = cursor.fetchall()
 
-    conn.close()
+    # Convert each person into a dictionary
+    # and determine relationship status
 
+    people_with_status = []
+
+    for person in people:
+
+        person = dict(person)
+
+        person_id = person["id"]
+
+        # -----------------------------------------
+        # CHECK FRIENDSHIP
+        # -----------------------------------------
+
+        cursor.execute("""
+            SELECT id
+            FROM connections
+            WHERE
+                (user1_id = ? AND user2_id = ?)
+                OR
+                (user1_id = ? AND user2_id = ?)
+        """, (
+            current_user,
+            person_id,
+            person_id,
+            current_user
+        ))
+
+        connection = cursor.fetchone()
+
+        if connection:
+
+            person["relationship_status"] = "friends"
+
+        else:
+
+            # -------------------------------------
+            # CHECK SENT REQUEST
+            # -------------------------------------
+
+            cursor.execute("""
+                SELECT id
+                FROM connection_requests
+                WHERE
+                    sender_id = ?
+                    AND receiver_id = ?
+                    AND status = 'pending'
+            """, (
+                current_user,
+                person_id
+            ))
+
+            sent_request = cursor.fetchone()
+
+            if sent_request:
+
+                person["relationship_status"] = "sent"
+
+            else:
+
+                # ---------------------------------
+                # CHECK RECEIVED REQUEST
+                # ---------------------------------
+
+                cursor.execute("""
+                    SELECT id
+                    FROM connection_requests
+                    WHERE
+                        sender_id = ?
+                        AND receiver_id = ?
+                        AND status = 'pending'
+                """, (
+                    person_id,
+                    current_user
+                ))
+
+                received_request = cursor.fetchone()
+
+                if received_request:
+
+                    person["relationship_status"] = "received"
+
+                else:
+
+                    person["relationship_status"] = "none"
+
+        people_with_status.append(person)
+
+    conn.close()
 
     return render_template(
         "find_people.html",
-        people=people,
+        people=people_with_status,
         search=search
     )
 
 
 # =========================================================
-# VIEW USER PROFILE
+# VIEW OTHER USER PROFILE
 # =========================================================
 
-@app.route(
-    "/profile/<int:user_id>"
-)
+@app.route("/profile/<int:user_id>")
 def user_profile(user_id):
 
+    # Check login
     if "user_id" not in session:
+        return redirect(url_for("login"))
 
-        return redirect(
-            url_for("login")
-        )
+    current_user = session["user_id"]
 
+    # If opening own profile
+    if user_id == current_user:
+        return redirect(url_for("profile"))
 
     conn = get_db()
-
     cursor = conn.cursor()
 
+    # =====================================================
+    # GET USER
+    # =====================================================
 
     cursor.execute("""
         SELECT
-
             id,
-
             name,
-
             email,
-
-            profile_picture
-
+            profile_picture,
+            bio,
+            last_seen
         FROM users
-
         WHERE id = ?
-
-    """, (
-        user_id,
-    ))
-
+    """, (user_id,))
 
     person = cursor.fetchone()
 
-    conn.close()
-
-
     if person is None:
-
+        conn.close()
         return "Person not found.", 404
 
+    # =====================================================
+    # GET USER POSTS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at,
+            COUNT(likes.id) AS like_count
+
+        FROM posts
+
+        LEFT JOIN likes
+        ON likes.post_id = posts.id
+
+        WHERE posts.user_id = ?
+
+        GROUP BY
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at
+
+        ORDER BY posts.created_at DESC
+    """, (user_id,))
+
+    posts = cursor.fetchall()
+
+    # =====================================================
+    # DEFAULT CONNECTION STATUS
+    # =====================================================
+
+    relationship_status = "none"
+    pending_request_id = None
+
+    # =====================================================
+    # CHECK IF FRIENDS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id
+        FROM connections
+
+        WHERE
+            (user1_id = ? AND user2_id = ?)
+
+            OR
+
+            (user1_id = ? AND user2_id = ?)
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+    connection = cursor.fetchone()
+
+    if connection:
+
+        relationship_status = "friends"
+
+    else:
+
+        # =================================================
+        # CHECK SENT REQUEST
+        # =================================================
+
+        cursor.execute("""
+            SELECT id
+            FROM connection_requests
+
+            WHERE
+                sender_id = ?
+                AND receiver_id = ?
+                AND status = 'pending'
+        """, (
+            current_user,
+            user_id
+        ))
+
+        outgoing_request = cursor.fetchone()
+
+        if outgoing_request:
+
+            relationship_status = "sent"
+
+            pending_request_id = outgoing_request["id"]
+
+        else:
+
+            # =============================================
+            # CHECK RECEIVED REQUEST
+            # =============================================
+
+            cursor.execute("""
+                SELECT id
+                FROM connection_requests
+
+                WHERE
+                    sender_id = ?
+                    AND receiver_id = ?
+                    AND status = 'pending'
+            """, (
+                user_id,
+                current_user
+            ))
+
+            incoming_request = cursor.fetchone()
+
+            if incoming_request:
+
+                relationship_status = "received"
+
+                pending_request_id = incoming_request["id"]
+
+    # =====================================================
+    # GET USER CONNECTIONS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT
+            users.id,
+            users.name,
+            users.profile_picture
+
+        FROM connections
+
+        JOIN users
+        ON users.id =
+            CASE
+                WHEN connections.user1_id = ?
+                THEN connections.user2_id
+                ELSE connections.user1_id
+            END
+
+        WHERE
+            connections.user1_id = ?
+
+            OR
+
+            connections.user2_id = ?
+
+        ORDER BY connections.created_at DESC
+    """, (
+        user_id,
+        user_id,
+        user_id
+    ))
+
+    friends = cursor.fetchall()
+
+    conn.close()
+
+    # =====================================================
+    # OPEN PROFILE PAGE
+    # =====================================================
 
     return render_template(
         "profile.html",
-        person=person
+        person=person,
+        posts=posts,
+        friends=friends,
+        is_own_profile=False,
+        relationship_status=relationship_status,
+        pending_request_id=pending_request_id
     )
 
 
@@ -1661,38 +2558,37 @@ def send_request(user_id):
         conn.close()
 
         return redirect(
-            url_for("find_people")
-        )
+    url_for(
+        "find_people",
+        sent=user_id
+    )
+)
 
 
+    # CHECK ONLY PENDING REQUEST
     cursor.execute("""
-        SELECT id, status
+        SELECT id
         FROM connection_requests
-
         WHERE
-            (sender_id = ? AND receiver_id = ?)
-
-            OR
-
-            (sender_id = ? AND receiver_id = ?)
-
+            sender_id = ?
+            AND receiver_id = ?
+            AND status = 'pending'
     """, (
         current_user,
-        user_id,
-        user_id,
-        current_user
+        user_id
     ))
 
-
     existing_request = cursor.fetchone()
-
 
     if existing_request:
 
         conn.close()
 
         return redirect(
-            url_for("find_people")
+            url_for(
+                "find_people",
+                sent=user_id
+            )
         )
 
 
@@ -1718,8 +2614,11 @@ def send_request(user_id):
 
 
     return redirect(
-        url_for("find_people")
+    url_for(
+        "find_people",
+        sent=user_id
     )
+)
 
 
 # =========================================================
@@ -2000,6 +2899,9 @@ def messages():
 
     current_user = session["user_id"]
 
+    # Person selected from another user's profile
+    selected_user = request.args.get("user_id", type=int)
+
     conn = get_db()
     cursor = conn.cursor()
 
@@ -2064,11 +2966,29 @@ def messages():
 
     people = cursor.fetchall()
 
+    # Get selected person's information
+    selected_person = None
+
+    if selected_user:
+
+        cursor.execute("""
+            SELECT
+                id,
+                name,
+                email,
+                profile_picture
+            FROM users
+            WHERE id = ?
+        """, (selected_user,))
+
+        selected_person = cursor.fetchone()
+
     conn.close()
 
     return render_template(
         "messages.html",
-        people=people
+        people=people,
+        selected_person=selected_person
     )
 
 
@@ -2218,18 +3138,20 @@ def conversation(user_id):
 
 
             cursor.execute("""
-                INSERT INTO messages
-                (
-                    sender_id,
-                    receiver_id,
-                    message
-                )
-                VALUES (?, ?, ?)
-            """, (
-                current_user,
-                user_id,
-                message
-            ))
+    INSERT INTO messages
+    (
+        sender_id,
+        receiver_id,
+        message,
+        delivered_at,
+        read_at
+    )
+    VALUES (?, ?, ?, NULL, NULL)
+""", (
+    current_user,
+    user_id,
+    message
+))
 
 
             conn.commit()
@@ -2247,6 +3169,25 @@ def conversation(user_id):
 
 
     # -----------------------------------------------------
+    # MARK RECEIVED MESSAGES AS READ
+    # -----------------------------------------------------
+
+    cursor.execute("""
+        UPDATE messages
+        SET read_at = ?
+        WHERE sender_id = ?
+        AND receiver_id = ?
+        AND read_at IS NULL
+    """, (
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        user_id,
+        current_user
+    ))
+
+    conn.commit()
+
+
+    # -----------------------------------------------------
     # GET MESSAGES
     # -----------------------------------------------------
 
@@ -2256,7 +3197,9 @@ def conversation(user_id):
             sender_id,
             receiver_id,
             message,
-            created_at
+            created_at,
+            delivered_at,
+            read_at
         FROM messages
 
         WHERE
@@ -2280,9 +3223,7 @@ def conversation(user_id):
         current_user
     ))
 
-
     messages = cursor.fetchall()
-
 
     conn.close()
 
@@ -2297,186 +3238,7 @@ def conversation(user_id):
         messages=messages
     )
 
-
-    # =====================================================
-    # GET PERSON
-    # =====================================================
-
-    cursor.execute("""
-        SELECT
-
-            id,
-
-            name,
-
-            email,
-
-            profile_picture
-
-        FROM users
-
-        WHERE id = ?
-
-    """, (
-        user_id,
-    ))
-
-
-    person = cursor.fetchone()
-
-
-    if person is None:
-
-        conn.close()
-
-        return "Person not found.", 404
-
-
-    # =====================================================
-    # CHECK CONNECTION
-    # =====================================================
-
-    cursor.execute("""
-        SELECT id
-
-        FROM connections
-
-        WHERE
-
-            (user1_id = ? AND user2_id = ?)
-
-            OR
-
-            (user1_id = ? AND user2_id = ?)
-
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
-
-
-    connected = cursor.fetchone()
-
-
-    if not connected:
-
-        conn.close()
-
-        return (
-            "You can only message your connections.",
-            403
-        )
-
-
-    # =====================================================
-    # SEND MESSAGE
-    # =====================================================
-
-    if request.method == "POST":
-
-        message = request.form.get(
-            "message",
-            ""
-        ).strip()
-
-
-        if message:
-
-            if len(message) > 1000:
-
-                conn.close()
-
-                return (
-                    "Message is too long.",
-                    400
-                )
-
-
-            cursor.execute("""
-                INSERT INTO messages
-                (
-                    sender_id,
-                    receiver_id,
-                    message
-                )
-
-                VALUES (?, ?, ?)
-
-            """, (
-                current_user,
-                user_id,
-                message
-            ))
-
-
-            conn.commit()
-
-
-    # =====================================================
-    # GET MESSAGES
-    # =====================================================
-
-    cursor.execute("""
-        SELECT
-
-            messages.message,
-
-            messages.created_at,
-
-            users.name,
-
-            messages.sender_id
-
-        FROM messages
-
-        JOIN users
-
-        ON users.id = messages.sender_id
-
-        WHERE
-
-            (
-                messages.sender_id = ?
-
-                AND
-
-                messages.receiver_id = ?
-
-            )
-
-            OR
-
-            (
-                messages.sender_id = ?
-
-                AND
-
-                messages.receiver_id = ?
-
-            )
-
-        ORDER BY messages.created_at ASC
-
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
-
-
-    messages_data = cursor.fetchall()
-
-    conn.close()
-
-
-    return render_template(
-        "conversation.html",
-        person=person,
-        messages=messages_data
-    )
+    
 
 
 # =========================================================
@@ -2554,13 +3316,19 @@ def message_data(user_id):
     cursor.execute("""
         SELECT
 
-            messages.message,
+    messages.id,
 
-            messages.created_at,
+    messages.message,
 
-            users.name,
+    messages.created_at,
 
-            messages.sender_id
+    messages.delivered_at,
+
+    messages.read_at,
+
+    users.name,
+
+    messages.sender_id
 
         FROM messages
 
@@ -2607,20 +3375,81 @@ def message_data(user_id):
 
     return jsonify([
 
-        {
-            "message": message["message"],
+    {
+        "id": message["id"],
 
-            "created_at": message["created_at"],
+        "message": message["message"],
 
-            "name": message["name"],
+        "created_at": message["created_at"],
 
-            "sender_id": message["sender_id"]
+        "delivered_at": message["delivered_at"],
 
-        }
+        "read_at": message["read_at"],
 
-        for message in messages_data
+        "name": message["name"],
 
-    ])
+        "sender_id": message["sender_id"]
+
+    }
+
+    for message in messages_data
+
+])
+
+# =========================================================
+# MARK MESSAGES AS READ
+# =========================================================
+
+@app.route(
+    "/messages/<int:user_id>/read",
+    methods=["POST"]
+)
+def mark_messages_read(user_id):
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False
+        }), 401
+
+    current_user = session["user_id"]
+
+    if current_user == user_id:
+        return jsonify({
+            "success": False
+        }), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    now = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+
+    cursor.execute("""
+        UPDATE messages
+        SET
+            read_at = ?,
+            delivered_at = COALESCE(
+                delivered_at,
+                ?
+            )
+        WHERE
+            sender_id = ?
+            AND receiver_id = ?
+            AND read_at IS NULL
+    """, (
+        now,
+        now,
+        user_id,
+        current_user
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
 
 
 # =========================================================

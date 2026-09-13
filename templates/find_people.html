@@ -17,135 +17,406 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eef3f8, #dfe8f2);
+            color: #172033;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 700px;
-            margin: 30px auto;
-            padding: 20px;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 35px 20px 50px;
         }
 
-        h1 {
+        /* HEADER */
+
+        .page-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .search {
-            background: white;
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #667085;
+            font-size: 15px;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            background: rgba(255,255,255,0.95);
             padding: 15px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(20,40,70,0.10);
+            margin-bottom: 22px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #7b8794;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #d7dee8;
             border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 0 15px 0 45px;
+            font-size: 15px;
+            outline: none;
+            background: #f8fafc;
+            transition: 0.2s;
         }
 
-        .search input {
-            width: 70%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
+        .search-input:focus {
+            border-color: #1877f2;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(24,119,242,0.10);
         }
 
-        .search button {
-            padding: 10px 15px;
+        .search-button {
+            height: 48px;
+            padding: 0 22px;
             border: none;
-            border-radius: 7px;
-            background: #222;
+            border-radius: 12px;
+            background: #1877f2;
             color: white;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
         }
+
+        .search-button:hover {
+            background: #0d65d9;
+            transform: translateY(-1px);
+        }
+
+        /* PERSON CARD */
 
         .person {
-            background: white;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-radius: 12px;
+            background: rgba(255,255,255,0.97);
+            border: 1px solid #e1e7ef;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 14px;
+
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
+
+            box-shadow: 0 7px 22px rgba(20,40,70,0.08);
+
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .person:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(20,40,70,0.13);
+        }
+
+        /* PROFILE IMAGE */
+
+        .picture-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .profile-picture,
+        .default-picture {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
         }
 
         .profile-picture {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
             object-fit: cover;
+            border: 3px solid #edf2f7;
         }
 
         .default-picture {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: #ddd;
+            background: linear-gradient(135deg, #dce6f2, #b9c8da);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 35px;
+            font-size: 32px;
+            border: 3px solid white;
         }
+
+        /* STATUS DOT */
+
+        .status-dot {
+            position: absolute;
+            right: 2px;
+            bottom: 3px;
+
+            width: 17px;
+            height: 17px;
+
+            background: #98a2b3;
+            border: 3px solid white;
+            border-radius: 50%;
+        }
+
+        /* USER INFO */
 
         .info {
             flex: 1;
+            min-width: 0;
         }
 
         .name {
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 19px;
+            font-weight: 700;
             margin-bottom: 5px;
+            color: #101828;
         }
 
-        .email {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 10px;
+        .member-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #667085;
+            font-size: 13px;
+            margin-bottom: 13px;
+        }
+
+        .member-icon {
+            font-size: 12px;
+        }
+
+        /* ACTIONS */
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .view-button,
         .connect-button {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 7px;
+            min-height: 39px;
+            padding: 0 14px;
+
+            border-radius: 10px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
             text-decoration: none;
-            border: none;
+            font-size: 13px;
+            font-weight: 600;
+
             cursor: pointer;
-            font-size: 14px;
+            transition: 0.2s;
         }
 
         .view-button {
-            background: #ddd;
-            color: #222;
+            background: #f2f4f7;
+            border: 1px solid #d8dee8;
+            color: #344054;
+        }
+
+        .view-button:hover {
+            background: #e7ebf0;
         }
 
         .connect-button {
-            background: #222;
+            background: #1877f2;
+            border: 1px solid #1877f2;
             color: white;
         }
 
-        .navigation {
-            text-align: center;
-            margin-top: 25px;
+        .connect-button:hover {
+            background: #0d65d9;
+            transform: translateY(-1px);
         }
 
-        .navigation a {
-            margin: 5px;
-            color: #222;
+        /* CONNECTED / REQUEST SENT */
+
+        .connect-button.sent {
+            background: #e8f7ee;
+            border-color: #b7e4c7;
+            color: #16803c;
+            cursor: default;
         }
+
+        .connect-button.sent:hover {
+            transform: none;
+        }
+
+        /* EMPTY */
 
         .empty {
             background: white;
-            padding: 30px;
+            padding: 45px 20px;
             text-align: center;
-            border-radius: 12px;
-            color: #777;
+            border-radius: 18px;
+            box-shadow: 0 7px 22px rgba(20,40,70,0.08);
         }
 
-        @media (max-width: 600px) {
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .empty h2 {
+            font-size: 19px;
+            margin-bottom: 7px;
+        }
+
+        .empty p {
+            color: #667085;
+            font-size: 14px;
+        }
+
+        /* NOTIFICATION */
+
+        .notification {
+            background: #ecfdf3;
+            color: #137333;
+            border: 1px solid #b7ebc6;
+
+            padding: 13px 16px;
+            border-radius: 12px;
+
+            margin-bottom: 18px;
+
+            display: flex;
+            align-items: center;
+            gap: 9px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            animation: notificationIn 0.3s ease;
+        }
+
+        @keyframes notificationIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        /* NAVIGATION */
+
+        .navigation {
+            margin-top: 28px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .navigation a {
+            background: white;
+            color: #344054;
+
+            text-decoration: none;
+            text-align: center;
+
+            padding: 13px 8px;
+            border-radius: 12px;
+
+            border: 1px solid #e1e7ef;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .navigation a:hover {
+            background: #1877f2;
+            color: white;
+            border-color: #1877f2;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 650px) {
+
+            .container {
+                padding: 22px 12px 35px;
+            }
+
+            .page-header h1 {
+                font-size: 27px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-button {
+                width: 100%;
+            }
 
             .person {
                 align-items: flex-start;
+                padding: 15px;
             }
 
-            .search input {
-                width: 65%;
+            .profile-picture,
+            .default-picture {
+                width: 60px;
+                height: 60px;
+            }
+
+            .default-picture {
+                font-size: 27px;
+            }
+
+            .status-dot {
+                width: 15px;
+                height: 15px;
+            }
+
+            .name {
+                font-size: 17px;
+            }
+
+            .actions {
+                margin-top: 3px;
+            }
+
+            .view-button,
+            .connect-button {
+                min-height: 36px;
+                padding: 0 11px;
+                font-size: 12px;
+            }
+
+            .navigation {
+                grid-template-columns: 1fr;
             }
 
         }
@@ -159,23 +430,66 @@
 
 <div class="container">
 
-    <h1>👥 Find People</h1>
+
+    <!-- PAGE HEADER -->
+
+    <div class="page-header">
+
+        <h1>👥 Find People</h1>
+
+        <p>
+            Discover people and build your connections
+        </p>
+
+    </div>
+
+
+    <!-- SUCCESS MESSAGE -->
+
+    {% if request.args.get('sent') %}
+
+        <div class="notification">
+
+            <span>✅</span>
+
+            <span>
+                Connection request sent successfully!
+            </span>
+
+        </div>
+
+    {% endif %}
 
 
     <!-- SEARCH -->
 
-    <div class="search">
+    <div class="search-box">
 
-        <form method="GET" action="{{ url_for('find_people') }}">
+        <form
+            method="GET"
+            action="{{ url_for('find_people') }}"
+            class="search-form"
+        >
 
-            <input
-                type="text"
-                name="q"
-                placeholder="Search by name or email..."
-                value="{{ search }}"
+            <div class="search-input-wrapper">
+
+                <span class="search-icon">🔍</span>
+
+                <input
+                    type="text"
+                    name="q"
+                    class="search-input"
+                    placeholder="Search people by name..."
+                    value="{{ search }}"
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="search-button"
             >
-
-            <button type="submit">
                 Search
             </button>
 
@@ -190,26 +504,35 @@
 
         {% for person in people %}
 
-            {% if person["id"] != session["user_id"] %}
-
             <div class="person">
 
-                {% if person["profile_picture"] %}
 
-                    <img
-                        src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
-                        class="profile-picture"
-                        alt="Profile Picture"
-                    >
+                <!-- PROFILE PICTURE -->
 
-                {% else %}
+                <div class="picture-wrapper">
 
-                    <div class="default-picture">
-                        👤
-                    </div>
+                    {% if person["profile_picture"] %}
 
-                {% endif %}
+                        <img
+                            src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                            class="profile-picture"
+                            alt="Profile Picture"
+                        >
 
+                    {% else %}
+
+                        <div class="default-picture">
+                            👤
+                        </div>
+
+                    {% endif %}
+
+                    <span class="status-dot"></span>
+
+                </div>
+
+
+                <!-- USER INFORMATION -->
 
                 <div class="info">
 
@@ -217,47 +540,115 @@
                         {{ person["name"] }}
                     </div>
 
-                    <div class="email">
-                        {{ person["email"] }}
+
+                    <div class="member-status">
+
+                        <span class="member-icon">●</span>
+
+                        <span>PrivateConnect member</span>
+
                     </div>
 
 
-                    <a
-                        href="{{ url_for('user_profile', user_id=person['id']) }}"
-                        class="view-button"
-                    >
-                        View Profile
-                    </a>
+                    <!-- ACTIONS -->
+
+                    <div class="actions">
 
 
-                    <form
-                        action="{{ url_for('send_request', user_id=person['id']) }}"
-                        method="POST"
-                        style="display:inline;"
-                    >
+                        <!-- VIEW PROFILE -->
 
-                        <button
-                            type="submit"
-                            class="connect-button"
+                        <a
+                            href="{{ url_for('user_profile', user_id=person['id']) }}"
+                            class="view-button"
                         >
-                            ➕ Connect
-                        </button>
+                            👁️ View Profile
+                        </a>
 
-                    </form>
+
+                        <!-- CONNECTION STATUS -->
+
+                        {% if person["relationship_status"] == "friends" %}
+
+                            <button
+                                type="button"
+                                class="connect-button sent"
+                                disabled
+                            >
+                                ✓ Connected
+                            </button>
+
+
+                        {% elif person["relationship_status"] == "sent" %}
+
+                            <button
+                                type="button"
+                                class="connect-button sent"
+                                disabled
+                            >
+                                ✓ Request Sent
+                            </button>
+
+
+                        {% elif person["relationship_status"] == "received" %}
+
+                            <a
+                                href="{{ url_for('requests') }}"
+                                class="connect-button"
+                            >
+                                📩 Respond
+                            </a>
+
+
+                        {% else %}
+
+                            <form
+                                action="{{ url_for('send_request', user_id=person['id']) }}"
+                                method="POST"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="connect-button"
+                                >
+                                    ＋ Connect
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+
+                    </div>
 
                 </div>
 
             </div>
 
-            {% endif %}
-
         {% endfor %}
+
 
     {% else %}
 
+
+        <!-- NO PEOPLE -->
+
         <div class="empty">
-            No people found.
+
+            <div class="empty-icon">
+                🔎
+            </div>
+
+            <h2>
+                No people found
+            </h2>
+
+            <p>
+                Try searching with another name.
+            </p>
+
         </div>
+
 
     {% endif %}
 
@@ -267,22 +658,19 @@
     <div class="navigation">
 
         <a href="{{ url_for('requests') }}">
-            📩 Connection Requests
+            📩 Requests
         </a>
-
-        <br><br>
 
         <a href="{{ url_for('connections') }}">
-            👥 My Connections
+            👥 Connections
         </a>
 
-        <br><br>
-
         <a href="{{ url_for('dashboard') }}">
-            🏠 Dashboard
+            🏠 Home
         </a>
 
     </div>
+
 
 </div>
 

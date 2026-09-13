@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reels - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
+        }
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #181818;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .upload-button {
+            background: #2878ff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .upload-button:hover {
+            background: #1765df;
+        }
+
+        /* =====================================================
+           REELS CONTAINER
+        ===================================================== */
+
+        .reels-container {
+            width: 100%;
+            max-width: 600px;
+            height: calc(100vh - 120px);
+            margin: 60px auto 60px;
+            padding: 0;
+            overflow-y: auto;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+
+        .reels-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* =====================================================
+           REEL
+        ===================================================== */
+
+        .reel {
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            margin: 0;
+            min-height: calc(100vh - 120px);
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            scroll-snap-align: start;
+        }
+
+        .reel video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background: black;
+        }
+
+        /* =====================================================
+           REEL INFO
+        ===================================================== */
+
+        .reel-info {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 20px;
+            padding-bottom: 25px;
+            background: linear-gradient(
+                transparent,
+                rgba(0, 0, 0, 0.9)
+            );
+            z-index: 5;
+        }
+
+        .user-name {
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .caption {
+            color: #ddd;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .action-button:hover {
+            opacity: 0.8;
+        }
+
+        .like-button.liked {
+            color: #ff4d6d;
+        }
+
+        /* =====================================================
+           COMMENT
+        ===================================================== */
+
+        .comment-form {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .comment-form input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .comment-form button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2878ff;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .comment-form button:disabled {
+            opacity: 0.6;
+        }
+
+        .comments-list {
+            max-height: 130px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .comment {
+            font-size: 13px;
+            margin-top: 5px;
+            color: #eee;
+        }
+
+        .comment strong {
+            color: #63adff;
+            margin-right: 5px;
+        }
+
+        /* =====================================================
+           DELETE
+        ===================================================== */
+
+        .delete-reel-button {
+            margin: 8px 0;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: #aaa;
+        }
+
+        .empty h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        /* =====================================================
+           UPLOAD MODAL
+        ===================================================== */
+
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            color: #222;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .modal-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .selected-video {
+            margin-top: 10px;
+            width: 100%;
+            max-height: 250px;
+            border-radius: 10px;
+            background: #000;
+            display: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .upload-submit {
+            background: #2878ff;
+            color: white;
+        }
+
+        .cancel {
+            background: #ddd;
+            color: #222;
+        }
+
+        /* =====================================================
+           BOTTOM NAV
+        ===================================================== */
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: #181818;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .bottom-nav a {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .bottom-nav a:hover {
+            color: white;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .reels-container {
+                width: 100%;
+                padding: 0;
+            }
+
+            .top-bar {
+                padding: 0 12px;
+            }
+
+            .reel-info {
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
+
+<div class="top-bar">
+
+    <div class="title">
+        🎬 Reels
+    </div>
+
+    <button
+        type="button"
+        class="upload-button"
+        onclick="openUploadModal()"
+    >
+        ➕ Upload Reel
+    </button>
+
+</div>
+
+
+<!-- =====================================================
+     REELS
+===================================================== -->
+
+<div class="reels-container">
+
+    {% if reels %}
+
+        {% for reel in reels %}
+
+            <div
+                class="reel"
+                id="reel-{{ reel['id'] }}"
+            >
+
+                <!-- VIDEO -->
+
+                <video
+                    controls
+                    preload="metadata"
+                    playsinline
+                >
+
+                    <source
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' + reel['media']
+                        ) }}"
+                    >
+
+                    Your browser does not support video.
+
+                </video>
+
+
+                <!-- REEL INFORMATION -->
+
+                <div class="reel-info">
+
+
+                    <!-- USER -->
+
+                    <div class="user-name">
+                        👤 {{ reel["name"] }}
+                    </div>
+
+
+                    <!-- DELETE -->
+
+                    {% if reel["user_id"] == session["user_id"] %}
+
+                        <form
+                            action="{{ url_for(
+                                'delete_reel',
+                                post_id=reel['id']
+                            ) }}"
+                            method="POST"
+                            onsubmit="return confirm(
+                                'Delete this reel?'
+                            );"
+                        >
+
+                            <button
+                                type="submit"
+                                class="delete-reel-button"
+                            >
+                                🗑️ Delete Reel
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+
+                    <!-- CAPTION -->
+
+                    {% if reel["caption"] %}
+
+                        <div class="caption">
+                            {{ reel["caption"] }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- ================= ACTIONS ================= -->
+
+                    <div class="actions">
+
+
+                        <!-- LIKE -->
+
+                        <button
+                            type="button"
+                            class="action-button like-button {% if reel['user_liked'] %}liked{% endif %}"
+                            data-reel-id="{{ reel['id'] }}"
+                            onclick="likeReel(
+                                {{ reel['id'] }},
+                                this
+                            )"
+                        >
+
+                            <span class="like-icon">
+
+                                {% if reel["user_liked"] %}
+                                    ❤️
+                                {% else %}
+                                    🤍
+                                {% endif %}
+
+                            </span>
+
+                            <span class="like-text">
+
+                                {% if reel["user_liked"] %}
+                                    Liked
+                                {% else %}
+                                    Like
+                                {% endif %}
+
+                            </span>
+
+                            <span class="like-count">
+                                {{ reel["like_count"] }}
+                            </span>
+
+                        </button>
+
+
+                        <!-- COMMENT BUTTON -->
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            onclick="focusReelComment(
+                                {{ reel['id'] }}
+                            )"
+                        >
+
+                            💬
+
+                            <span class="comment-count">
+                                {{ reel["comment_count"] }}
+                            </span>
+
+                        </button>
+
+
+                        <!-- SHARE -->
+
+                        <button
+                            type="button"
+                            class="action-button"
+                            onclick="shareReel(
+                                {{ reel['id'] }}
+                            )"
+                        >
+
+                            🔗 Share
+
+                        </button>
+
+
+                    </div>
+
+
+                    <!-- ================= COMMENTS ================= -->
+
+                    <div
+                        class="comments-area"
+                        id="comments-{{ reel['id'] }}"
+                    >
+
+
+                        <div class="comments-list">
+
+                            {% if reel["comments"] %}
+
+                                {% for comment in reel["comments"] %}
+
+                                    <div class="comment">
+
+                                        <strong>
+                                            {{ comment["name"] }}
+                                        </strong>
+
+                                        {{ comment["comment"] }}
+
+                                    </div>
+
+                                {% endfor %}
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- COMMENT FORM -->
+
+                        <form
+                            class="comment-form"
+                            onsubmit="return submitReelComment(
+                                event,
+                                {{ reel['id'] }},
+                                this
+                            )"
+                        >
+
+                            <input
+                                type="text"
+                                name="comment"
+                                placeholder="Write a comment..."
+                                maxlength="500"
+                                required
+                            >
+
+                            <button
+                                type="submit"
+                            >
+                                Send
+                            </button>
+
+                        </form>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>
+                🎬 No Reels Yet
+            </h2>
+
+            <p>
+                Upload your first reel!
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =====================================================
+     UPLOAD MODAL
+===================================================== -->
+
+<div
+    class="modal"
+    id="uploadModal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            🎬 Upload Reel
+        </h2>
+
+
+        <form
+            action="{{ url_for('upload_reel') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+
+            <div class="form-group">
+
+                <label>
+                    Select Video
+                </label>
+
+                <input
+                    type="file"
+                    id="reelInput"
+                    name="reel"
+                    accept="video/mp4,video/webm,video/quicktime"
+                    required
+                >
+
+                <video
+                    id="selectedVideo"
+                    class="selected-video"
+                    controls
+                ></video>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Caption
+                </label>
+
+                <textarea
+                    name="caption"
+                    placeholder="Write something about your reel..."
+                    maxlength="500"
+                ></textarea>
+
+            </div>
+
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    onclick="closeUploadModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="upload-submit"
+                >
+                    🚀 Upload
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
+
+<div class="bottom-nav">
+
+    <a href="{{ url_for('dashboard') }}">
+        🏠<br>
+        Home
+    </a>
+
+    <a href="{{ url_for('find_people') }}">
+        👥<br>
+        People
+    </a>
+
+    <a href="{{ url_for('reels') }}">
+        🎬<br>
+        Reels
+    </a>
+
+    <a href="{{ url_for('profile') }}">
+        👤<br>
+        Profile
+    </a>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =====================================================
+   OPEN MODAL
+===================================================== */
+
+function openUploadModal() {
+
+    document.getElementById(
+        "uploadModal"
+    ).style.display = "flex";
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+function closeUploadModal() {
+
+    document.getElementById(
+        "uploadModal"
+    ).style.display = "none";
+
+}
+
+
+/* =====================================================
+   VIDEO PREVIEW
+===================================================== */
+
+document.getElementById(
+    "reelInput"
+).addEventListener(
+    "change",
+    function() {
+
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        const video =
+            document.getElementById(
+                "selectedVideo"
+            );
+
+        video.src =
+            URL.createObjectURL(file);
+
+        video.style.display =
+            "block";
+
+    }
+);
+
+
+/* =====================================================
+   LIKE REEL WITHOUT PAGE RELOAD
+===================================================== */
+
+function likeReel(reelId, button) {
+
+    fetch(
+        "/like/" + reelId,
+        {
+            method: "POST",
+            headers: {
+                "X-Requested-With":
+                    "XMLHttpRequest"
+            }
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Like request failed"
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to like reel."
+            );
+
+            return;
+        }
+
+
+        const icon =
+            button.querySelector(
+                ".like-icon"
+            );
+
+        const text =
+            button.querySelector(
+                ".like-text"
+            );
+
+        const count =
+            button.querySelector(
+                ".like-count"
+            );
+
+
+        if (data.liked) {
+
+            button.classList.add(
+                "liked"
+            );
+
+            icon.textContent =
+                "❤️";
+
+            text.textContent =
+                "Liked";
+
+        } else {
+
+            button.classList.remove(
+                "liked"
+            );
+
+            icon.textContent =
+                "🤍";
+
+            text.textContent =
+                "Like";
+
+        }
+
+
+        count.textContent =
+            data.like_count;
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to like reel."
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   FOCUS COMMENT
+===================================================== */
+
+function focusReelComment(reelId) {
+
+    const input =
+        document.querySelector(
+            "#comments-" +
+            reelId +
+            " input[name='comment']"
+        );
+
+    if (input) {
+
+        input.focus();
+
+        input.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }
+
+}
+
+
+/* =====================================================
+   COMMENT WITHOUT PAGE RELOAD
+===================================================== */
+
+function submitReelComment(
+    event,
+    reelId,
+    form
+) {
+
+    event.preventDefault();
+
+
+    const input =
+        form.querySelector(
+            "input[name='comment']"
+        );
+
+
+    const button =
+        form.querySelector(
+            "button"
+        );
+
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) {
+
+        return false;
+
+    }
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Sending...";
+
+
+    fetch(
+        "/comment/" + reelId,
+        {
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/x-www-form-urlencoded",
+
+                "X-Requested-With":
+                    "XMLHttpRequest"
+
+            },
+
+            body: new URLSearchParams({
+
+                comment: text
+
+            })
+
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Comment request failed"
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to add comment."
+            );
+
+            return;
+
+        }
+
+
+        const commentsBox =
+            document.querySelector(
+                "#comments-" + reelId
+            );
+
+
+        const commentsList =
+            commentsBox.querySelector(
+                ".comments-list"
+            );
+
+
+        const newComment =
+            document.createElement(
+                "div"
+            );
+
+
+        newComment.className =
+            "comment";
+
+
+        const name =
+            document.createElement(
+                "strong"
+            );
+
+
+        name.textContent =
+            data.name;
+
+
+        const commentText =
+            document.createTextNode(
+                " " + data.comment
+            );
+
+
+        newComment.appendChild(
+            name
+        );
+
+        newComment.appendChild(
+            commentText
+        );
+
+
+        commentsList.appendChild(
+            newComment
+        );
+
+
+        input.value = "";
+
+
+        /* UPDATE COMMENT COUNT */
+
+        const reel =
+            document.querySelector(
+                "#reel-" + reelId
+            );
+
+
+        const commentCount =
+            reel.querySelector(
+                ".comment-count"
+            );
+
+
+        if (
+            commentCount &&
+            data.comment_count !== undefined
+        ) {
+
+            commentCount.textContent =
+                data.comment_count;
+
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to add comment."
+        );
+
+    })
+
+    .finally(function() {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Send";
+
+    });
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   SHARE REEL
+===================================================== */
+
+function shareReel(reelId) {
+
+    const reelUrl =
+        window.location.origin +
+        "/reels#reel-" +
+        reelId;
+
+
+    if (
+        navigator.share
+    ) {
+
+        navigator.share({
+
+            title:
+                "PrivateConnect Reel",
+
+            text:
+                "Check out this reel on PrivateConnect!",
+
+            url:
+                reelUrl
+
+        });
+
+    } else if (
+        navigator.clipboard
+    ) {
+
+        navigator.clipboard
+            .writeText(reelUrl)
+            .then(function() {
+
+                alert(
+                    "Reel link copied! 🔗"
+                );
+
+            });
+
+    } else {
+
+        prompt(
+            "Copy this link:",
+            reelUrl
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   AUTO PLAY / PAUSE REELS
+===================================================== */
+
+const reelVideos =
+    document.querySelectorAll(
+        ".reel video"
+    );
+
+
+const reelObserver =
+    new IntersectionObserver(
+        function(entries) {
+
+            entries.forEach(
+                function(entry) {
+
+                    const video =
+                        entry.target;
+
+
+                    if (
+                        entry.isIntersecting
+                    ) {
+
+                        video
+                            .play()
+                            .catch(
+                                function() {}
+                            );
+
+                    } else {
+
+                        video.pause();
+
+                    }
+
+                }
+            );
+
+        },
+        {
+            threshold: 0.7
+        }
+    );
+
+
+reelVideos.forEach(
+    function(video) {
+
+        reelObserver.observe(
+            video
+        );
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>

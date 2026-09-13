@@ -12,7 +12,6 @@
 
     <title>Chat - PrivateConnect</title>
 
-
     <style>
 
         * {
@@ -20,7 +19,6 @@
             margin: 0;
             padding: 0;
         }
-
 
         body {
 
@@ -105,18 +103,6 @@
             background:
                 rgba(255,255,255,0.06);
 
-            transition: 0.2s;
-
-        }
-
-
-        .back-btn:hover {
-
-            background:
-                rgba(59,130,246,0.20);
-
-            transform: translateX(-2px);
-
         }
 
 
@@ -166,9 +152,7 @@
 
 
         .header-info {
-
             min-width: 0;
-
         }
 
 
@@ -179,12 +163,6 @@
             font-weight: 700;
 
             color: #f8fafc;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
 
         }
 
@@ -342,7 +320,45 @@
 
             font-size: 9px;
 
-            opacity: 0.55;
+            opacity: 0.65;
+
+        }
+
+
+        /* =================================
+           MESSAGE TICKS
+        ================================= */
+
+        .message-ticks {
+
+            margin-left: 5px;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            letter-spacing: -2px;
+
+        }
+
+
+        .ticks-sent {
+
+            color: rgba(255,255,255,0.75);
+
+        }
+
+
+        .ticks-delivered {
+
+            color: #ffffff;
+
+        }
+
+
+        .ticks-read {
+
+            color: #38bdf8;
 
         }
 
@@ -400,10 +416,6 @@
         }
 
 
-        /* =================================
-           ICON BUTTON
-        ================================= */
-
         .icon-btn {
 
             width: 42px;
@@ -430,27 +442,8 @@
 
             cursor: pointer;
 
-            transition: 0.2s;
-
         }
 
-
-        .icon-btn:hover {
-
-            background:
-                rgba(59,130,246,0.18);
-
-            border-color:
-                rgba(96,165,250,0.35);
-
-            transform: translateY(-2px);
-
-        }
-
-
-        /* =================================
-           INPUT
-        ================================= */
 
         .input-wrapper {
 
@@ -506,22 +499,6 @@
         }
 
 
-        #messageInput:focus {
-
-            border-color:
-                rgba(59,130,246,0.55);
-
-            box-shadow:
-                0 0 0 3px
-                rgba(59,130,246,0.08);
-
-        }
-
-
-        /* =================================
-           CHARACTER COUNT
-        ================================= */
-
         #counter {
 
             position: absolute;
@@ -538,10 +515,6 @@
 
         }
 
-
-        /* =================================
-           SEND BUTTON
-        ================================= */
 
         .send-btn {
 
@@ -572,37 +545,11 @@
                     #1d4ed8
                 );
 
-            box-shadow:
-                0 5px 15px
-                rgba(37,99,235,0.30);
-
-            transition: 0.2s;
-
-        }
-
-
-        .send-btn:hover {
-
-            transform:
-                scale(1.08)
-                rotate(-5deg);
-
-            box-shadow:
-                0 8px 22px
-                rgba(37,99,235,0.40);
-
-        }
-
-
-        .send-btn:active {
-
-            transform: scale(0.94);
-
         }
 
 
         /* =================================
-           EMOJI PANEL
+           EMOJI
         ================================= */
 
         .emoji-picker {
@@ -632,10 +579,6 @@
 
             border-radius: 16px;
 
-            box-shadow:
-                0 15px 40px
-                rgba(0,0,0,0.45);
-
         }
 
 
@@ -660,18 +603,6 @@
             font-size: 22px;
 
             cursor: pointer;
-
-            transition: 0.15s;
-
-        }
-
-
-        .emoji-picker button:hover {
-
-            background:
-                rgba(255,255,255,0.08);
-
-            transform: scale(1.15);
 
         }
 
@@ -703,10 +634,6 @@
 
             border-radius: 10px;
 
-            border:
-                1px solid
-                rgba(255,255,255,0.10);
-
         }
 
 
@@ -735,26 +662,11 @@
         }
 
 
-        /* =================================
-           MOBILE
-        ================================= */
-
         @media (max-width: 600px) {
 
-            body {
-
-                padding-bottom: 80px;
-
-            }
-
-
             .chat-header {
-
-                padding:
-                    11px 12px;
-
+                padding: 11px 12px;
             }
-
 
             .header-avatar,
             .header-avatar-fallback {
@@ -766,14 +678,6 @@
 
             }
 
-
-            .header-name {
-
-                font-size: 16px;
-
-            }
-
-
             .messages-container {
 
                 padding:
@@ -781,28 +685,18 @@
 
             }
 
-
             .bubble {
 
                 max-width: 82%;
 
             }
 
-
             .composer-area {
 
                 padding:
-                    7px 7px;
+                    7px;
 
             }
-
-
-            .message-form {
-
-                gap: 5px;
-
-            }
-
 
             .icon-btn {
 
@@ -811,10 +705,7 @@
 
                 min-width: 37px;
 
-                font-size: 16px;
-
             }
-
 
             .send-btn {
 
@@ -823,30 +714,13 @@
 
                 min-width: 40px;
 
-                font-size: 18px;
-
             }
-
 
             #messageInput {
 
                 min-height: 40px;
 
                 font-size: 14px;
-
-                padding:
-                    10px 43px 9px 14px;
-
-            }
-
-
-            .emoji-picker {
-
-                left: 5px;
-
-                bottom: 60px;
-
-                width: 255px;
 
             }
 
@@ -865,7 +739,6 @@
 ========================================= -->
 
 <div class="chat-header">
-
 
     <a
         href="{{ url_for('messages') }}"
@@ -900,9 +773,7 @@
     <div class="header-info">
 
         <div class="header-name">
-
             {{ user.name }}
-
         </div>
 
         <div class="status">
@@ -922,13 +793,18 @@
      MESSAGES
 ========================================= -->
 
-<div class="messages-container">
+<div
+    class="messages-container"
+    id="messagesContainer"
+>
 
     {% if messages %}
 
         {% for message in messages %}
 
             {% if message[1] == session['user_id'] %}
+
+                <!-- SENT -->
 
                 <div class="message sent">
 
@@ -948,13 +824,40 @@
 
                             {{ message[4] }}
 
+                            <span class="message-ticks">
+
+                                {% if message[6] %}
+
+                                    <span class="ticks-read">
+                                        ✓✓
+                                    </span>
+
+                                {% elif message[5] %}
+
+                                    <span class="ticks-delivered">
+                                        ✓✓
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="ticks-sent">
+                                        ✓
+                                    </span>
+
+                                {% endif %}
+
+                            </span>
+
                         </span>
 
                     </div>
 
                 </div>
 
+
             {% else %}
+
+                <!-- RECEIVED -->
 
                 <div class="message received">
 
@@ -985,6 +888,7 @@
             {% endif %}
 
         {% endfor %}
+
 
     {% else %}
 
@@ -1026,13 +930,11 @@
 
 
 <!-- =========================================
-     MESSAGE COMPOSER
+     COMPOSER
 ========================================= -->
 
 <div class="composer-area">
 
-
-    <!-- IMAGE PREVIEW -->
 
     <div
         class="image-preview"
@@ -1056,71 +958,34 @@
     </div>
 
 
-    <!-- EMOJI PICKER -->
+    <!-- EMOJI -->
 
     <div
         class="emoji-picker"
         id="emojiPicker"
     >
 
-        <button type="button"
-            onclick="addEmoji('😀')">😀</button>
-
-        <button type="button"
-            onclick="addEmoji('😂')">😂</button>
-
-        <button type="button"
-            onclick="addEmoji('😍')">😍</button>
-
-        <button type="button"
-            onclick="addEmoji('🥰')">🥰</button>
-
-        <button type="button"
-            onclick="addEmoji('😊')">😊</button>
-
-        <button type="button"
-            onclick="addEmoji('😎')">😎</button>
-
-        <button type="button"
-            onclick="addEmoji('🔥')">🔥</button>
-
-        <button type="button"
-            onclick="addEmoji('❤️')">❤️</button>
-
-        <button type="button"
-            onclick="addEmoji('👍')">👍</button>
-
-        <button type="button"
-            onclick="addEmoji('👏')">👏</button>
-
-        <button type="button"
-            onclick="addEmoji('🎉')">🎉</button>
-
-        <button type="button"
-            onclick="addEmoji('🙏')">🙏</button>
-
-        <button type="button"
-            onclick="addEmoji('💯')">💯</button>
-
-        <button type="button"
-            onclick="addEmoji('🤔')">🤔</button>
-
-        <button type="button"
-            onclick="addEmoji('🤣')">🤣</button>
-
-        <button type="button"
-            onclick="addEmoji('😢')">😢</button>
-
-        <button type="button"
-            onclick="addEmoji('😡')">😡</button>
-
-        <button type="button"
-            onclick="addEmoji('😘')">😘</button>
+        <button type="button" onclick="addEmoji('😀')">😀</button>
+        <button type="button" onclick="addEmoji('😂')">😂</button>
+        <button type="button" onclick="addEmoji('😍')">😍</button>
+        <button type="button" onclick="addEmoji('🥰')">🥰</button>
+        <button type="button" onclick="addEmoji('😊')">😊</button>
+        <button type="button" onclick="addEmoji('😎')">😎</button>
+        <button type="button" onclick="addEmoji('🔥')">🔥</button>
+        <button type="button" onclick="addEmoji('❤️')">❤️</button>
+        <button type="button" onclick="addEmoji('👍')">👍</button>
+        <button type="button" onclick="addEmoji('👏')">👏</button>
+        <button type="button" onclick="addEmoji('🎉')">🎉</button>
+        <button type="button" onclick="addEmoji('🙏')">🙏</button>
+        <button type="button" onclick="addEmoji('💯')">💯</button>
+        <button type="button" onclick="addEmoji('🤔')">🤔</button>
+        <button type="button" onclick="addEmoji('🤣')">🤣</button>
+        <button type="button" onclick="addEmoji('😢')">😢</button>
+        <button type="button" onclick="addEmoji('😡')">😡</button>
+        <button type="button" onclick="addEmoji('😘')">😘</button>
 
     </div>
 
-
-    <!-- FORM -->
 
     <form
         method="POST"
@@ -1128,8 +993,6 @@
         class="message-form"
     >
 
-
-        <!-- EMOJI -->
 
         <button
             type="button"
@@ -1139,8 +1002,6 @@
             😊
         </button>
 
-
-        <!-- IMAGE -->
 
         <label
             for="imageInput"
@@ -1160,8 +1021,6 @@
         >
 
 
-        <!-- TEXT -->
-
         <div class="input-wrapper">
 
             <textarea
@@ -1173,15 +1032,12 @@
                 required
             ></textarea>
 
-
             <span id="counter">
                 0/1000
             </span>
 
         </div>
 
-
-        <!-- VOICE -->
 
         <button
             type="button"
@@ -1193,8 +1049,6 @@
         </button>
 
 
-        <!-- SEND -->
-
         <button
             type="submit"
             class="send-btn"
@@ -1203,7 +1057,6 @@
             ➤
         </button>
 
-
     </form>
 
 </div>
@@ -1211,23 +1064,286 @@
 
 <script>
 
-
 /* =========================================
    ELEMENTS
 ========================================= */
 
 const messageInput =
-    document.getElementById(
-        "messageInput"
-    );
-
+    document.getElementById("messageInput");
 
 const counter =
-    document.getElementById(
-        "counter"
-    );
+    document.getElementById("counter");
+
+const emojiPicker =
+    document.getElementById("emojiPicker");
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+const previewImage =
+    document.getElementById("previewImage");
 
 
 /* =========================================
-   CHARACTER COUNTER + AUTO HEIGHT
-============
+   CHARACTER COUNTER
+========================================= */
+
+messageInput.addEventListener(
+    "input",
+    function() {
+
+        counter.textContent =
+            messageInput.value.length + "/1000";
+
+
+        messageInput.style.height = "auto";
+
+        messageInput.style.height =
+            Math.min(
+                messageInput.scrollHeight,
+                110
+            ) + "px";
+
+    }
+);
+
+
+/* =========================================
+   ENTER TO SEND
+========================================= */
+
+messageInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            document
+                .getElementById("messageForm")
+                .submit();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   EMOJI PICKER
+========================================= */
+
+function toggleEmoji() {
+
+    emojiPicker.classList.toggle("show");
+
+}
+
+
+function addEmoji(emoji) {
+
+    messageInput.value += emoji;
+
+    messageInput.focus();
+
+    counter.textContent =
+        messageInput.value.length + "/1000";
+
+}
+
+
+/* =========================================
+   IMAGE PREVIEW
+========================================= */
+
+function previewSelectedImage(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload =
+        function(e) {
+
+            previewImage.src =
+                e.target.result;
+
+            imagePreview.style.display =
+                "block";
+
+        };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+function removeImage() {
+
+    imageInput.value = "";
+
+    previewImage.src = "";
+
+    imagePreview.style.display =
+        "none";
+
+}
+
+
+/* =========================================
+   VOICE TYPING
+========================================= */
+
+function startVoice() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        alert(
+            "Voice typing is not supported by this browser."
+        );
+
+        return;
+
+    }
+
+    const recognition =
+        new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+
+    recognition.interimResults = false;
+
+    recognition.maxAlternatives = 1;
+
+
+    recognition.start();
+
+
+    recognition.onresult =
+        function(event) {
+
+            const text =
+                event.results[0][0].transcript;
+
+            messageInput.value +=
+                text;
+
+            messageInput.dispatchEvent(
+                new Event("input")
+            );
+
+        };
+
+}
+
+
+/* =========================================
+   AUTO SCROLL
+========================================= */
+
+function scrollToBottom() {
+
+    const container =
+        document.getElementById(
+            "messagesContainer"
+        );
+
+    if (container) {
+
+        window.scrollTo(
+            0,
+            document.body.scrollHeight
+        );
+
+    }
+
+}
+
+/* =========================================
+   MARK MESSAGES AS READ
+========================================= */
+
+function markMessagesAsRead() {
+
+    fetch(
+        "{{ url_for('mark_messages_read', user_id=user.id) }}",
+        {
+            method: "POST"
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.success) {
+            console.log("Messages marked as read");
+        }
+
+    })
+    .catch(error => {
+
+        console.log(
+            "Read status update failed:",
+            error
+        );
+
+    });
+
+}
+
+
+window.addEventListener(
+    "load",
+    function() {
+
+        scrollToBottom();
+
+        markMessagesAsRead();
+
+    }
+);
+
+
+/* =========================================
+   CLOSE EMOJI WHEN CLICKING OUTSIDE
+========================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(".emoji-picker") &&
+            !event.target.closest(".icon-btn")
+        ) {
+
+            emojiPicker.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

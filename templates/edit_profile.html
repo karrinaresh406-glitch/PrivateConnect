@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Profile - PrivateConnect</title>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Edit Profile - PrivateConnect</title>
+
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -72,7 +75,9 @@
             text-decoration: none;
             color: #555;
         }
+
     </style>
+
 </head>
 
 <body>
@@ -88,7 +93,7 @@
         <input
             type="text"
             name="name"
-            value="{{ person[1] }}"
+            value="{{ person['name'] }}"
             required
         >
 
@@ -99,7 +104,7 @@
         <textarea
             name="bio"
             placeholder="Write something about yourself..."
-        >{{ person[3] if person|length > 3 else '' }}</textarea>
+        >{{ person['bio'] or '' }}</textarea>
 
         <button type="submit">
             Save Changes
@@ -107,7 +112,10 @@
 
     </form>
 
-    <a class="cancel" href="{{ url_for('profile') }}">
+    <a
+        class="cancel"
+        href="{{ url_for('profile') }}"
+    >
         Cancel
     </a>
 

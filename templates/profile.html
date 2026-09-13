@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Profile - PrivateConnect</title>
+    <title>
+        {% if is_own_profile %}
+            My Profile - PrivateConnect
+        {% else %}
+            {{ person["name"] }} - PrivateConnect
+        {% endif %}
+    </title>
 
     <style>
 
@@ -22,72 +28,104 @@
         }
 
         .profile-container {
-            max-width: 500px;
-            margin: 40px auto;
+            max-width: 700px;
+            margin: 25px auto;
+            padding: 15px;
+        }
+
+        /* =====================================================
+           PROFILE CARD
+        ===================================================== */
+
+        .profile-card {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
+            border-radius: 18px;
+            padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
-        h1 {
-            margin-bottom: 25px;
-        }
-
-        .profile-picture {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #ddd;
-            margin-bottom: 20px;
-        }
-
+        .profile-picture,
         .default-picture {
             width: 140px;
             height: 140px;
             border-radius: 50%;
+            margin: 0 auto 15px;
+        }
+
+        .profile-picture {
+            object-fit: cover;
+            border: 4px solid #ddd;
+        }
+
+        .default-picture {
             background: #ddd;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
             font-size: 60px;
         }
 
         .name {
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .email {
+        .bio {
             color: #666;
-            margin-bottom: 25px;
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 500px;
+            margin: 0 auto 15px;
         }
 
-        .upload-form {
+        /* =====================================================
+           PROFILE STATS
+        ===================================================== */
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
             margin: 20px 0;
         }
 
-        input[type="file"] {
-            margin-bottom: 15px;
-            max-width: 100%;
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .buttons {
+            margin-top: 15px;
         }
 
         button,
         .button {
             display: inline-block;
-            padding: 11px 18px;
+            padding: 10px 15px;
             border: none;
             border-radius: 8px;
             background: #333;
             color: white;
             text-decoration: none;
             cursor: pointer;
-            font-size: 15px;
-            margin: 5px;
+            font-size: 14px;
+            margin: 4px;
         }
 
         button:hover,
@@ -95,96 +133,1041 @@
             background: #555;
         }
 
-        .links {
-            margin-top: 25px;
+        /* =====================================================
+           OTHER USER ACTIONS
+        ===================================================== */
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .message-button {
+            background: #2878ff;
+            color: white;
+        }
+
+        .friends-button {
+            background: #dff5e1;
+            color: #237a2c;
+        }
+
+        .request-button {
+            background: #eee;
+            color: #222;
+        }
+
+        .pending-button {
+            background: #ddd;
+            color: #777;
+            cursor: default;
+        }
+
+        .request-link {
+            background: #eee;
+            color: #222;
+        }
+
+        /* =====================================================
+           SECTIONS
+        ===================================================== */
+
+        .section {
+            background: white;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        /* =====================================================
+           POSTS
+        ===================================================== */
+
+        .post {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+
+        .post-media {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .post-content {
+            padding: 15px;
+        }
+
+        .caption {
+            font-size: 16px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .post-date {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .likes {
+            font-weight: bold;
+        }
+
+        .delete-button {
+            background: #d32f2f;
+        }
+
+        .delete-button:hover {
+            background: #b71c1c;
+        }
+
+        /* =====================================================
+           FRIENDS
+        ===================================================== */
+
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .friend {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .friend-picture {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 8px;
+        }
+
+        .friend-default {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: #ddd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .friend-name {
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        /* =====================================================
+           CROP MODAL
+        ===================================================== */
+
+        .crop-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.75);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .crop-box {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .crop-box h2 {
+            margin-bottom: 15px;
+        }
+
+        #cropCanvas {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .crop-buttons {
+            margin-top: 15px;
+        }
+
+        .cancel-button {
+            background: #777;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .profile-container {
+                margin: 10px auto;
+            }
+
+            .profile-card {
+                padding: 25px 15px;
+            }
+
+            .stats {
+                gap: 20px;
+            }
+
+            .friends-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .button {
+                width: 100%;
+                margin: 4px 0;
+            }
+
+            .user-actions {
+                flex-direction: column;
+            }
+
+            .action-button {
+                width: 100%;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
+
 
 <div class="profile-container">
 
-    <h1>Profile</h1>
+
+    <!-- =====================================================
+         PROFILE CARD
+    ===================================================== -->
+
+    <div class="profile-card">
 
 
-    {% if person["profile_picture"] %}
+        <!-- PROFILE PHOTO -->
 
-        <img
-            src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
-            class="profile-picture"
-            alt="Profile Picture"
-        >
+        {% if person["profile_picture"] %}
 
-    {% else %}
+            <img
+                src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                class="profile-picture"
+                alt="Profile Picture"
+            >
 
-        <div class="default-picture">
-            👤
+        {% else %}
+
+            <div class="default-picture">
+                👤
+            </div>
+
+        {% endif %}
+
+
+        <!-- NAME -->
+
+        <div class="name">
+            {{ person["name"] }}
         </div>
 
-    {% endif %}
+
+        <!-- BIO -->
+
+        {% if person["bio"] %}
+
+            <div class="bio">
+                {{ person["bio"] }}
+            </div>
+
+        {% endif %}
 
 
-    <div class="name">
-        {{ person["name"] }}
+        <!-- =================================================
+             PROFILE STATS
+        ================================================== -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    {{ posts|length }}
+                </div>
+
+                <div class="stat-label">
+                    Posts
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    {{ friends|length }}
+                </div>
+
+                <div class="stat-label">
+                    Friends
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    ❤️
+                </div>
+
+                <div class="stat-label">
+                    Likes
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             OWN PROFILE CONTROLS
+        ================================================== -->
+
+        {% if is_own_profile %}
+
+
+            <!-- PROFILE PHOTO UPLOAD -->
+
+            <form
+                id="profileForm"
+                action="{{ url_for('upload_profile_picture') }}"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    type="file"
+                    id="profileInput"
+                    name="profile_picture"
+                    accept="image/*"
+                    hidden
+                >
+
+                <button
+                    type="button"
+                    onclick="document.getElementById('profileInput').click()"
+                >
+                    📷 Change Profile Picture
+                </button>
+
+
+                <input
+                    type="hidden"
+                    name="cropped_image"
+                    id="croppedImage"
+                >
+
+            </form>
+
+
+            <!-- OWN PROFILE BUTTONS -->
+
+            <div class="buttons">
+
+                <a
+                    href="{{ url_for('edit_profile') }}"
+                    class="button"
+                >
+                    ✏️ Edit Profile
+                </a>
+
+
+                <a
+                    href="{{ url_for('find_people') }}"
+                    class="button"
+                >
+                    👥 Find People
+                </a>
+
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="button"
+                >
+                    🏠 Dashboard
+                </a>
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 OTHER USER ACTIONS
+            ================================================== -->
+
+            <div class="user-actions">
+
+
+                {% if relationship_status == "friends" %}
+
+
+                    <!-- MESSAGE -->
+
+                    <a
+                        href="{{ url_for('conversation', user_id=person['id']) }}"
+                        class="action-button message-button"
+                    >
+                        💬 Message
+                    </a>
+
+
+                    <!-- FRIENDS -->
+
+                    <button
+                        type="button"
+                        class="action-button friends-button"
+                        disabled
+                    >
+                        ✅ Friends
+                    </button>
+
+
+                {% elif relationship_status == "sent" %}
+
+
+                    <!-- REQUEST SENT -->
+
+                    <button
+                        type="button"
+                        class="action-button pending-button"
+                        disabled
+                    >
+                        ⏳ Request Sent
+                    </button>
+
+
+                {% elif relationship_status == "received" %}
+
+
+                    <!-- RECEIVED REQUEST -->
+
+                    <a
+                        href="{{ url_for('requests') }}"
+                        class="action-button request-link"
+                    >
+                        ↩️ View Request
+                    </a>
+
+
+                {% else %}
+
+
+                    <!-- ADD FRIEND -->
+
+                    <form
+                        action="{{ url_for('send_request', user_id=person['id']) }}"
+                        method="POST"
+                        style="flex:1;"
+                    >
+
+                        <button
+                            type="submit"
+                            class="action-button request-button"
+                            style="width:100%; margin:0;"
+                        >
+                            🤝 Add Friend
+                        </button>
+
+                    </form>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        {% endif %}
+
+
     </div>
 
-    <div class="email">
-        {{ person["email"] }}
+
+
+    <!-- =====================================================
+         POSTS
+    ===================================================== -->
+
+    <div class="section">
+
+
+        <h2>
+
+            {% if is_own_profile %}
+                📝 My Posts
+            {% else %}
+                📝 {{ person["name"] }}'s Posts
+            {% endif %}
+
+        </h2>
+
+
+        {% if posts %}
+
+
+            {% for post in posts %}
+
+
+                <div class="post">
+
+
+                    <!-- MEDIA -->
+
+                    {% if post["media"] %}
+
+
+                        {% if post["media"].lower().endswith(('.mp4', '.webm', '.mov')) %}
+
+
+                            <video
+                                class="post-media"
+                                controls
+                                preload="metadata"
+                            >
+
+                                <source
+                                    src="{{ url_for('static', filename='uploads/' + post['media']) }}"
+                                >
+
+                                Your browser does not support video.
+
+                            </video>
+
+
+                        {% else %}
+
+
+                            <img
+                                class="post-media"
+                                src="{{ url_for('static', filename='uploads/' + post['media']) }}"
+                                alt="Post"
+                            >
+
+
+                        {% endif %}
+
+
+                    {% endif %}
+
+
+
+                    <!-- POST CONTENT -->
+
+                    <div class="post-content">
+
+
+                        {% if post["caption"] %}
+
+                            <div class="caption">
+                                {{ post["caption"] }}
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="post-date">
+                            {{ post["created_at"] }}
+                        </div>
+
+
+                        <div class="post-actions">
+
+
+                            <!-- LIKE COUNT -->
+
+                            <div class="likes">
+
+                                ❤️ {{ post["like_count"] }}
+
+                                {% if post["like_count"] == 1 %}
+                                    Like
+                                {% else %}
+                                    Likes
+                                {% endif %}
+
+                            </div>
+
+
+
+                            <!-- DELETE ONLY ON OWN PROFILE -->
+
+                            {% if is_own_profile %}
+
+
+                                <form
+                                    action="{{ url_for('delete_post', post_id=post['id']) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this post?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="delete-button"
+                                    >
+                                        🗑️ Delete
+                                    </button>
+
+                                </form>
+
+
+                            {% endif %}
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                {% if is_own_profile %}
+                    You haven't created any posts yet.
+                {% else %}
+                    {{ person["name"] }} hasn't created any posts yet.
+                {% endif %}
+
+            </div>
+
+
+        {% endif %}
+
+
     </div>
 
 
-    <form
-        class="upload-form"
-        action="{{ url_for('upload_profile_picture') }}"
-        method="POST"
-        enctype="multipart/form-data"
+
+    <!-- =====================================================
+         FRIENDS
+    ===================================================== -->
+
+    <div class="section">
+
+
+        <h2>
+
+            {% if is_own_profile %}
+                👥 My Friends
+            {% else %}
+                👥 {{ person["name"] }}'s Friends
+            {% endif %}
+
+        </h2>
+
+
+        {% if friends %}
+
+
+            <div class="friends-grid">
+
+
+                {% for friend in friends %}
+
+
+                    <div class="friend">
+
+
+                        {% if friend["profile_picture"] %}
+
+
+                            <img
+                                src="{{ url_for('static', filename='uploads/' + friend['profile_picture']) }}"
+                                class="friend-picture"
+                                alt="Friend"
+                            >
+
+
+                        {% else %}
+
+
+                            <div class="friend-default">
+                                👤
+                            </div>
+
+
+                        {% endif %}
+
+
+                        <div class="friend-name">
+                            {{ friend["name"] }}
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="empty">
+
+                {% if is_own_profile %}
+                    You don't have any friends yet.
+                {% else %}
+                    {{ person["name"] }} doesn't have any friends yet.
+                {% endif %}
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         BACK / DASHBOARD
+    ===================================================== -->
+
+    <div
+        style="
+            text-align:center;
+            margin:25px 0;
+        "
     >
-
-        <input
-            type="file"
-            name="profile_picture"
-            accept="image/*"
-            required
-        >
-
-        <br>
-
-        <button type="submit">
-            📷 Upload Profile Picture
-        </button>
-
-    </form>
-
-
-    <div class="links">
-
-        <a
-            href="{{ url_for('edit_profile') }}"
-            class="button"
-        >
-            ✏️ Edit Profile
-        </a>
-
-        <a
-            href="{{ url_for('find_people') }}"
-            class="button"
-        >
-            👥 Find People
-        </a>
 
         <a
             href="{{ url_for('dashboard') }}"
             class="button"
         >
-            🏠 Dashboard
+            🏠 Back to Dashboard
         </a>
 
     </div>
 
+
 </div>
 
+
+
+<!-- =========================================================
+     CROP PROFILE PICTURE MODAL
+========================================================= -->
+
+{% if is_own_profile %}
+
+<div
+    class="crop-modal"
+    id="cropModal"
+>
+
+
+    <div class="crop-box">
+
+
+        <h2>
+            ✂️ Crop Profile Picture
+        </h2>
+
+
+        <canvas id="cropCanvas"></canvas>
+
+
+        <div class="crop-buttons">
+
+
+            <button
+                type="button"
+                onclick="cropImage()"
+            >
+                ✓ Crop & Upload
+            </button>
+
+
+            <button
+                type="button"
+                class="cancel-button"
+                onclick="closeCrop()"
+            >
+                Cancel
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    /* =====================================================
+       PROFILE PHOTO CROPPING
+    ===================================================== */
+
+
+    const profileInput =
+        document.getElementById("profileInput");
+
+
+    const cropModal =
+        document.getElementById("cropModal");
+
+
+    const cropCanvas =
+        document.getElementById("cropCanvas");
+
+
+    const croppedImage =
+        document.getElementById("croppedImage");
+
+
+    const profileForm =
+        document.getElementById("profileForm");
+
+
+    let selectedImage = new Image();
+
+
+
+    /* =====================================================
+       SELECT IMAGE
+    ===================================================== */
+
+    profileInput.addEventListener(
+        "change",
+        function () {
+
+
+            const file =
+                this.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            /* Check image */
+
+            if (!file.type.startsWith("image/")) {
+
+                alert("Please select an image file.");
+
+                this.value = "";
+
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function(event) {
+
+
+                    selectedImage.onload =
+                        function() {
+
+
+                            const size =
+                                Math.min(
+                                    selectedImage.width,
+                                    selectedImage.height
+                                );
+
+
+                            cropCanvas.width = 400;
+
+                            cropCanvas.height = 400;
+
+
+                            const ctx =
+                                cropCanvas.getContext("2d");
+
+
+                            /* Center crop */
+
+                            const sx =
+                                (selectedImage.width - size) / 2;
+
+
+                            const sy =
+                                (selectedImage.height - size) / 2;
+
+
+                            ctx.clearRect(
+                                0,
+                                0,
+                                400,
+                                400
+                            );
+
+
+                            ctx.drawImage(
+                                selectedImage,
+                                sx,
+                                sy,
+                                size,
+                                size,
+                                0,
+                                0,
+                                400,
+                                400
+                            );
+
+
+                            cropModal.style.display =
+                                "flex";
+
+
+                        };
+
+
+                    selectedImage.src =
+                        event.target.result;
+
+
+                };
+
+
+            reader.readAsDataURL(file);
+
+
+        }
+    );
+
+
+
+    /* =====================================================
+       CROP AND UPLOAD
+    ===================================================== */
+
+    function cropImage() {
+
+
+        const imageData =
+            cropCanvas.toDataURL(
+                "image/jpeg",
+                0.9
+            );
+
+
+        croppedImage.value =
+            imageData;
+
+
+        profileForm.submit();
+
+
+    }
+
+
+
+    /* =====================================================
+       CLOSE CROP WINDOW
+    ===================================================== */
+
+    function closeCrop() {
+
+
+        cropModal.style.display =
+            "none";
+
+
+        profileInput.value =
+            "";
+
+
+        croppedImage.value =
+            "";
+
+
+    }
+
+
+</script>
+
+{% endif %}
+
+
 </body>
+
 </html>

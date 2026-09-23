@@ -266,6 +266,21 @@
             transform: none;
         }
 
+        /* UNSEND REQUEST */
+
+        .connect-button.unsend {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #dc2626;
+            cursor: pointer;
+        }
+
+        .connect-button.unsend:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            transform: translateY(-1px);
+        }
+
         /* EMPTY */
 
         .empty {
@@ -587,6 +602,22 @@
                             >
                                 ✓ Request Sent
                             </button>
+
+                            <form
+                                action="{{ url_for('cancel_request', user_id=person['id']) }}"
+                                method="POST"
+                                style="display:inline;"
+                                onsubmit="return confirm('Unsend this connection request?');"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="connect-button unsend"
+                                >
+                                    ↩ Unsend
+                                </button>
+
+                            </form>
 
 
                         {% elif person["relationship_status"] == "received" %}

@@ -1,903 +1,1521 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 
-<head>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <meta charset="UTF-8">
+<title>PrivateConnect</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<style>
 
-    <title>PrivateConnect</title>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #071426;
+        color: white;
+        padding-bottom: 75px;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #071426;
-            color: white;
-            padding-bottom: 75px;
-        }
+    /* ================= HEADER ================= */
 
-        /* ================= HEADER ================= */
+    .header {
+        position: sticky;
+        top: 0;
+        height: 60px;
 
-        .header {
-            position: sticky;
-            top: 0;
-            height: 60px;
-            background: #0b1b30;
-            border-bottom: 1px solid #1d3855;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            z-index: 100;
-        }
+        background: #0b1b30;
+        border-bottom: 1px solid #1d3855;
 
-        .logo {
-            font-size: 21px;
-            font-weight: bold;
-            color: #4da3ff;
-        }
+        display: flex;
+        align-items: center;
 
-        .header-spacer {
-            flex: 1;
-        }
+        padding: 0 15px;
 
-        .header-icon {
-            margin-left: 18px;
-            color: #dce8f5;
-            text-decoration: none;
-            font-size: 20px;
-        }
+        z-index: 1000;
+    }
 
-        /* ================= MAIN ================= */
+    .logo {
+        font-size: 21px;
+        font-weight: bold;
+        color: #4da3ff;
+    }
+
+    .header-spacer {
+        flex: 1;
+    }
+
+    .header-icon {
+        margin-left: 18px;
+
+        color: #dce8f5;
+        text-decoration: none;
+
+        font-size: 20px;
+
+        background: none;
+        border: none;
+
+        cursor: pointer;
+    }
+
+
+    /* ================= NOTIFICATION ================= */
+
+    .notification-wrapper {
+        position: relative;
+        margin-left: 18px;
+    }
+
+    .notification-button {
+        position: relative;
+
+        border: none;
+        background: none;
+
+        color: #dce8f5;
+
+        font-size: 20px;
+
+        cursor: pointer;
+
+        padding: 2px;
+    }
+
+    .notification-badge {
+        position: absolute;
+
+        top: -8px;
+        right: -9px;
+
+        min-width: 18px;
+        height: 18px;
+
+        padding: 0 5px;
+
+        background: #ff365c;
+        color: white;
+
+        border: 2px solid #0b1b30;
+
+        border-radius: 999px;
+
+        font-size: 10px;
+        font-weight: bold;
+
+        display: none;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /* ================= NOTIFICATION PANEL ================= */
+
+    .notification-panel {
+        position: absolute;
+
+        top: 42px;
+        right: -10px;
+
+        width: 360px;
+        max-width: calc(100vw - 25px);
+
+        background: #0d1e34;
+
+        border: 1px solid #294766;
+        border-radius: 16px;
+
+        box-shadow:
+            0 15px 40px rgba(0, 0, 0, 0.55);
+
+        overflow: hidden;
+
+        display: none;
+
+        z-index: 5000;
+    }
+
+    .notification-panel.show {
+        display: block;
+    }
+
+
+    /* NOTIFICATION HEADER */
+
+    .notification-header {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 15px;
+
+        border-bottom: 1px solid #203954;
+    }
+
+    .notification-title {
+        font-size: 17px;
+        font-weight: bold;
+    }
+
+    .notification-read-button {
+        border: none;
+        background: none;
+
+        color: #4da3ff;
+
+        font-size: 11px;
+
+        cursor: pointer;
+    }
+
+
+    /* NOTIFICATION LIST */
+
+    .notification-list {
+        max-height: 430px;
+        overflow-y: auto;
+    }
+
+
+    /* NOTIFICATION ITEM */
+
+    .notification-item {
+        display: flex;
+
+        align-items: center;
+
+        gap: 11px;
+
+        padding: 13px 15px;
+
+        color: white;
+        text-decoration: none;
+
+        border-bottom: 1px solid #172f49;
+
+        transition: background 0.2s;
+    }
+
+    .notification-item:hover {
+        background: #102b47;
+    }
+
+    .notification-item.unread {
+        background: #102b47;
+    }
+
+
+    /* NOTIFICATION AVATAR */
+
+    .notification-avatar {
+        width: 45px;
+        height: 45px;
+
+        min-width: 45px;
+
+        border-radius: 50%;
+
+        object-fit: cover;
+
+        border: 1px solid #3974a9;
+    }
+
+
+    /* NOTIFICATION CONTENT */
+
+    .notification-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-message {
+        font-size: 13px;
+
+        line-height: 1.4;
+    }
+
+    .notification-time {
+        margin-top: 4px;
+
+        color: #7890a7;
+
+        font-size: 10px;
+    }
+
+
+    /* BLUE UNREAD DOT */
+
+    .notification-unread-dot {
+        width: 8px;
+        height: 8px;
+
+        min-width: 8px;
+
+        background: #238cff;
+
+        border-radius: 50%;
+    }
+
+
+    /* EMPTY / LOADING */
+
+    .notification-empty,
+    .notification-loading {
+        padding: 35px 15px;
+
+        text-align: center;
+
+        color: #8298ad;
+
+        font-size: 13px;
+    }
+
+
+    /* ================= MAIN ================= */
+
+    .container {
+        width: 100%;
+        max-width: 700px;
+
+        margin: auto;
+
+        padding: 15px;
+    }
+
+
+    /* ================= WELCOME ================= */
+
+    .welcome {
+        background: #102641;
+
+        padding: 16px;
+
+        border-radius: 14px;
+
+        margin-bottom: 15px;
+
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+
+    /* ================= QUICK MENU ================= */
+
+    .quick-menu {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 8px;
+
+        margin-bottom: 18px;
+    }
+
+    .quick-menu a {
+        background: #102641;
+
+        border: 1px solid #1b3958;
+
+        border-radius: 12px;
+
+        padding: 12px 5px;
+
+        text-align: center;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 12px;
+    }
+
+    .quick-menu a:hover {
+        background: #14304f;
+    }
+
+    .quick-menu span {
+        display: block;
+
+        font-size: 21px;
+
+        margin-bottom: 5px;
+    }
+
+
+    /* ================= PEOPLE ================= */
+
+    .section-title {
+        font-size: 17px;
+
+        margin: 18px 0 10px;
+    }
+
+    .people {
+        display: flex;
+
+        gap: 10px;
+
+        overflow-x: auto;
+
+        padding-bottom: 5px;
+    }
+
+    .people::-webkit-scrollbar {
+        display: none;
+    }
+
+    .person {
+        min-width: 105px;
+
+        background: #102641;
+
+        border: 1px solid #1b3958;
+
+        border-radius: 12px;
+
+        padding: 10px;
+
+        text-align: center;
+
+        text-decoration: none;
+
+        color: white;
+    }
+
+    .person:hover {
+        background: #14304f;
+    }
+
+    .person img {
+        width: 55px;
+        height: 55px;
+
+        border-radius: 50%;
+
+        object-fit: cover;
+
+        border: 2px solid #238cff;
+
+        margin-bottom: 6px;
+    }
+
+    .person-name {
+        font-size: 13px;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+    .person-status {
+        font-size: 10px;
+
+        color: #8fa5bd;
+
+        margin-top: 3px;
+    }
+
+
+    /* ================= CREATE POST ================= */
+
+    .create-post {
+        background: #102641;
+
+        border: 1px solid #1b3958;
+
+        border-radius: 14px;
+
+        padding: 15px;
+
+        margin-top: 18px;
+    }
+
+    .create-post textarea {
+        width: 100%;
+
+        min-height: 75px;
+
+        resize: vertical;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        border: 1px solid #294766;
+
+        background: #08172a;
+
+        color: white;
+
+        outline: none;
+
+        font-family: Arial;
+    }
+
+    .create-post input[type="file"] {
+        width: 100%;
+
+        margin-top: 10px;
+
+        color: #aebed0;
+    }
+
+    .post-button {
+        margin-top: 10px;
+
+        width: 100%;
+
+        padding: 11px;
+
+        border: none;
+
+        border-radius: 9px;
+
+        background: #238cff;
+
+        color: white;
+
+        font-weight: bold;
+
+        cursor: pointer;
+    }
+
+    .post-button:hover {
+        background: #147de6;
+    }
+
+
+    /* ================= POST ================= */
+
+    .post {
+        background: #0d1e34;
+
+        border: 1px solid #1a3653;
+
+        border-radius: 14px;
+
+        margin-top: 15px;
+
+        overflow: hidden;
+    }
+
+    .post-header {
+        display: flex;
+
+        align-items: center;
+
+        padding: 12px;
+    }
+
+    .post-avatar {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 50%;
+
+        object-fit: cover;
+
+        margin-right: 10px;
+
+        border: 1px solid #3974a9;
+    }
+
+    .post-user {
+        font-weight: bold;
+
+        font-size: 14px;
+    }
+
+    .post-time {
+        color: #8298ad;
+
+        font-size: 11px;
+
+        margin-top: 3px;
+    }
+
+    .post-caption {
+        padding: 0 12px 12px;
+
+        font-size: 14px;
+
+        line-height: 1.4;
+
+        white-space: pre-wrap;
+    }
+
+
+    /* ================= MEDIA ================= */
+
+    .post-media {
+        width: 100%;
+
+        max-height: 600px;
+
+        object-fit: cover;
+
+        display: block;
+
+        background: black;
+    }
+
+
+    /* ================= ACTIONS ================= */
+
+    .post-actions {
+        display: flex;
+
+        align-items: center;
+
+        border-top: 1px solid #1b344e;
+
+        border-bottom: 1px solid #1b344e;
+
+        padding: 8px 10px;
+
+        gap: 15px;
+    }
+
+    .action-form {
+        margin: 0;
+    }
+
+    .action-button {
+        border: none;
+
+        background: none;
+
+        color: #d9e5f1;
+
+        cursor: pointer;
+
+        font-size: 14px;
+    }
+
+    .action-button:hover {
+        opacity: 0.8;
+    }
+
+    .liked {
+        color: #ff4d6d;
+    }
+
+    .delete-button {
+        margin-left: auto;
+
+        color: #ff687c;
+    }
+
+
+    /* ================= COMMENTS ================= */
+
+    .comments {
+        padding: 10px 12px;
+    }
+
+    .comment {
+        margin-bottom: 8px;
+
+        font-size: 13px;
+
+        line-height: 1.4;
+    }
+
+    .comment strong {
+        color: #63adff;
+
+        margin-right: 5px;
+    }
+
+    .comment-form {
+        display: flex;
+
+        gap: 7px;
+
+        margin-top: 8px;
+    }
+
+    .comment-form input {
+        flex: 1;
+
+        padding: 9px;
+
+        border-radius: 8px;
+
+        border: 1px solid #294766;
+
+        background: #08172a;
+
+        color: white;
+
+        outline: none;
+    }
+
+    .comment-form button {
+        padding: 8px 12px;
+
+        border: none;
+
+        border-radius: 8px;
+
+        background: #238cff;
+
+        color: white;
+
+        cursor: pointer;
+    }
+
+    .comment-form button:disabled {
+        opacity: 0.6;
+
+        cursor: not-allowed;
+    }
+
+
+    /* ================= BOTTOM NAV ================= */
+
+    .bottom-nav {
+        position: fixed;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 68px;
+
+        background: #071426;
+
+        border-top: 1px solid #203954;
+
+        display: flex;
+
+        justify-content: space-around;
+
+        align-items: center;
+
+        z-index: 1000;
+    }
+
+    .bottom-nav a {
+        color: #9cafc2;
+
+        text-decoration: none;
+
+        text-align: center;
+
+        font-size: 11px;
+    }
+
+    .bottom-nav span {
+        display: block;
+
+        font-size: 21px;
+
+        margin-bottom: 3px;
+    }
+
+    .bottom-nav .active {
+        color: #4da3ff;
+    }
+
+
+    /* ================= DESKTOP ================= */
+
+    @media (min-width: 800px) {
 
         .container {
-            width: 100%;
-            max-width: 700px;
-            margin: auto;
-            padding: 15px;
+            max-width: 750px;
         }
-
-        /* ================= WELCOME ================= */
-
-        .welcome {
-            background: #102641;
-            padding: 16px;
-            border-radius: 14px;
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* ================= QUICK MENU ================= */
-
-        .quick-menu {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-
-        .quick-menu a {
-            background: #102641;
-            border: 1px solid #1b3958;
-            border-radius: 12px;
-            padding: 12px 5px;
-            text-align: center;
-            color: white;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .quick-menu span {
-            display: block;
-            font-size: 21px;
-            margin-bottom: 5px;
-        }
-
-        /* ================= PEOPLE ================= */
-
-        .section-title {
-            font-size: 17px;
-            margin: 18px 0 10px;
-        }
-
-        .people {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        .people::-webkit-scrollbar {
-            display: none;
-        }
-
-        .person {
-            min-width: 105px;
-            background: #102641;
-            border: 1px solid #1b3958;
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-        }
-
-        .person img {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #238cff;
-            margin-bottom: 6px;
-        }
-
-        .person-name {
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .person-status {
-            font-size: 10px;
-            color: #8fa5bd;
-            margin-top: 3px;
-        }
-
-        /* ================= CREATE POST ================= */
-
-        .create-post {
-            background: #102641;
-            border: 1px solid #1b3958;
-            border-radius: 14px;
-            padding: 15px;
-            margin-top: 18px;
-        }
-
-        .create-post textarea {
-            width: 100%;
-            min-height: 75px;
-            resize: vertical;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #294766;
-            background: #08172a;
-            color: white;
-            outline: none;
-            font-family: Arial;
-        }
-
-        .create-post input[type="file"] {
-            width: 100%;
-            margin-top: 10px;
-            color: #aebed0;
-        }
-
-        .post-button {
-            margin-top: 10px;
-            width: 100%;
-            padding: 11px;
-            border: none;
-            border-radius: 9px;
-            background: #238cff;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* ================= POST ================= */
-
-        .post {
-            background: #0d1e34;
-            border: 1px solid #1a3653;
-            border-radius: 14px;
-            margin-top: 15px;
-            overflow: hidden;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-        }
-
-        .post-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 10px;
-            border: 1px solid #3974a9;
-        }
-
-        .post-user {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .post-time {
-            color: #8298ad;
-            font-size: 11px;
-            margin-top: 3px;
-        }
-
-        .post-caption {
-            padding: 0 12px 12px;
-            font-size: 14px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        /* ================= MEDIA ================= */
 
         .post-media {
-            width: 100%;
-            max-height: 600px;
-            object-fit: cover;
-            display: block;
-            background: black;
+            max-height: 650px;
         }
 
-        /* ================= ACTIONS ================= */
+    }
 
-        .post-actions {
-            display: flex;
-            align-items: center;
-            border-top: 1px solid #1b344e;
-            border-bottom: 1px solid #1b344e;
-            padding: 8px 10px;
-            gap: 15px;
-        }
 
-        .action-form {
-            margin: 0;
-        }
+    /* ================= MOBILE ================= */
 
-        .action-button {
-            border: none;
-            background: none;
-            color: #d9e5f1;
-            cursor: pointer;
-            font-size: 14px;
-        }
+    @media (max-width: 500px) {
 
-        .action-button:hover {
-            opacity: 0.8;
-        }
-
-        .liked {
-            color: #ff4d6d;
-        }
-
-        .delete-button {
-            margin-left: auto;
-            color: #ff687c;
-        }
-
-        /* ================= COMMENTS ================= */
-
-        .comments {
-            padding: 10px 12px;
-        }
-
-        .comment {
-            margin-bottom: 8px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .comment strong {
-            color: #63adff;
-            margin-right: 5px;
-        }
-
-        .comment-form {
-            display: flex;
-            gap: 7px;
-            margin-top: 8px;
-        }
-
-        .comment-form input {
-            flex: 1;
-            padding: 9px;
-            border-radius: 8px;
-            border: 1px solid #294766;
-            background: #08172a;
-            color: white;
-            outline: none;
-        }
-
-        .comment-form button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 8px;
-            background: #238cff;
-            color: white;
-            cursor: pointer;
-        }
-
-        .comment-form button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* ================= BOTTOM NAV ================= */
-
-        .bottom-nav {
+        .notification-panel {
             position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 68px;
-            background: #071426;
-            border-top: 1px solid #203954;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
+
+            top: 60px;
+
+            left: 10px;
+            right: 10px;
+
+            width: auto;
+
+            max-width: none;
         }
 
-        .bottom-nav a {
-            color: #9cafc2;
-            text-decoration: none;
-            text-align: center;
-            font-size: 11px;
+        .quick-menu {
+            grid-template-columns:
+                repeat(4, 1fr);
         }
 
-        .bottom-nav span {
-            display: block;
-            font-size: 21px;
-            margin-bottom: 3px;
-        }
+    }
 
-        .bottom-nav .active {
-            color: #4da3ff;
-        }
+</style>
 
-        /* ================= DESKTOP ================= */
-
-        @media (min-width: 800px) {
-
-            .container {
-                max-width: 750px;
-            }
-
-            .post-media {
-                max-height: 650px;
-            }
-
-        }
-
-    </style>
-
-</head>
+</head><body><!-- =====================================================
+     HEADER
+===================================================== --><header class="header"><div class="logo">
+    PrivateConnect
+</div>
 
 
-<body>
+<div class="header-spacer"></div>
 
 
-<!-- ================= HEADER ================= -->
+<!-- SEARCH -->
 
-<header class="header">
+<a
+    href="{{ url_for('find_people') }}"
+    class="header-icon"
+    aria-label="Search"
+>
+    🔍
+</a>
 
-    <div class="logo">
-        PrivateConnect
-    </div>
 
-    <div class="header-spacer"></div>
+<!-- NOTIFICATIONS -->
 
-    <a
-        href="{{ url_for('find_people') }}"
-        class="header-icon"
+<div class="notification-wrapper">
+
+
+    <button
+        type="button"
+        class="notification-button"
+        onclick="toggleNotifications()"
+        aria-label="Notifications"
     >
-        🔍
-    </a>
 
-    <a
-        href="{{ url_for('requests') }}"
-        class="header-icon"
-    >
         🔔
-    </a>
 
-</header>
-
-
-<!-- ================= MAIN ================= -->
-
-<main class="container">
-
-
-    <!-- WELCOME -->
-
-    <div class="welcome">
-        Welcome 👋
-    </div>
-
-
-    <!-- ================= QUICK MENU ================= -->
-
-    <div class="quick-menu">
-
-        <a href="{{ url_for('find_people') }}">
-            <span>🔎</span>
-            Search
-        </a>
-
-        <a href="{{ url_for('messages') }}">
-            <span>💬</span>
-            Chats
-        </a>
-
-        <a href="{{ url_for('connections') }}">
-            <span>💙</span>
-            Match
-        </a>
-
-        <a href="{{ url_for('profile') }}">
-            <span>❤️</span>
-            Likes
-        </a>
-
-    </div>
-
-
-    <!-- ================= PEOPLE ================= -->
-
-    <div class="section-title">
-        People Near You
-    </div>
-
-    <div class="people">
-
-        {% if users %}
-
-            {% for user in users %}
-
-                <a
-                    href="{{ url_for('profile', user_id=user.id) }}"
-                    class="person"
-                >
-
-                    {% if user.profile_picture %}
-
-                        <img
-                            src="{{ url_for(
-                                'static',
-                                filename='uploads/' + user.profile_picture
-                            ) }}"
-                            alt="Profile"
-                        >
-
-                    {% else %}
-
-                        <img
-                            src="https://via.placeholder.com/100"
-                            alt="Profile"
-                        >
-
-                    {% endif %}
-
-                    <div class="person-name">
-                        {{ user.name }}
-                    </div>
-
-                    <div class="person-status">
-
-                        {% if user.last_seen %}
-                            Active
-                        {% else %}
-                            New user
-                        {% endif %}
-
-                    </div>
-
-                </a>
-
-            {% endfor %}
-
-        {% else %}
-
-            <p>
-                No other users yet.
-            </p>
-
-        {% endif %}
-
-    </div>
-
-
-    <!-- ================= CREATE POST ================= -->
-
-    <div class="section-title">
-        Create Post
-    </div>
-
-    <div class="create-post">
-
-        <form
-            method="POST"
-            action="{{ url_for('create_post') }}"
-            enctype="multipart/form-data"
+        <span
+            id="notificationBadge"
+            class="notification-badge"
         >
+            0
+        </span>
 
-            <textarea
-                name="caption"
-                placeholder="What's on your mind?"
-                maxlength="2000"
-            ></textarea>
+    </button>
 
-            <input
-                type="file"
-                name="media"
-                accept="image/png,image/jpeg,image/gif,video/mp4,video/webm"
-            >
+
+    <!-- NOTIFICATION PANEL -->
+
+    <div
+        id="notificationPanel"
+        class="notification-panel"
+    >
+
+
+        <div class="notification-header">
+
+            <span class="notification-title">
+                Notifications
+            </span>
+
 
             <button
-                type="submit"
-                class="post-button"
+                type="button"
+                class="notification-read-button"
+                onclick="markNotificationsRead()"
             >
-                Post
+                Mark all read
             </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- ================= POSTS ================= -->
-
-    <div class="section-title">
-        Posts
-    </div>
-
-
-    {% if posts %}
-
-        {% for post in posts %}
-
-            <article
-                class="post"
-                id="post-{{ post.id }}"
-            >
-
-
-                <!-- POST HEADER -->
-
-                <div class="post-header">
-
-                    {% if post.profile_picture %}
-
-                        <img
-                            class="post-avatar"
-                            src="{{ url_for(
-                                'static',
-                                filename='uploads/' + post.profile_picture
-                            ) }}"
-                            alt="Profile"
-                        >
-
-                    {% else %}
-
-                        <img
-                            class="post-avatar"
-                            src="https://via.placeholder.com/100"
-                            alt="Profile"
-                        >
-
-                    {% endif %}
-
-
-                    <div>
-
-                        <div class="post-user">
-                            {{ post.name }}
-                        </div>
-
-                        <div class="post-time">
-                            {{ post.created_at }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- CAPTION -->
-
-                {% if post.caption %}
-
-                    <div class="post-caption">
-                        {{ post.caption }}
-                    </div>
-
-                {% endif %}
-
-
-                <!-- MEDIA -->
-
-                {% if post.media %}
-
-                    {% if
-                        post.media.lower().endswith('.mp4')
-                        or
-                        post.media.lower().endswith('.webm')
-                    %}
-
-                        <video
-                            class="post-media"
-                            controls
-                            playsinline
-                            preload="metadata"
-                        >
-
-                            <source
-                                src="{{ url_for(
-                                    'static',
-                                    filename='uploads/' + post.media
-                                ) }}"
-                            >
-
-                        </video>
-
-                    {% else %}
-
-                        <img
-                            class="post-media"
-                            src="{{ url_for(
-                                'static',
-                                filename='uploads/' + post.media
-                            ) }}"
-                            alt="Post"
-                        >
-
-                    {% endif %}
-
-                {% endif %}
-
-
-                <!-- ================= ACTIONS ================= -->
-
-                <div class="post-actions">
-
-
-                    <!-- LIKE -->
-
-                    <button
-                        type="button"
-                        class="action-button like-button {% if post.user_liked %}liked{% endif %}"
-                        data-post-id="{{ post.id }}"
-                        onclick="event.preventDefault(); likePost({{ post.id }}, this); return false;"
-                    >
-
-                        <span class="like-icon">
-
-                            {% if post.user_liked %}
-                                ❤️
-                            {% else %}
-                                🤍
-                            {% endif %}
-
-                        </span>
-
-                        <span class="like-count">
-                            {{ post.like_count }}
-                        </span>
-
-                    </button>
-
-
-                    <!-- COMMENT -->
-
-                    <button
-                        type="button"
-                        class="action-button comment-button"
-                        onclick="focusComment({{ post.id }}); return false;"
-                    >
-
-                        💬
-
-                        <span class="comment-count">
-                            {{ post.comment_count }}
-                        </span>
-
-                    </button>
-
-
-                    <!-- SHARE -->
-
-                    <button
-                        type="button"
-                        class="action-button"
-                        onclick="sharePost({{ post.id }}); return false;"
-                    >
-
-                        ↗ Share
-
-                    </button>
-
-
-                    <!-- DELETE -->
-
-                    <form
-                        method="POST"
-                        action="{{ url_for(
-                            'delete_post',
-                            post_id=post.id
-                        ) }}"
-                        class="action-form delete-button"
-                        onsubmit="return confirm(
-                            'Delete this post?'
-                        );"
-                    >
-
-                        <button
-                            type="submit"
-                            class="action-button delete-button"
-                        >
-
-                            🗑️
-
-                        </button>
-
-                    </form>
-
-                </div>
-
-
-                <!-- ================= COMMENTS ================= -->
-
-                <div
-                    class="comments"
-                    id="comments-{{ post.id }}"
-                >
-
-
-                    {% for comment in post.comments %}
-
-                        <div class="comment">
-
-                            <strong>
-                                {{ comment.name }}
-                            </strong>
-
-                            {{ comment.comment }}
-
-                        </div>
-
-                    {% endfor %}
-
-
-                    <!-- COMMENT FORM -->
-
-                    <form
-                        class="comment-form"
-                        onsubmit="submitComment(
-                            event,
-                            {{ post.id }},
-                            this
-                        ); return false;"
-                    >
-
-                        <input
-                            type="text"
-                            name="comment"
-                            placeholder="Write a comment..."
-                            maxlength="500"
-                            required
-                        >
-
-                        <button type="submit">
-                            Send
-                        </button>
-
-                    </form>
-
-                </div>
-
-
-            </article>
-
-        {% endfor %}
-
-
-    {% else %}
-
-        <div class="create-post">
-
-            <p
-                style="
-                    text-align:center;
-                    color:#9cafc2;
-                "
-            >
-
-                No posts yet.
-
-                <br>
-
-                Create the first post! 🎉
-
-            </p>
 
         </div>
 
-    {% endif %}
+
+        <div
+            id="notificationList"
+            class="notification-list"
+        >
+
+            <div class="notification-loading">
+                Loading...
+            </div>
+
+        </div>
 
 
-</main>
+    </div>
+
+</div>
+
+</header><!-- =====================================================
+     MAIN
+===================================================== --><main class="container"><!-- WELCOME -->
+
+<div class="welcome">
+
+    Welcome 👋
+
+</div>
 
 
-<!-- ================= BOTTOM NAVIGATION ================= -->
+<!-- =================================================
+     QUICK MENU
+================================================= -->
 
-<nav class="bottom-nav">
+<div class="quick-menu">
+
 
     <a
-        href="{{ url_for('dashboard') }}"
-        class="active"
+        href="{{ url_for('find_people') }}"
     >
 
-        <span>⌂</span>
+        <span>🔎</span>
 
-        Home
-
-    </a>
-
-
-    <a href="{{ url_for('find_people') }}">
-
-        <span>⌕</span>
-
-        Explore
+        Search
 
     </a>
 
 
-    <a href="{{ url_for('reels') }}">
+    <a
+        href="{{ url_for('messages') }}"
+    >
 
-        <span>▣</span>
+        <span>💬</span>
 
-        Reels
+        Chats
 
     </a>
 
 
-    <a href="{{ url_for('connections') }}">
+    <a
+        href="{{ url_for('match') }}"
+    >
 
-        <span>♥</span>
+        <span>💙</span>
 
         Match
 
     </a>
 
 
-    <a href="{{ url_for('profile') }}">
+    <a
+        href="{{ url_for('connections') }}"
+    >
 
-        <span>●</span>
+        <span>👥</span>
 
-        Profile
+        Connections
 
     </a>
 
-</nav>
+
+</div>
 
 
-<!-- =====================================================
+<!-- =================================================
+     PEOPLE
+================================================= -->
+
+<div class="section-title">
+
+    People Near You
+
+</div>
+
+
+<div class="people">
+
+
+    {% if users %}
+
+
+        {% for user in users %}
+
+
+            <a
+                href="{{ url_for(
+                    'profile',
+                    user_id=user.id
+                ) }}"
+                class="person"
+            >
+
+
+                {% if user.profile_picture %}
+
+
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' +
+                            user.profile_picture
+                        ) }}"
+                        alt="Profile"
+                    >
+
+
+                {% else %}
+
+
+                    <img
+                        src="https://via.placeholder.com/100"
+                        alt="Profile"
+                    >
+
+
+                {% endif %}
+
+
+                <div class="person-name">
+
+                    {{ user.name }}
+
+                </div>
+
+
+                <div class="person-status">
+
+
+                    {% if user.last_seen %}
+
+                        Active
+
+                    {% else %}
+
+                        New user
+
+                    {% endif %}
+
+
+                </div>
+
+
+            </a>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <p>
+            No other users yet.
+        </p>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- =================================================
+     CREATE POST
+================================================= -->
+
+<div class="section-title">
+
+    Create Post
+
+</div>
+
+
+<div class="create-post">
+
+
+    <form
+        method="POST"
+        action="{{ url_for('create_post') }}"
+        enctype="multipart/form-data"
+    >
+
+
+        <textarea
+            name="caption"
+            placeholder="What's on your mind?"
+            maxlength="2000"
+        ></textarea>
+
+
+        <input
+            type="file"
+            name="media"
+            accept="
+                image/png,
+                image/jpeg,
+                image/gif,
+                video/mp4,
+                video/webm
+            "
+        >
+
+
+        <button
+            type="submit"
+            class="post-button"
+        >
+
+            Post
+
+        </button>
+
+
+    </form>
+
+
+</div>
+
+
+<!-- =================================================
+     POSTS
+================================================= -->
+
+<div class="section-title">
+
+    Posts
+
+</div>
+
+
+{% if posts %}
+
+
+    {% for post in posts %}
+
+
+        <article
+            class="post"
+            id="post-{{ post.id }}"
+        >
+
+
+            <!-- POST HEADER -->
+
+            <div class="post-header">
+
+
+                {% if post.profile_picture %}
+
+
+                    <img
+                        class="post-avatar"
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' +
+                            post.profile_picture
+                        ) }}"
+                        alt="Profile"
+                    >
+
+
+                {% else %}
+
+
+                    <img
+                        class="post-avatar"
+                        src="https://via.placeholder.com/100"
+                        alt="Profile"
+                    >
+
+
+                {% endif %}
+
+
+                <div>
+
+
+                    <div class="post-user">
+
+                        {{ post.name }}
+
+                    </div>
+
+
+                    <div class="post-time">
+
+                        {{ post.created_at }}
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <!-- CAPTION -->
+
+            {% if post.caption %}
+
+
+                <div class="post-caption">
+
+                    {{ post.caption }}
+
+                </div>
+
+
+            {% endif %}
+
+
+            <!-- MEDIA -->
+
+            {% if post.media %}
+
+
+                {% if
+                    post.media.lower().endswith('.mp4')
+                    or
+                    post.media.lower().endswith('.webm')
+                %}
+
+
+                    <video
+                        class="post-media"
+                        controls
+                        playsinline
+                        preload="metadata"
+                    >
+
+
+                        <source
+                            src="{{ url_for(
+                                'static',
+                                filename='uploads/' +
+                                post.media
+                            ) }}"
+                        >
+
+
+                    </video>
+
+
+                {% else %}
+
+
+                    <img
+                        class="post-media"
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' +
+                            post.media
+                        ) }}"
+                        alt="Post"
+                    >
+
+
+                {% endif %}
+
+
+            {% endif %}
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================= -->
+
+            <div class="post-actions">
+
+
+                <!-- LIKE -->
+
+                <button
+                    type="button"
+                    class="action-button like-button
+                    {% if post.user_liked %}
+                        liked
+                    {% endif %}"
+                    data-post-id="{{ post.id }}"
+                    onclick="
+                        event.preventDefault();
+                        likePost(
+                            {{ post.id }},
+                            this
+                        );
+                        return false;
+                    "
+                >
+
+
+                    <span class="like-icon">
+
+
+                        {% if post.user_liked %}
+
+                            ❤️
+
+                        {% else %}
+
+                            🤍
+
+                        {% endif %}
+
+
+                    </span>
+
+
+                    <span class="like-count">
+
+                        {{ post.like_count }}
+
+                    </span>
+
+
+                </button>
+
+
+                <!-- COMMENT -->
+
+                <button
+                    type="button"
+                    class="action-button comment-button"
+                    onclick="
+                        focusComment(
+                            {{ post.id }}
+                        );
+                        return false;
+                    "
+                >
+
+                    💬
+
+                    <span class="comment-count">
+
+                        {{ post.comment_count }}
+
+                    </span>
+
+                </button>
+
+
+                <!-- SHARE -->
+
+                <button
+                    type="button"
+                    class="action-button"
+                    onclick="
+                        sharePost(
+                            {{ post.id }}
+                        );
+                        return false;
+                    "
+                >
+
+                    ↗ Share
+
+                </button>
+
+
+                <!-- DELETE -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for(
+                        'delete_post',
+                        post_id=post.id
+                    ) }}"
+                    class="action-form delete-button"
+                    onsubmit="
+                        return confirm(
+                            'Delete this post?'
+                        );
+                    "
+                >
+
+
+                    <button
+                        type="submit"
+                        class="action-button delete-button"
+                    >
+
+                        🗑️
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 COMMENTS
+            ================================================= -->
+
+            <div
+                class="comments"
+                id="comments-{{ post.id }}"
+            >
+
+
+                {% for comment in post.comments %}
+
+
+                    <div class="comment">
+
+
+                        <strong>
+
+                            {{ comment.name }}
+
+                        </strong>
+
+
+                        {{ comment.comment }}
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+                <!-- COMMENT FORM -->
+
+                <form
+                    class="comment-form"
+                    onsubmit="
+                        submitComment(
+                            event,
+                            {{ post.id }},
+                            this
+                        );
+                        return false;
+                    "
+                >
+
+
+                    <input
+                        type="text"
+                        name="comment"
+                        placeholder="Write a comment..."
+                        maxlength="500"
+                        required
+                    >
+
+
+                    <button
+                        type="submit"
+                    >
+
+                        Send
+
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+        </article>
+
+
+    {% endfor %}
+
+
+{% else %}
+
+
+    <div class="create-post">
+
+
+        <p
+            style="
+                text-align:center;
+                color:#9cafc2;
+            "
+        >
+
+            No posts yet.
+
+            <br>
+
+            Create the first post! 🎉
+
+        </p>
+
+
+    </div>
+
+
+{% endif %}
+
+</main><!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== --><nav class="bottom-nav"><a
+    href="{{ url_for('dashboard') }}"
+    class="active"
+>
+
+    <span>⌂</span>
+
+    Home
+
+</a>
+
+
+<a
+    href="{{ url_for('find_people') }}"
+>
+
+    <span>⌕</span>
+
+    Explore
+
+</a>
+
+
+<a
+    href="{{ url_for('reels') }}"
+>
+
+    <span>▣</span>
+
+    Reels
+
+</a>
+
+
+<a
+    href="{{ url_for('connections') }}"
+>
+
+    <span>♥</span>
+
+    Match
+
+</a>
+
+
+<a
+    href="{{ url_for('profile') }}"
+>
+
+    <span>●</span>
+
+    Profile
+
+</a>
+
+</nav><!-- =====================================================
      JAVASCRIPT
-===================================================== -->
-
-<script>
+===================================================== --><script>
 
 
 /* =================================================
@@ -906,9 +1524,13 @@
 
 function focusComment(postId) {
 
-    const box = document.querySelector(
-        "#comments-" + postId + " input"
-    );
+    const box =
+        document.querySelector(
+            "#comments-" +
+            postId +
+            " input"
+        );
+
 
     if (box) {
 
@@ -928,29 +1550,45 @@ function focusComment(postId) {
    LIKE POST
 ================================================= */
 
-function likePost(postId, button) {
+function likePost(
+    postId,
+    button
+) {
 
-    fetch("/like/" + postId, {
 
-        method: "POST",
+    fetch(
+        "/like/" + postId,
+        {
+            method: "POST",
 
-        headers: {
-            "X-Requested-With": "XMLHttpRequest"
+            headers: {
+                "X-Requested-With":
+                    "XMLHttpRequest"
+            }
         }
+    )
 
-    })
 
     .then(response => {
 
+
         if (!response.ok) {
-            throw new Error("Like request failed");
+
+            throw new Error(
+                "Like request failed"
+            );
+
         }
+
 
         return response.json();
 
+
     })
 
+
     .then(data => {
+
 
         if (!data.success) {
 
@@ -961,27 +1599,45 @@ function likePost(postId, button) {
             );
 
             return;
+
         }
 
 
         const icon =
-            button.querySelector(".like-icon");
+            button.querySelector(
+                ".like-icon"
+            );
+
 
         const count =
-            button.querySelector(".like-count");
+            button.querySelector(
+                ".like-count"
+            );
 
 
         if (data.liked) {
 
-            button.classList.add("liked");
 
-            icon.textContent = "❤️";
+            button.classList.add(
+                "liked"
+            );
+
+
+            icon.textContent =
+                "❤️";
+
 
         } else {
 
-            button.classList.remove("liked");
 
-            icon.textContent = "🤍";
+            button.classList.remove(
+                "liked"
+            );
+
+
+            icon.textContent =
+                "🤍";
+
 
         }
 
@@ -989,15 +1645,29 @@ function likePost(postId, button) {
         count.textContent =
             data.like_count;
 
+
+        /*
+         * Refresh notification badge.
+         * This allows a notification created
+         * by another user to appear quickly.
+         */
+
+        updateNotificationBadge();
+
+
     })
+
 
     .catch(error => {
 
+
         console.error(error);
+
 
         alert(
             "Unable to like post."
         );
+
 
     });
 
@@ -1014,6 +1684,7 @@ function submitComment(
     form
 ) {
 
+
     event.preventDefault();
 
 
@@ -1024,7 +1695,9 @@ function submitComment(
 
 
     const button =
-        form.querySelector("button");
+        form.querySelector(
+            "button"
+        );
 
 
     const text =
@@ -1032,38 +1705,49 @@ function submitComment(
 
 
     if (!text) {
+
         return false;
+
     }
 
 
-    button.disabled = true;
+    button.disabled =
+        true;
 
-    button.textContent = "Sending...";
+
+    button.textContent =
+        "Sending...";
 
 
-    fetch("/comment/" + postId, {
+    fetch(
+        "/comment/" + postId,
+        {
 
-        method: "POST",
+            method: "POST",
 
-        headers: {
+            headers: {
 
-            "Content-Type":
-                "application/x-www-form-urlencoded",
+                "Content-Type":
+                    "application/x-www-form-urlencoded",
 
-            "X-Requested-With":
-                "XMLHttpRequest"
+                "X-Requested-With":
+                    "XMLHttpRequest"
 
-        },
+            },
 
-        body: new URLSearchParams({
+            body:
+                new URLSearchParams({
 
-            comment: text
+                    comment: text
 
-        })
+                })
 
-    })
+        }
+    )
+
 
     .then(response => {
+
 
         if (!response.ok) {
 
@@ -1073,9 +1757,12 @@ function submitComment(
 
         }
 
+
         return response.json();
 
+
     })
+
 
     .then(data => {
 
@@ -1089,12 +1776,14 @@ function submitComment(
             );
 
             return;
+
         }
 
 
         const commentsBox =
             document.querySelector(
-                "#comments-" + postId
+                "#comments-" +
+                postId
             );
 
 
@@ -1105,7 +1794,9 @@ function submitComment(
 
 
         const newComment =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         newComment.className =
@@ -1113,7 +1804,9 @@ function submitComment(
 
 
         const name =
-            document.createElement("strong");
+            document.createElement(
+                "strong"
+            );
 
 
         name.textContent =
@@ -1122,13 +1815,15 @@ function submitComment(
 
         const commentText =
             document.createTextNode(
-                " " + data.comment
+                " " +
+                data.comment
             );
 
 
         newComment.appendChild(
             name
         );
+
 
         newComment.appendChild(
             commentText
@@ -1141,14 +1836,16 @@ function submitComment(
         );
 
 
-        input.value = "";
+        input.value =
+            "";
 
 
         /* UPDATE COMMENT COUNT */
 
         const post =
             document.querySelector(
-                "#post-" + postId
+                "#post-" +
+                postId
             );
 
 
@@ -1166,31 +1863,48 @@ function submitComment(
 
         if (
             commentCount &&
-            data.comment_count !== undefined
+            data.comment_count !==
+                undefined
         ) {
+
 
             commentCount.textContent =
                 data.comment_count;
 
+
         }
+
+
+        updateNotificationBadge();
+
 
     })
 
+
     .catch(error => {
 
+
         console.error(error);
+
 
         alert(
             "Unable to add comment."
         );
 
+
     })
+
 
     .finally(() => {
 
-        button.disabled = false;
 
-        button.textContent = "Send";
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Send";
+
 
     });
 
@@ -1202,9 +1916,10 @@ function submitComment(
 
 /* =================================================
    SHARE POST
-================================================= */
+===================================================== */
 
 function sharePost(postId) {
+
 
     fetch(
         "/share/" + postId,
@@ -1213,71 +1928,558 @@ function sharePost(postId) {
         }
     )
 
+
     .then(response => {
 
+
         if (!response.ok) {
+
             throw new Error(
                 "Share request failed"
             );
+
         }
+
 
         return response.json();
 
+
     })
+
 
     .then(data => {
 
+
         if (data.success) {
+
 
             if (
                 navigator.clipboard &&
                 navigator.clipboard.writeText
             ) {
 
+
                 navigator.clipboard.writeText(
                     data.url
                 );
+
 
                 alert(
                     "Post link copied!"
                 );
 
+
             } else {
+
 
                 prompt(
                     "Copy this link:",
                     data.url
                 );
 
+
             }
 
+
         } else {
+
 
             alert(
                 data.error ||
                 "Unable to share."
             );
 
+
         }
+
 
     })
 
+
     .catch(error => {
 
+
         console.error(error);
+
 
         alert(
             "Unable to share post."
         );
+
 
     });
 
 }
 
 
-</script>
+/* =================================================
+   UPDATE NOTIFICATION BADGE
+===================================================== */
+
+function updateNotificationBadge() {
 
 
-</body>
+    fetch(
+        "/notification-count"
+    )
 
-</html>
+
+    .then(response => {
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Notification count failed"
+            );
+
+        }
+
+
+        return response.json();
+
+
+    })
+
+
+    .then(data => {
+
+
+        const badge =
+            document.getElementById(
+                "notificationBadge"
+            );
+
+
+        if (!badge) {
+
+            return;
+
+        }
+
+
+        const count =
+            Number(
+                data.count || 0
+            );
+
+
+        if (count > 0) {
+
+
+            badge.textContent =
+                count > 99
+                    ? "99+"
+                    : count;
+
+
+            badge.style.display =
+                "flex";
+
+
+        } else {
+
+
+            badge.style.display =
+                "none";
+
+
+        }
+
+
+    })
+
+
+    .catch(error => {
+
+
+        console.error(
+            "Notification badge:",
+            error
+        );
+
+
+    });
+
+}
+
+
+/* =================================================
+   TOGGLE NOTIFICATION PANEL
+===================================================== */
+
+function toggleNotifications() {
+
+
+    const panel =
+        document.getElementById(
+            "notificationPanel"
+        );
+
+
+    if (!panel) {
+
+        return;
+
+    }
+
+
+    panel.classList.toggle(
+        "show"
+    );
+
+
+    if (
+        panel.classList.contains(
+            "show"
+        )
+    ) {
+
+        loadNotifications();
+
+    }
+
+}
+
+
+/* =================================================
+   LOAD NOTIFICATIONS
+===================================================== */
+
+function loadNotifications() {
+
+
+    const list =
+        document.getElementById(
+            "notificationList"
+        );
+
+
+    if (!list) {
+
+        return;
+
+    }
+
+
+    list.innerHTML = `
+        <div class="notification-loading">
+            Loading notifications...
+        </div>
+    `;
+
+
+    fetch(
+        "/notifications"
+    )
+
+
+    .then(response => {
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Notification loading failed"
+            );
+
+        }
+
+
+        return response.json();
+
+
+    })
+
+
+    .then(data => {
+
+
+        if (
+            !data.notifications ||
+            data.notifications.length === 0
+        ) {
+
+
+            list.innerHTML = `
+                <div class="notification-empty">
+
+                    🔔
+
+                    <br><br>
+
+                    No notifications yet.
+
+                </div>
+            `;
+
+
+            return;
+
+        }
+
+
+        list.innerHTML =
+            "";
+
+
+        data.notifications.forEach(
+            notification => {
+
+
+                const item =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                item.className =
+                    "notification-item";
+
+
+                if (
+                    !notification.is_read
+                ) {
+
+                    item.classList.add(
+                        "unread"
+                    );
+
+                }
+
+
+                item.href =
+                    notification.url ||
+                    "#";
+
+
+                const avatar =
+                    notification.sender_picture
+                    ? "/static/uploads/" +
+                      notification.sender_picture
+                    : "https://via.placeholder.com/100";
+
+
+                const safeMessage =
+                    notification.message ||
+                    "New notification";
+
+
+                const safeTime =
+                    notification.created_at ||
+                    "";
+
+
+                item.innerHTML = `
+
+                    <img
+                        class="notification-avatar"
+                        src="${avatar}"
+                        alt="Profile"
+                    >
+
+                    <div
+                        class="notification-content"
+                    >
+
+                        <div
+                            class="notification-message"
+                        >
+                            ${escapeHtml(
+                                safeMessage
+                            )}
+                        </div>
+
+                        <div
+                            class="notification-time"
+                        >
+                            ${escapeHtml(
+                                safeTime
+                            )}
+                        </div>
+
+                    </div>
+
+                    ${
+                        !notification.is_read
+                        ? `
+                            <span
+                                class="
+                                    notification-unread-dot
+                                "
+                            ></span>
+                        `
+                        : ""
+                    }
+
+                `;
+
+
+                list.appendChild(
+                    item
+                );
+
+
+            }
+        );
+
+
+    })
+
+
+    .catch(error => {
+
+
+        console.error(error);
+
+
+        list.innerHTML = `
+            <div class="notification-empty">
+
+                Notifications are
+                temporarily unavailable.
+
+            </div>
+        `;
+
+
+    });
+
+}
+
+
+/* =================================================
+   MARK NOTIFICATIONS READ
+===================================================== */
+
+function markNotificationsRead() {
+
+
+    fetch(
+        "/notifications/read",
+        {
+            method: "POST"
+        }
+    )
+
+
+    .then(response =>
+        response.json()
+    )
+
+
+    .then(data => {
+
+
+        if (data.success) {
+
+
+            updateNotificationBadge();
+
+
+            loadNotifications();
+
+
+        }
+
+
+    })
+
+
+    .catch(error => {
+
+
+        console.error(
+            "Mark notifications:",
+            error
+        );
+
+
+    });
+
+}
+
+
+/* =================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(value) {
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        value;
+
+
+    return div.innerHTML;
+
+}
+
+
+/* =================================================
+   CLOSE NOTIFICATION PANEL
+   WHEN CLICKING OUTSIDE
+===================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+
+        const wrapper =
+            document.querySelector(
+                ".notification-wrapper"
+            );
+
+
+        const panel =
+            document.getElementById(
+                "notificationPanel"
+            );
+
+
+        if (
+            wrapper &&
+            panel &&
+            !wrapper.contains(
+                event.target
+            )
+        ) {
+
+
+            panel.classList.remove(
+                "show"
+            );
+
+
+        }
+
+
+    }
+);
+
+
+/* =================================================
+   INITIAL NOTIFICATION CHECK
+===================================================== */
+
+updateNotificationBadge();
+
+
+/* =================================================
+   CHECK EVERY 5 SECONDS
+===================================================== */
+
+setInterval(
+    updateNotificationBadge,
+    5000
+);
+
+
+</script></body></html>

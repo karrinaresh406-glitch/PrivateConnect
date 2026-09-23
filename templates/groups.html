@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Groups - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #07111f;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 25px 18px 100px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            background: linear-gradient(
+                90deg,
+                #00c6ff,
+                #8b5cf6
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .create-btn {
+            border: none;
+            background: linear-gradient(
+                135deg,
+                #1877f2,
+                #7c3aed
+            );
+            color: white;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .create-btn:hover {
+            opacity: 0.9;
+        }
+
+        .group-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            background: rgba(255,255,255,0.08);
+
+            border: 1px solid rgba(255,255,255,0.10);
+
+            border-radius: 18px;
+
+            padding: 15px;
+
+            margin-bottom: 14px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .group-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.12);
+        }
+
+        .group-icon {
+            width: 60px;
+            height: 60px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #1877f2,
+                #8b5cf6
+            );
+
+            font-size: 28px;
+
+            flex-shrink: 0;
+        }
+
+        .group-info {
+            flex: 1;
+        }
+
+        .group-info h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .group-info p {
+            color: #aab4c3;
+            font-size: 14px;
+        }
+
+        .arrow {
+            font-size: 25px;
+            color: #8db8ff;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+
+            color: #9ca8ba;
+        }
+
+        .empty-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .empty h2 {
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        /* CREATE GROUP MODAL */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0,0,0,0.75);
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 1000;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 450px;
+
+            background: #101c2d;
+
+            border-radius: 22px;
+
+            padding: 25px;
+
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .input {
+            width: 100%;
+
+            padding: 14px;
+
+            margin-bottom: 14px;
+
+            border-radius: 12px;
+
+            border: 1px solid #34445c;
+
+            background: #07111f;
+
+            color: white;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        textarea.input {
+            resize: none;
+            height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .cancel {
+            background: #273449;
+            color: white;
+        }
+
+        .submit {
+            background: #1877f2;
+            color: white;
+        }
+
+        /* BOTTOM NAV */
+
+        .bottom-nav {
+            position: fixed;
+
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+            height: 70px;
+
+            background: rgba(8,18,32,0.96);
+
+            border-top: 1px solid rgba(255,255,255,0.08);
+
+            display: flex;
+
+            justify-content: center;
+
+            z-index: 500;
+        }
+
+        .nav-inner {
+            width: 100%;
+            max-width: 700px;
+
+            display: flex;
+
+            justify-content: space-around;
+
+            align-items: center;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #9ba9bb;
+
+            text-align: center;
+
+            font-size: 12px;
+        }
+
+        .nav-item span {
+            display: block;
+            font-size: 23px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: #4da3ff;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>👥 Groups</h1>
+
+        <button
+            class="create-btn"
+            onclick="openCreateGroup()"
+        >
+            + Create
+        </button>
+
+    </div>
+
+
+    {% if groups %}
+
+        {% for group in groups %}
+
+        <div
+            class="group-card"
+            onclick="openGroup({{ group['id'] }})"
+        >
+
+            <div class="group-icon">
+                👥
+            </div>
+
+            <div class="group-info">
+
+                <h3>
+                    {{ group["name"] }}
+                </h3>
+
+                <p>
+                    {{ group["description"] or "No description" }}
+                </p>
+
+            </div>
+
+            <div class="arrow">
+                ›
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                👥
+            </div>
+
+            <h2>
+                No groups yet
+            </h2>
+
+            <p>
+                Create your first group and start chatting with friends.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- CREATE GROUP MODAL -->
+
+<div
+    class="modal"
+    id="createGroupModal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            Create Group
+        </h2>
+
+        <form
+            action="{{ url_for('create_group') }}"
+            method="POST"
+        >
+
+            <input
+                class="input"
+                type="text"
+                name="name"
+                placeholder="Group name"
+                maxlength="100"
+                required
+            >
+
+            <textarea
+                class="input"
+                name="description"
+                placeholder="Group description"
+                maxlength="500"
+            ></textarea>
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    onclick="closeCreateGroup()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="submit"
+                >
+                    Create Group
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+    <div class="nav-inner">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="nav-item"
+        >
+            <span>🏠</span>
+            Home
+        </a>
+
+        <a
+            href="{{ url_for('find_people') }}"
+            class="nav-item"
+        >
+            <span>🔍</span>
+            People
+        </a>
+
+        <a
+            href="{{ url_for('messages') }}"
+            class="nav-item"
+        >
+            <span>💬</span>
+            Messages
+        </a>
+
+        <a
+            href="{{ url_for('groups') }}"
+            class="nav-item active"
+        >
+            <span>👥</span>
+            Groups
+        </a>
+
+        <a
+            href="{{ url_for('profile') }}"
+            class="nav-item"
+        >
+            <span>👤</span>
+            Profile
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function openCreateGroup() {
+
+    document.getElementById(
+        "createGroupModal"
+    ).style.display = "flex";
+
+}
+
+
+function closeCreateGroup() {
+
+    document.getElementById(
+        "createGroupModal"
+    ).style.display = "none";
+
+}
+
+
+function openGroup(groupId) {
+
+    window.location.href =
+        "/group/" + groupId;
+
+}
+
+
+window.onclick = function(event) {
+
+    const modal =
+        document.getElementById(
+            "createGroupModal"
+        );
+
+    if (event.target === modal) {
+
+        closeCreateGroup();
+
+    }
+
+};
+
+</script>
+
+</body>
+
+</html>

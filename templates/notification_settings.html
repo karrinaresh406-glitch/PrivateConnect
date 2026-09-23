@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Notifications - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        /* =========================
+           HEADER
+        ========================== */
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 16px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: white;
+            background: #2563eb;
+            padding: 9px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .container {
+            max-width: 600px;
+            margin: 35px auto;
+            padding: 0 15px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* =========================
+           CARD
+        ========================== */
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        /* =========================
+           SETTING ROW
+        ========================== */
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 18px 0;
+            border-top: 1px solid #eef0f4;
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            flex-shrink: 0;
+        }
+
+        .setting-text strong {
+            display: block;
+            font-size: 16px;
+        }
+
+        .setting-text span {
+            display: block;
+            margin-top: 4px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* =========================
+           TOGGLE
+        ========================== */
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #d1d5db;
+            border-radius: 30px;
+            transition: 0.25s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 4px;
+            top: 4px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.25s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle input:checked + .slider {
+            background: #2563eb;
+        }
+
+        .toggle input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* =========================
+           SAVE BUTTON
+        ========================== */
+
+        .save-button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #1d4ed8;
+        }
+
+        /* =========================
+           INFO
+        ========================== */
+
+        .info-box {
+            margin-top: 20px;
+            padding: 14px;
+            background: #f9fafb;
+            border-radius: 10px;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 14px 16px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .back-button {
+                padding: 8px 11px;
+                font-size: 13px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .setting-text strong {
+                font-size: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================== -->
+
+<div class="header">
+
+    <div class="logo">
+        💙 PrivateConnect
+    </div>
+
+    <a
+        href="{{ url_for('settings') }}"
+        class="back-button"
+    >
+        ← Settings
+    </a>
+
+</div>
+
+
+<!-- =========================
+     MAIN
+========================== -->
+
+<div class="container">
+
+    <div class="title">
+        🔔 Notifications
+    </div>
+
+
+    <div class="card">
+
+        <div class="description">
+            Control whether PrivateConnect notifications are enabled
+            for your account.
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('notification_settings') }}"
+        >
+
+            <!-- NOTIFICATION TOGGLE -->
+
+            <div class="setting-row">
+
+                <div class="setting-left">
+
+                    <div class="icon">
+                        🔔
+                    </div>
+
+                    <div class="setting-text">
+
+                        <strong>
+                            Notifications
+                        </strong>
+
+                        <span>
+                            Turn PrivateConnect notifications on or off.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <label class="toggle">
+
+                    <input
+                        type="checkbox"
+                        name="notifications_enabled"
+                        value="1"
+                        {% if user["notifications_enabled"] == 1 %}
+                            checked
+                        {% endif %}
+                    >
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+                Save Changes
+            </button>
+
+        </form>
+
+
+        <div class="info-box">
+
+            💡 When notifications are turned off, your account
+            preference will be saved as disabled.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

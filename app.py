@@ -77,6 +77,34 @@ def get_db():
 
     return conn
 
+# =========================================================
+# NOTIFICATION HELPER
+# =========================================================
+
+def add_notification(
+    cursor,
+    user_id,
+    sender_id,
+    notification_type,
+    message
+):
+
+    cursor.execute("""
+        INSERT INTO notifications
+        (
+            user_id,
+            sender_id,
+            type,
+            message
+        )
+        VALUES (?, ?, ?, ?)
+    """, (
+        user_id,
+        sender_id,
+        notification_type,
+        message
+    ))
+
 
 # =========================================================
 # CHECK FILE TYPES
@@ -127,6 +155,42 @@ def init_db():
         )
     """)
 
+    # USERS - notifications
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN notifications_enabled INTEGER DEFAULT 1
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # USERS - profile visibility
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN profile_visibility TEXT DEFAULT 'everyone'
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # USERS - posts visibility
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN posts_visibility TEXT DEFAULT 'everyone'
+        """)
+    except sqlite3.OperationalError:
+        pass
+
+    # USERS - profile views
+    try:
+        cursor.execute("""
+            ALTER TABLE users
+            ADD COLUMN profile_views_enabled INTEGER DEFAULT 1
+        """)
+    except sqlite3.OperationalError:
+        pass
+
     # =====================================================
     # POSTS
     # =====================================================
@@ -165,6 +229,20 @@ def init_db():
             user_id INTEGER NOT NULL,
             post_id INTEGER NOT NULL,
             UNIQUE(user_id, post_id)
+        )
+    """)
+
+    # =====================================================
+    # MATCH LIKES
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS match_likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            liked_user_id INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, liked_user_id)
         )
     """)
 
@@ -241,8 +319,56 @@ def init_db():
     """)
 
     # =====================================================
+    # GROUPS
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS groups (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            group_picture TEXT,
+            created_by INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (created_by) REFERENCES users(id)
+        )
+    """)
+
+    # =====================================================
+    # GROUP MEMBERS
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS group_members (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            role TEXT NOT NULL DEFAULT 'member',
+            joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(group_id, user_id),
+            FOREIGN KEY (group_id) REFERENCES groups(id),
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    """)
+
+    # =====================================================
+    # GROUP MESSAGES
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS group_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id INTEGER NOT NULL,
+            sender_id INTEGER NOT NULL,
+            message TEXT,
+            file_path TEXT,
+            file_type TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # =====================================================
     # DATABASE MIGRATION
-    # For old users.db files
     # =====================================================
 
     # USERS - profile_picture
@@ -298,6 +424,49 @@ def init_db():
         """)
     except sqlite3.OperationalError:
         pass
+
+    # =====================================================
+    # NOTIFICATIONS
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            sender_id INTEGER,
+            type TEXT NOT NULL,
+            message TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # =====================================================
+    # PROFILE VIEWS
+    # =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS profile_views (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            viewer_id INTEGER NOT NULL,
+            viewed_user_id INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+# =====================================================
+# BLOCKED USERS
+# =====================================================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS blocked_users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            blocker_id INTEGER NOT NULL,
+            blocked_id INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(blocker_id, blocked_id)
+        )
+    """)
 
     # =====================================================
     # SAVE DATABASE
@@ -667,6 +836,284 @@ def reels():
     )
 
 # =========================================================
+# GROUPS PAGE
+# =========================================================
+
+@app.route("/groups")
+def groups():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            groups.id,
+            groups.name,
+            groups.description,
+            groups.group_picture,
+            groups.created_by,
+            groups.created_at
+        FROM groups
+        JOIN group_members
+            ON group_members.group_id = groups.id
+        WHERE group_members.user_id = ?
+        ORDER BY groups.created_at DESC
+    """, (session["user_id"],))
+
+    groups_data = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "groups.html",
+        groups=groups_data
+    )
+
+
+# =========================================================
+# CREATE GROUP
+# =========================================================
+
+@app.route("/create-group", methods=["POST"])
+def create_group():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    name = request.form.get("name", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not name:
+        return "Group name is required.", 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO groups
+        (name, description, created_by)
+        VALUES (?, ?, ?)
+    """, (
+        name,
+        description,
+        session["user_id"]
+    ))
+
+    group_id = cursor.lastrowid
+
+    cursor.execute("""
+        INSERT INTO group_members
+        (group_id, user_id, role)
+        VALUES (?, ?, ?)
+    """, (
+        group_id,
+        session["user_id"],
+        "admin"
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("groups"))
+
+
+# =========================================================
+# GROUP CHAT
+# =========================================================
+
+@app.route("/group/<int:group_id>", methods=["GET"])
+def group_chat(group_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check that the logged-in user belongs to this group
+    cursor.execute("""
+        SELECT
+            groups.id,
+            groups.name,
+            groups.description,
+            groups.group_picture
+        FROM groups
+        JOIN group_members
+            ON group_members.group_id = groups.id
+        WHERE
+            groups.id = ?
+            AND group_members.user_id = ?
+    """, (
+        group_id,
+        session["user_id"]
+    ))
+
+    group = cursor.fetchone()
+
+    if not group:
+        conn.close()
+        return "Group not found or you are not a member.", 404
+
+    # Get group messages
+    cursor.execute("""
+        SELECT
+            group_messages.id,
+            group_messages.group_id,
+            group_messages.sender_id,
+            group_messages.message,
+            group_messages.file_path,
+            group_messages.file_type,
+            group_messages.created_at,
+            users.name AS sender_name
+        FROM group_messages
+        JOIN users
+            ON users.id = group_messages.sender_id
+        WHERE group_messages.group_id = ?
+        ORDER BY group_messages.created_at ASC
+    """, (group_id,))
+
+    messages = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "group_chat.html",
+        group=group,
+        messages=messages
+    )
+
+# =========================================================
+# GROUP MEMBERS
+# =========================================================
+
+@app.route("/group/<int:group_id>/members")
+def group_members(group_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check that the logged-in user is a member
+    cursor.execute("""
+        SELECT
+            groups.id,
+            groups.name
+        FROM groups
+        JOIN group_members
+            ON group_members.group_id = groups.id
+        WHERE
+            groups.id = ?
+            AND group_members.user_id = ?
+    """, (
+        group_id,
+        session["user_id"]
+    ))
+
+    group = cursor.fetchone()
+
+    if not group:
+        conn.close()
+        return "Group not found or you are not a member.", 404
+
+    # Get all group members
+    cursor.execute("""
+        SELECT
+            users.id,
+            users.name,
+            users.profile_picture,
+            group_members.role,
+            group_members.joined_at
+        FROM group_members
+        JOIN users
+            ON users.id = group_members.user_id
+        WHERE group_members.group_id = ?
+        ORDER BY
+            CASE
+                WHEN group_members.role = 'admin' THEN 0
+                ELSE 1
+            END,
+            users.name ASC
+    """, (group_id,))
+
+    members = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "group_members.html",
+        group=group,
+        members=members
+    )
+
+
+# =========================================================
+# SEND GROUP MESSAGE
+# =========================================================
+
+@app.route("/group/<int:group_id>/send", methods=["POST"])
+def send_group_message(group_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    message = request.form.get("message", "").strip()
+
+    if not message:
+        return redirect(url_for(
+            "group_chat",
+            group_id=group_id
+        ))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check membership
+    cursor.execute("""
+        SELECT id
+        FROM group_members
+        WHERE group_id = ?
+        AND user_id = ?
+    """, (
+        group_id,
+        session["user_id"]
+    ))
+
+    member = cursor.fetchone()
+
+    if not member:
+        conn.close()
+        return "You are not a member of this group.", 403
+
+    # Save message
+    cursor.execute("""
+        INSERT INTO group_messages
+        (
+            group_id,
+            sender_id,
+            message
+        )
+        VALUES (?, ?, ?)
+    """, (
+        group_id,
+        session["user_id"],
+        message
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for(
+        "group_chat",
+        group_id=group_id
+    ))
+
+
+# =========================================================
 # HOME
 # =========================================================
 
@@ -915,6 +1362,8 @@ def dashboard():
     conn = get_db()
     cursor = conn.cursor()
 
+
+
     # =====================================================
     # GET OTHER USERS
     # =====================================================
@@ -1039,6 +1488,380 @@ def dashboard():
         users=users,
         posts=posts
     )
+
+# =========================================================
+# NOTIFICATION COUNT
+# =========================================================
+
+@app.route("/notification-count")
+def notification_count():
+
+    if "user_id" not in session:
+        return jsonify({
+            "count": 0
+        })
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM notifications
+        WHERE user_id = ?
+        AND is_read = 0
+    """, (
+        session["user_id"],
+    ))
+
+    count = cursor.fetchone()[0]
+
+    conn.close()
+
+    return jsonify({
+        "count": count
+    })
+
+# =========================================================
+# NOTIFICATIONS LIST
+# =========================================================
+
+@app.route("/notifications")
+def notifications():
+
+    if "user_id" not in session:
+        return jsonify({
+            "notifications": []
+        })
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            notifications.id,
+            notifications.type,
+            notifications.message,
+            notifications.is_read,
+            notifications.created_at,
+            notifications.sender_id,
+            users.name AS sender_name,
+            users.profile_picture AS sender_picture
+        FROM notifications
+        LEFT JOIN users
+            ON users.id = notifications.sender_id
+        WHERE notifications.user_id = ?
+        ORDER BY notifications.created_at DESC
+        LIMIT 50
+    """, (
+        session["user_id"],
+    ))
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    notification_list = []
+
+    for row in rows:
+
+        notification = dict(row)
+
+        # Decide where notification should open
+        if notification["type"] == "message":
+
+            notification["url"] = url_for(
+                "messages"
+            )
+
+        elif notification["type"] == "match":
+
+            notification["url"] = url_for(
+                "match"
+            )
+
+        elif notification["type"] == "connection_request":
+
+            notification["url"] = url_for(
+                "requests"
+            )
+
+        elif notification["sender_id"]:
+
+            notification["url"] = url_for(
+                "profile",
+                user_id=notification["sender_id"]
+            )
+
+        else:
+
+            notification["url"] = url_for(
+                "dashboard"
+            )
+
+        notification_list.append(
+            notification
+        )
+
+    return jsonify({
+        "notifications": notification_list
+    })
+
+# =========================================================
+# MARK NOTIFICATIONS READ
+# =========================================================
+
+@app.route("/notifications/read", methods=["POST"])
+def mark_notifications_read():
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False
+        }), 401
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE user_id = ?
+        AND is_read = 0
+    """, (
+        session["user_id"],
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+# =========================================================
+# MATCH PAGE
+# =========================================================
+
+@app.route("/match")
+def match():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            users.id,
+            users.name,
+            users.profile_picture,
+            users.bio
+        FROM users
+        WHERE users.id != ?
+        AND users.id NOT IN (
+            SELECT liked_user_id
+            FROM match_likes
+            WHERE user_id = ?
+        )
+        ORDER BY RANDOM()
+        LIMIT 1
+    """, (
+        current_user,
+        current_user
+    ))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    return render_template(
+        "match.html",
+        user=user
+    )
+
+
+
+# =========================================================
+# MATCH LIKE
+# =========================================================
+
+@app.route(
+    "/profile-like/<int:user_id>",
+    methods=["POST"]
+)
+def profile_like(user_id):
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False,
+            "error": "Please login first."
+        }), 401
+
+    current_user = session["user_id"]
+
+    # Cannot like yourself
+    if current_user == user_id:
+        return jsonify({
+            "success": False,
+            "error": "You cannot like yourself."
+        }), 400
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # =====================================================
+    # CHECK TARGET USER
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id
+        FROM users
+        WHERE id = ?
+    """, (
+        user_id,
+    ))
+
+    target_user = cursor.fetchone()
+
+    if target_user is None:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "error": "User not found."
+        }), 404
+
+    # =====================================================
+    # CHECK IF ALREADY LIKED
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id
+        FROM match_likes
+        WHERE user_id = ?
+        AND liked_user_id = ?
+    """, (
+        current_user,
+        user_id
+    ))
+
+    existing_like = cursor.fetchone()
+
+    # =====================================================
+    # SAVE NEW LIKE
+    # =====================================================
+
+    if not existing_like:
+
+        cursor.execute("""
+            INSERT INTO match_likes
+            (
+                user_id,
+                liked_user_id
+            )
+            VALUES (?, ?)
+        """, (
+            current_user,
+            user_id
+        ))
+
+        # =================================================
+        # GET SENDER NAME
+        # =================================================
+
+        cursor.execute("""
+            SELECT name
+            FROM users
+            WHERE id = ?
+        """, (
+            current_user,
+        ))
+
+        sender = cursor.fetchone()
+
+        # =================================================
+        # SEND LIKE NOTIFICATION
+        # =================================================
+
+        if sender:
+
+            add_notification(
+                cursor,
+                user_id,
+                current_user,
+                "match_like",
+                f"{sender['name']} liked you 💙"
+            )
+
+    # =====================================================
+    # CHECK MUTUAL LIKE
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id
+        FROM match_likes
+        WHERE user_id = ?
+        AND liked_user_id = ?
+    """, (
+        user_id,
+        current_user
+    ))
+
+    mutual_like = cursor.fetchone()
+
+    # =====================================================
+    # SEND MATCH NOTIFICATION
+    # =====================================================
+
+    if mutual_like:
+
+        cursor.execute("""
+            SELECT name
+            FROM users
+            WHERE id = ?
+        """, (
+            current_user,
+        ))
+
+        sender = cursor.fetchone()
+
+        if sender:
+
+            add_notification(
+                cursor,
+                user_id,
+                current_user,
+                "match",
+                f"It's a Match with {sender['name']}! 💙"
+            )
+
+    # =====================================================
+    # SAVE DATABASE
+    # =====================================================
+
+    conn.commit()
+    conn.close()
+
+    # =====================================================
+    # RETURN RESULT
+    # =====================================================
+
+    if mutual_like:
+
+        return jsonify({
+            "success": True,
+            "match": True,
+            "message": "It's a Match! 💙"
+        })
+
+    return jsonify({
+        "success": True,
+        "match": False,
+        "message": "Like sent 💙"
+    })
 
 
 # =========================================================
@@ -1393,6 +2216,42 @@ def like(post_id):
 
         liked = True
 
+        # =================================================
+        # SEND LIKE NOTIFICATION
+        # =================================================
+
+        cursor.execute("""
+            SELECT user_id
+            FROM posts
+            WHERE id = ?
+        """, (
+            post_id,
+        ))
+
+        post_owner = cursor.fetchone()
+
+        if post_owner and post_owner["user_id"] != session["user_id"]:
+
+            cursor.execute("""
+                SELECT name
+                FROM users
+                WHERE id = ?
+            """, (
+                session["user_id"],
+            ))
+
+            sender = cursor.fetchone()
+
+            if sender:
+
+                add_notification(
+                    cursor,
+                    post_owner["user_id"],
+                    session["user_id"],
+                    "post_like",
+                    f"{sender['name']} liked your post ❤️"
+                )
+
 
     # =====================================================
     # GET NEW LIKE COUNT
@@ -1529,7 +2388,7 @@ def comment(post_id):
         comment_text
     ))
 
-
+    
     # =====================================================
     # GET USER NAME
     # =====================================================
@@ -1546,6 +2405,37 @@ def comment(post_id):
 
 
     user_name = user["name"] if user else "User"
+
+# =====================================================
+    # GET POST OWNER
+    # =====================================================
+
+    cursor.execute("""
+        SELECT user_id
+        FROM posts
+        WHERE id = ?
+    """, (
+        post_id,
+    ))
+
+    post_owner = cursor.fetchone()
+
+
+    # =====================================================
+    # SEND COMMENT NOTIFICATION
+    # =====================================================
+
+    if post_owner:
+
+        if post_owner["user_id"] != session["user_id"]:
+
+            add_notification(
+                cursor,
+                post_owner["user_id"],
+                session["user_id"],
+                "comment",
+                f"{user_name} commented on your post 💬"
+            )
 
 
     # =====================================================
@@ -1584,7 +2474,6 @@ def comment(post_id):
 
     })
 
-
 # =========================================================
 # SHARE POST
 # =========================================================
@@ -1602,23 +2491,22 @@ def share(post_id):
             "error": "Please login first."
         }), 401
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
+    # -----------------------------------------------------
+    # CHECK POST
+    # -----------------------------------------------------
 
     cursor.execute("""
-        SELECT id
+        SELECT id, user_id
         FROM posts
         WHERE id = ?
     """, (
         post_id,
     ))
 
-
     post = cursor.fetchone()
-
 
     if post is None:
 
@@ -1629,6 +2517,9 @@ def share(post_id):
             "error": "Post not found."
         }), 404
 
+    # -----------------------------------------------------
+    # SAVE SHARE
+    # -----------------------------------------------------
 
     cursor.execute("""
         INSERT INTO shares
@@ -1636,19 +2527,50 @@ def share(post_id):
             user_id,
             post_id
         )
-
         VALUES (?, ?)
-
     """, (
         session["user_id"],
         post_id
     ))
 
+    # -----------------------------------------------------
+    # SEND SHARE NOTIFICATION
+    # -----------------------------------------------------
+
+    post_owner_id = post["user_id"]
+
+    if post_owner_id != session["user_id"]:
+
+        cursor.execute("""
+            SELECT name
+            FROM users
+            WHERE id = ?
+        """, (
+            session["user_id"],
+        ))
+
+        sender = cursor.fetchone()
+
+        if sender:
+
+            add_notification(
+                cursor,
+                post_owner_id,
+                session["user_id"],
+                "share",
+                f"{sender['name']} shared your post 🔄"
+            )
+
+    # -----------------------------------------------------
+    # SAVE DATABASE
+    # -----------------------------------------------------
 
     conn.commit()
-
     conn.close()
 
+    # -----------------------------------------------------
+    # SHARE URL
+    # -----------------------------------------------------
 
     share_url = (
         request.host_url.rstrip("/")
@@ -1656,13 +2578,443 @@ def share(post_id):
         + str(post_id)
     )
 
-
     return jsonify({
         "success": True,
         "url": share_url
     })
 
+# =====================================================
+# SETTINGS
+# =====================================================
 
+@app.route("/settings")
+def settings():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            name,
+            email,
+            profile_picture,
+            bio
+        FROM users
+        WHERE id = ?
+    """, (
+        session["user_id"],
+    ))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user is None:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "settings.html",
+        user=user
+    )
+
+@app.route("/change-password", methods=["GET", "POST"])
+def change_password():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not current_password or not new_password or not confirm_password:
+            return render_template(
+                "change_password.html",
+                error="Please fill all fields."
+            )
+
+        if new_password != confirm_password:
+            return render_template(
+                "change_password.html",
+                error="New passwords do not match."
+            )
+
+        if len(new_password) < 6:
+            return render_template(
+                "change_password.html",
+                error="Password must be at least 6 characters."
+            )
+
+        conn = get_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT password
+            FROM users
+            WHERE id = ?
+        """, (
+            session["user_id"],
+        ))
+
+        user = cursor.fetchone()
+
+        if not user:
+            conn.close()
+            return redirect(url_for("login"))
+
+        if not check_password_hash(
+            user["password"],
+            current_password
+        ):
+            conn.close()
+
+            return render_template(
+                "change_password.html",
+                error="Current password is incorrect."
+            )
+
+        new_password_hash = generate_password_hash(
+            new_password
+        )
+
+        cursor.execute("""
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        """, (
+            new_password_hash,
+            session["user_id"]
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return render_template(
+            "change_password.html",
+            success="Password changed successfully."
+        )
+
+    return render_template(
+        "change_password.html"
+    )
+
+# =========================================================
+# NOTIFICATION SETTINGS
+# =========================================================
+
+@app.route(
+    "/notification-settings",
+    methods=["GET", "POST"]
+)
+def notification_settings():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        enabled = request.form.get(
+            "notifications_enabled"
+        )
+
+        if enabled == "1":
+            value = 1
+        else:
+            value = 0
+
+        cursor.execute("""
+            UPDATE users
+            SET notifications_enabled = ?
+            WHERE id = ?
+        """, (
+            value,
+            session["user_id"]
+        ))
+
+        conn.commit()
+
+    cursor.execute("""
+        SELECT notifications_enabled
+        FROM users
+        WHERE id = ?
+    """, (
+        session["user_id"],
+    ))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user is None:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "notification_settings.html",
+        user=user
+    )
+
+@app.route(
+    "/privacy-settings",
+    methods=["GET", "POST"]
+)
+def privacy_settings():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        profile_visibility = request.form.get(
+            "profile_visibility",
+            "everyone"
+        )
+
+        posts_visibility = request.form.get(
+            "posts_visibility",
+            "everyone"
+        )
+
+        profile_views_enabled = request.form.get(
+            "profile_views_enabled"
+        )
+
+        if profile_visibility not in [
+            "everyone",
+            "friends",
+            "only_me"
+        ]:
+            profile_visibility = "everyone"
+
+        if posts_visibility not in [
+            "everyone",
+            "friends"
+        ]:
+            posts_visibility = "everyone"
+
+        if profile_views_enabled == "1":
+            views_value = 1
+        else:
+            views_value = 0
+
+        cursor.execute("""
+            UPDATE users
+            SET
+                profile_visibility = ?,
+                posts_visibility = ?,
+                profile_views_enabled = ?
+            WHERE id = ?
+        """, (
+            profile_visibility,
+            posts_visibility,
+            views_value,
+            session["user_id"]
+        ))
+
+        conn.commit()
+
+    cursor.execute("""
+        SELECT
+            profile_visibility,
+            posts_visibility,
+            profile_views_enabled
+        FROM users
+        WHERE id = ?
+    """, (
+        session["user_id"],
+    ))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user is None:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "privacy_settings.html",
+        user=user
+    )
+
+# =========================================================
+# BLOCK USER
+# =========================================================
+
+@app.route(
+    "/block-user/<int:user_id>",
+    methods=["POST"]
+)
+def block_user(user_id):
+
+    # Check login
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    # Cannot block yourself
+    if current_user == user_id:
+        return redirect(
+            url_for(
+                "profile",
+                user_id=user_id
+            )
+        )
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # Check whether the user exists
+    cursor.execute("""
+        SELECT id
+        FROM users
+        WHERE id = ?
+    """, (
+        user_id,
+    ))
+
+    user = cursor.fetchone()
+
+    if user is None:
+        conn.close()
+        return "User not found.", 404
+
+    # Add blocked user
+    cursor.execute("""
+        INSERT OR IGNORE INTO blocked_users
+        (
+            blocker_id,
+            blocked_id
+        )
+        VALUES (?, ?)
+    """, (
+        current_user,
+        user_id
+    ))
+
+    # Remove friendship
+    cursor.execute("""
+        DELETE FROM connections
+        WHERE
+            (user1_id = ? AND user2_id = ?)
+            OR
+            (user1_id = ? AND user2_id = ?)
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+    # Remove pending friend requests
+    cursor.execute("""
+        DELETE FROM connection_requests
+        WHERE
+            (sender_id = ? AND receiver_id = ?)
+            OR
+            (sender_id = ? AND receiver_id = ?)
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            "profile",
+            user_id=user_id
+        )
+    )
+# =========================================================
+# BLOCKED USERS
+# =========================================================
+
+@app.route("/blocked-users")
+def blocked_users():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            blocked_users.id,
+            blocked_users.blocked_id,
+            users.name,
+            users.profile_picture
+
+        FROM blocked_users
+
+        JOIN users
+        ON users.id = blocked_users.blocked_id
+
+        WHERE blocked_users.blocker_id = ?
+
+        ORDER BY blocked_users.created_at DESC
+    """, (
+        session["user_id"],
+    ))
+
+    blocked = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "blocked_users.html",
+        blocked=blocked
+    )
+
+# =========================================================
+# UNBLOCK USER
+# =========================================================
+
+@app.route(
+    "/unblock-user/<int:user_id>",
+    methods=["POST"]
+)
+def unblock_user(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM blocked_users
+        WHERE
+            blocker_id = ?
+            AND blocked_id = ?
+    """, (
+        current_user,
+        user_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("blocked_users")
+    )
 # =========================================================
 # PROFILE
 # =========================================================
@@ -1701,7 +3053,10 @@ def profile():
             email,
             profile_picture,
             bio,
-            last_seen
+            last_seen,
+            profile_visibility,
+            posts_visibility,
+            profile_views_enabled
         FROM users
         WHERE id = ?
     """, (profile_id,))
@@ -1713,56 +3068,19 @@ def profile():
         return "User not found.", 404
 
     # =====================================================
-    # USER POSTS + LIKE COUNT
+    # CHECK OWN PROFILE
     # =====================================================
 
-    cursor.execute("""
-        SELECT
-            posts.id,
-            posts.user_id,
-            posts.caption,
-            posts.media,
-            posts.created_at,
-            COUNT(likes.id) AS like_count
-        FROM posts
-
-        LEFT JOIN likes
-            ON likes.post_id = posts.id
-
-        WHERE posts.user_id = ?
-
-        GROUP BY
-            posts.id,
-            posts.user_id,
-            posts.caption,
-            posts.media,
-            posts.created_at
-
-        ORDER BY posts.created_at DESC
-    """, (profile_id,))
-
-    posts = cursor.fetchall()
+    is_own_profile = profile_id == current_user
 
     # =====================================================
-    # DEFAULT RELATIONSHIP STATUS
+    # CHECK FRIENDSHIP
     # =====================================================
 
-    relationship_status = "none"
-    pending_request_id = None
+    is_friend = False
+    connection = None
 
-    # =====================================================
-    # OWN PROFILE
-    # =====================================================
-
-    if profile_id == current_user:
-
-        relationship_status = "own"
-
-    else:
-
-        # =================================================
-        # CHECK IF ALREADY FRIENDS
-        # =================================================
+    if not is_own_profile:
 
         cursor.execute("""
             SELECT id
@@ -1780,6 +3098,422 @@ def profile():
 
         connection = cursor.fetchone()
 
+        is_friend = connection is not None
+
+    # =====================================================
+    # PROFILE PRIVACY
+    # =====================================================
+
+    profile_visibility = person["profile_visibility"]
+
+    if profile_visibility is None:
+        profile_visibility = "everyone"
+
+    # =====================================================
+    # CHECK BLOCK STATUS
+    # =====================================================
+
+    if not is_own_profile:
+
+        cursor.execute("""
+            SELECT id
+            FROM blocked_users
+            WHERE
+               (
+                   blocker_id = ?
+                   AND blocked_id = ?
+                )
+                OR
+                (
+                   blocker_id = ?
+                   AND blocked_id = ?
+                )
+            LIMIT 1
+        """, (
+            current_user,
+            profile_id,
+            profile_id,
+            current_user
+        ))
+
+        blocked_record = cursor.fetchone()
+
+        if blocked_record:
+
+           conn.close()
+
+           return """
+           <!DOCTYPE html>
+           <html>
+           <head>
+
+            <title>Profile Unavailable - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">
+                    🚫
+                </div>
+
+                <h2>
+                    Profile Unavailable
+                </h2>
+
+                <p>
+                    You cannot view this profile because
+                    one of you has blocked the other.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # =====================================================
+    # FRIENDS ONLY
+    # =====================================================
+
+    if (
+        not is_own_profile
+        and profile_visibility == "friends"
+        and not is_friend
+    ):
+
+        conn.close()
+
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+
+            <title>Private Profile - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">🔒</div>
+
+                <h2>Private Profile</h2>
+
+                <p>
+                    This profile is visible to friends only.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # =====================================================
+    # ONLY ME
+    # =====================================================
+
+    if (
+        not is_own_profile
+        and profile_visibility == "only_me"
+    ):
+
+        conn.close()
+
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+
+            <title>Private Profile - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">🔐</div>
+
+                <h2>Private Profile</h2>
+
+                <p>
+                    This user has chosen to keep their profile private.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # =====================================================
+    # RECORD PROFILE VIEW
+    # =====================================================
+
+    if (
+        not is_own_profile
+        and person["profile_views_enabled"]
+    ):
+
+        cursor.execute("""
+            INSERT INTO profile_views (
+                viewer_id,
+                viewed_user_id
+            )
+            VALUES (?, ?)
+        """, (
+            current_user,
+            profile_id
+        ))
+
+        conn.commit()
+
+    # =====================================================
+    # GET USER POSTS
+    # =====================================================
+
+    posts = []
+
+    posts_visibility = person["posts_visibility"]
+
+    if posts_visibility is None:
+        posts_visibility = "everyone"
+
+    # Everyone OR friends
+    if (
+        is_own_profile
+        or posts_visibility == "everyone"
+        or is_friend
+    ):
+
+        cursor.execute("""
+            SELECT
+                posts.id,
+                posts.user_id,
+                posts.caption,
+                posts.media,
+                posts.created_at,
+                COUNT(likes.id) AS like_count
+
+            FROM posts
+
+            LEFT JOIN likes
+                ON likes.post_id = posts.id
+
+            WHERE posts.user_id = ?
+
+            GROUP BY
+                posts.id,
+                posts.user_id,
+                posts.caption,
+                posts.media,
+                posts.created_at
+
+            ORDER BY posts.created_at DESC
+        """, (profile_id,))
+
+        posts = cursor.fetchall()
+
+    # =====================================================
+    # DEFAULT RELATIONSHIP STATUS
+    # =====================================================
+
+    relationship_status = "none"
+    pending_request_id = None
+
+    # =====================================================
+    # OWN PROFILE
+    # =====================================================
+
+    if is_own_profile:
+
+        relationship_status = "own"
+
+    else:
+
+        # =================================================
+        # ALREADY FRIENDS
+        # =================================================
+
         if connection:
 
             relationship_status = "friends"
@@ -1787,7 +3521,7 @@ def profile():
         else:
 
             # =============================================
-            # CHECK OUTGOING REQUEST
+            # OUTGOING REQUEST
             # =============================================
 
             cursor.execute("""
@@ -1812,7 +3546,7 @@ def profile():
             else:
 
                 # =========================================
-                # CHECK INCOMING REQUEST
+                # INCOMING REQUEST
                 # =========================================
 
                 cursor.execute("""
@@ -1835,7 +3569,7 @@ def profile():
                     pending_request_id = incoming_request["id"]
 
     # =====================================================
-    # MY CONNECTIONS / FRIENDS
+    # GET FRIENDS
     # =====================================================
 
     cursor.execute("""
@@ -1843,6 +3577,7 @@ def profile():
             users.id,
             users.name,
             users.profile_picture
+
         FROM connections
 
         JOIN users
@@ -1878,11 +3613,51 @@ def profile():
         person=person,
         posts=posts,
         friends=friends,
-        is_own_profile=(
-            profile_id == current_user
-        ),
+        is_own_profile=is_own_profile,
         relationship_status=relationship_status,
         pending_request_id=pending_request_id
+    )
+
+# =========================================================
+# PROFILE VIEWS
+# =========================================================
+
+@app.route("/profile-views")
+def profile_views():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            profile_views.id,
+            profile_views.viewer_id,
+            profile_views.created_at,
+            users.name,
+            users.profile_picture
+
+        FROM profile_views
+
+        JOIN users
+        ON users.id = profile_views.viewer_id
+
+        WHERE profile_views.viewed_user_id = ?
+
+        ORDER BY profile_views.created_at DESC
+    """, (
+        session["user_id"],
+    ))
+
+    views = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "profile_views.html",
+        views=views
     )
 
 # =========================================================
@@ -2295,7 +4070,10 @@ def user_profile(user_id):
             email,
             profile_picture,
             bio,
-            last_seen
+            last_seen,
+            profile_visibility,
+            posts_visibility,
+            profile_views_enabled
         FROM users
         WHERE id = ?
     """, (user_id,))
@@ -2307,57 +4085,15 @@ def user_profile(user_id):
         return "Person not found.", 404
 
     # =====================================================
-    # GET USER POSTS
-    # =====================================================
-
-    cursor.execute("""
-        SELECT
-            posts.id,
-            posts.user_id,
-            posts.caption,
-            posts.media,
-            posts.created_at,
-            COUNT(likes.id) AS like_count
-
-        FROM posts
-
-        LEFT JOIN likes
-        ON likes.post_id = posts.id
-
-        WHERE posts.user_id = ?
-
-        GROUP BY
-            posts.id,
-            posts.user_id,
-            posts.caption,
-            posts.media,
-            posts.created_at
-
-        ORDER BY posts.created_at DESC
-    """, (user_id,))
-
-    posts = cursor.fetchall()
-
-    # =====================================================
-    # DEFAULT CONNECTION STATUS
-    # =====================================================
-
-    relationship_status = "none"
-    pending_request_id = None
-
-    # =====================================================
     # CHECK IF FRIENDS
     # =====================================================
 
     cursor.execute("""
         SELECT id
         FROM connections
-
         WHERE
             (user1_id = ? AND user2_id = ?)
-
             OR
-
             (user1_id = ? AND user2_id = ?)
     """, (
         current_user,
@@ -2367,6 +4103,275 @@ def user_profile(user_id):
     ))
 
     connection = cursor.fetchone()
+
+    is_friend = connection is not None
+
+    # =====================================================
+    # PROFILE PRIVACY
+    # =====================================================
+
+    profile_visibility = person["profile_visibility"]
+
+    if profile_visibility is None:
+        profile_visibility = "everyone"
+
+    # Friends only
+    if profile_visibility == "friends" and not is_friend:
+
+        conn.close()
+
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Private Profile - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">
+                    🔒
+                </div>
+
+                <h2>
+                    Private Profile
+                </h2>
+
+                <p>
+                    This profile is visible to friends only.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # Only me
+    if profile_visibility == "only_me":
+
+        conn.close()
+
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Private Profile - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">
+                    🔐
+                </div>
+
+                <h2>
+                    Private Profile
+                </h2>
+
+                <p>
+                    This user has chosen to keep their profile private.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # =====================================================
+    # RECORD PROFILE VIEW
+    # =====================================================
+
+    profile_views_enabled = person["profile_views_enabled"]
+
+    if profile_views_enabled:
+
+        cursor.execute("""
+            INSERT INTO profile_views (
+                viewer_id,
+                viewed_user_id
+            )
+            VALUES (?, ?)
+        """, (
+            current_user,
+            user_id
+        ))
+
+        conn.commit()
+
+    # =====================================================
+    # GET USER POSTS
+    # =====================================================
+
+    posts = []
+
+    posts_visibility = person["posts_visibility"]
+
+    if posts_visibility is None:
+        posts_visibility = "everyone"
+
+    # Show posts if everyone OR current user is a friend
+    if posts_visibility == "everyone" or is_friend:
+
+        cursor.execute("""
+            SELECT
+                posts.id,
+                posts.user_id,
+                posts.caption,
+                posts.media,
+                posts.created_at,
+                COUNT(likes.id) AS like_count
+
+            FROM posts
+
+            LEFT JOIN likes
+            ON likes.post_id = posts.id
+
+            WHERE posts.user_id = ?
+
+            GROUP BY
+                posts.id,
+                posts.user_id,
+                posts.caption,
+                posts.media,
+                posts.created_at
+
+            ORDER BY posts.created_at DESC
+        """, (user_id,))
+
+        posts = cursor.fetchall()
+
+    # =====================================================
+    # DEFAULT CONNECTION STATUS
+    # =====================================================
+
+    relationship_status = "none"
+    pending_request_id = None
+
+    # =====================================================
+    # CHECK CONNECTION STATUS
+    # =====================================================
 
     if connection:
 
@@ -2462,6 +4467,10 @@ def user_profile(user_id):
 
     friends = cursor.fetchall()
 
+    # =====================================================
+    # CLOSE DATABASE
+    # =====================================================
+
     conn.close()
 
     # =====================================================
@@ -2490,27 +4499,23 @@ def user_profile(user_id):
 def send_request(user_id):
 
     if "user_id" not in session:
-
-        return redirect(
-            url_for("login")
-        )
-
+        return redirect(url_for("login"))
 
     current_user = session["user_id"]
 
-
+    # Cannot connect with yourself
     if current_user == user_id:
-
         return (
             "You cannot connect with yourself.",
             400
         )
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
+    # =====================================================
+    # CHECK TARGET USER
+    # =====================================================
 
     cursor.execute("""
         SELECT id
@@ -2520,9 +4525,7 @@ def send_request(user_id):
         user_id,
     ))
 
-
     target_user = cursor.fetchone()
-
 
     if not target_user:
 
@@ -2530,18 +4533,24 @@ def send_request(user_id):
 
         return "User not found.", 404
 
+    # =====================================================
+    # CHECK BLOCK STATUS
+    # =====================================================
 
     cursor.execute("""
         SELECT id
-        FROM connections
-
+        FROM blocked_users
         WHERE
-            (user1_id = ? AND user2_id = ?)
-
+            (
+                blocker_id = ?
+                AND blocked_id = ?
+            )
             OR
-
-            (user1_id = ? AND user2_id = ?)
-
+            (
+                blocker_id = ?
+                AND blocked_id = ?
+            )
+        LIMIT 1
     """, (
         current_user,
         user_id,
@@ -2549,30 +4558,147 @@ def send_request(user_id):
         current_user
     ))
 
+    blocked_record = cursor.fetchone()
+
+    if blocked_record:
+
+        conn.close()
+
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+
+            <title>Connection Blocked - PrivateConnect</title>
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <style>
+
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f7fb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    color: #111827;
+                }
+
+                .box {
+                    background: white;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 35px;
+                    border-radius: 18px;
+                    text-align: center;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                }
+
+                .icon {
+                    font-size: 55px;
+                    margin-bottom: 15px;
+                }
+
+                h2 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    color: #6b7280;
+                    line-height: 1.5;
+                }
+
+                a {
+                    display: inline-block;
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">
+                    🚫
+                </div>
+
+                <h2>
+                    Connection Not Allowed
+                </h2>
+
+                <p>
+                    You cannot send a connection request
+                    to this user.
+                </p>
+
+                <a href="/find-people">
+                    Find People
+                </a>
+
+            </div>
+
+        </body>
+        </html>
+        """, 403
+
+    # =====================================================
+    # CHECK IF ALREADY FRIENDS
+    # =====================================================
+
+    cursor.execute("""
+        SELECT id
+        FROM connections
+        WHERE
+            (user1_id = ? AND user2_id = ?)
+            OR
+            (user1_id = ? AND user2_id = ?)
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
 
     existing_connection = cursor.fetchone()
-
 
     if existing_connection:
 
         conn.close()
 
         return redirect(
-    url_for(
-        "find_people",
-        sent=user_id
-    )
-)
+            url_for(
+                "user_profile",
+                user_id=user_id
+            )
+        )
 
+    # =====================================================
+    # CHECK EXISTING REQUEST
+    # =====================================================
 
-    # CHECK ONLY PENDING REQUEST
     cursor.execute("""
-        SELECT id
+        SELECT
+            id,
+            sender_id,
+            receiver_id,
+            status
         FROM connection_requests
         WHERE
             sender_id = ?
             AND receiver_id = ?
-            AND status = 'pending'
     """, (
         current_user,
         user_id
@@ -2580,45 +4706,184 @@ def send_request(user_id):
 
     existing_request = cursor.fetchone()
 
+    # =====================================================
+    # EXISTING REQUEST FOUND
+    # =====================================================
+
     if existing_request:
 
-        conn.close()
+        # Already pending
+        if existing_request["status"] == "pending":
 
+            conn.close()
+
+            return redirect(
+                url_for(
+                    "find_people",
+                    sent=user_id
+                )
+            )
+
+        # Old accepted/rejected request
+        # Change it back to pending
+        cursor.execute("""
+            UPDATE connection_requests
+            SET status = 'pending'
+            WHERE id = ?
+        """, (
+            existing_request["id"],
+        ))
+
+    else:
+
+        # =================================================
+        # CREATE NEW REQUEST
+        # =================================================
+
+        cursor.execute("""
+            INSERT INTO connection_requests
+            (
+                sender_id,
+                receiver_id,
+                status
+            )
+            VALUES (?, ?, 'pending')
+        """, (
+            current_user,
+            user_id
+        ))
+
+    # =====================================================
+    # GET SENDER NAME
+    # =====================================================
+
+    cursor.execute("""
+        SELECT name
+        FROM users
+        WHERE id = ?
+    """, (
+        current_user,
+    ))
+
+    sender = cursor.fetchone()
+
+    # =====================================================
+    # SEND NOTIFICATION
+    # =====================================================
+
+    if sender:
+
+        add_notification(
+            cursor,
+            user_id,
+            current_user,
+            "connection_request",
+            f"{sender['name']} sent you a connection request 🤝"
+        )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for(
+            "find_people",
+            sent=user_id
+        )
+    )
+
+
+# =========================================================
+# UNFRIEND USER
+# =========================================================
+
+@app.route(
+    "/unfriend/<int:user_id>",
+    methods=["POST"]
+)
+def unfriend(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    # Cannot unfriend yourself
+    if current_user == user_id:
         return redirect(
             url_for(
-                "find_people",
-                sent=user_id
+                "profile"
             )
         )
 
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # =====================================================
+    # REMOVE CONNECTION
+    # =====================================================
 
     cursor.execute("""
-        INSERT INTO connection_requests
-        (
-            sender_id,
-            receiver_id,
-            status
+        DELETE FROM connections
+        WHERE
+            (user1_id = ? AND user2_id = ?)
+            OR
+            (user1_id = ? AND user2_id = ?)
+    """, (
+        current_user,
+        user_id,
+        user_id,
+        current_user
+    ))
+
+    conn.commit()
+    conn.close()
+
+    # =====================================================
+    # RETURN TO USER PROFILE
+    # =====================================================
+
+    return redirect(
+        url_for(
+            "user_profile",
+            user_id=user_id
         )
+    )
 
-        VALUES (?, ?, 'pending')
 
+# =========================================================
+# UNSEND CONNECTION REQUEST
+# =========================================================
+
+@app.route(
+    "/cancel-request/<int:user_id>",
+    methods=["POST"]
+)
+def cancel_request(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM connection_requests
+        WHERE sender_id = ?
+        AND receiver_id = ?
+        AND status = 'pending'
     """, (
         current_user,
         user_id
     ))
 
-
     conn.commit()
-
     conn.close()
 
-
     return redirect(
-    url_for(
-        "find_people",
-        sent=user_id
+        url_for("find_people")
     )
-)
 
 
 # =========================================================
@@ -3012,29 +5277,23 @@ def conversation(user_id):
             url_for("login")
         )
 
-
     current_user = session["user_id"]
 
-
     # -----------------------------------------------------
-    # DON'T MESSAGE YOURSELF
+    # CANNOT MESSAGE YOURSELF
     # -----------------------------------------------------
 
     if current_user == user_id:
 
-        return (
-            "You cannot message yourself.",
-            400
+        return redirect(
+            url_for("messages")
         )
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
-
     # -----------------------------------------------------
-    # GET USER
+    # GET USER INFORMATION
     # -----------------------------------------------------
 
     cursor.execute("""
@@ -3049,74 +5308,13 @@ def conversation(user_id):
         user_id,
     ))
 
+    user = cursor.fetchone()
 
-    user_row = cursor.fetchone()
-
-
-    if user_row is None:
+    if user is None:
 
         conn.close()
 
-        return (
-            "User not found.",
-            404
-        )
-
-
-    # Create user dictionary
-    # This fixes: 'user' is undefined
-
-    user = {
-
-        "id": user_row["id"],
-
-        "name": user_row["name"],
-
-        "email": user_row["email"],
-
-        "profile_picture":
-            user_row["profile_picture"]
-
-    }
-
-
-    # -----------------------------------------------------
-    # CHECK CONNECTION
-    # -----------------------------------------------------
-
-    cursor.execute("""
-        SELECT id
-        FROM connections
-        WHERE
-            (
-                user1_id = ?
-                AND user2_id = ?
-            )
-            OR
-            (
-                user1_id = ?
-                AND user2_id = ?
-            )
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
-
-
-    connection = cursor.fetchone()
-
-
-    if connection is None:
-
-        conn.close()
-
-        return (
-            "You are not connected with this user.",
-            403
-        )
-
+        return "User not found.", 404
 
     # -----------------------------------------------------
     # SEND MESSAGE
@@ -3129,36 +5327,56 @@ def conversation(user_id):
             ""
         ).strip()
 
-
         if message:
 
             # Limit message length
-
             message = message[:1000]
 
+            # Save message
+            cursor.execute("""
+                INSERT INTO messages
+                (
+                    sender_id,
+                    receiver_id,
+                    message,
+                    delivered_at,
+                    read_at
+                )
+                VALUES (?, ?, ?, NULL, NULL)
+            """, (
+                current_user,
+                user_id,
+                message
+            ))
+
+            # -------------------------------------------------
+            # SEND MESSAGE NOTIFICATION
+            # -------------------------------------------------
 
             cursor.execute("""
-    INSERT INTO messages
-    (
-        sender_id,
-        receiver_id,
-        message,
-        delivered_at,
-        read_at
-    )
-    VALUES (?, ?, ?, NULL, NULL)
-""", (
-    current_user,
-    user_id,
-    message
-))
+                SELECT name
+                FROM users
+                WHERE id = ?
+            """, (
+                current_user,
+            ))
 
+            sender = cursor.fetchone()
 
+            if sender:
+
+                add_notification(
+                    cursor,
+                    user_id,
+                    current_user,
+                    "message",
+                    f"{sender['name']} sent you a message 💬"
+                )
+
+            # Save message + notification
             conn.commit()
 
-
         conn.close()
-
 
         return redirect(
             url_for(
@@ -3166,7 +5384,6 @@ def conversation(user_id):
                 user_id=user_id
             )
         )
-
 
     # -----------------------------------------------------
     # MARK RECEIVED MESSAGES AS READ
@@ -3179,13 +5396,14 @@ def conversation(user_id):
         AND receiver_id = ?
         AND read_at IS NULL
     """, (
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        ),
         user_id,
         current_user
     ))
 
     conn.commit()
-
 
     # -----------------------------------------------------
     # GET MESSAGES
@@ -3227,7 +5445,6 @@ def conversation(user_id):
 
     conn.close()
 
-
     # -----------------------------------------------------
     # OPEN CHAT
     # -----------------------------------------------------
@@ -3237,9 +5454,6 @@ def conversation(user_id):
         user=user,
         messages=messages
     )
-
-    
-
 
 # =========================================================
 # MESSAGE DATA FOR AUTOMATIC REFRESH

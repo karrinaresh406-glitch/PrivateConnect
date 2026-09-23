@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Match - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #071426;
+            color: white;
+            padding-bottom: 80px;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            position: sticky;
+            top: 0;
+            height: 60px;
+            background: #0b1b30;
+            border-bottom: 1px solid #1d3855;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 15px;
+
+            z-index: 100;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: bold;
+            color: #4da3ff;
+        }
+
+        /* ================= MAIN ================= */
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px 15px;
+        }
+
+        /* ================= TITLE ================= */
+
+        .title {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .title-heart {
+            font-size: 45px;
+            margin-bottom: 5px;
+        }
+
+        .title h1 {
+            font-size: 24px;
+            color: #4da3ff;
+        }
+
+        .title p {
+            margin-top: 6px;
+            color: #91a7bd;
+            font-size: 13px;
+        }
+
+        /* ================= PROFILE CARD ================= */
+
+        .profile-card {
+            background: #102641;
+            border: 1px solid #1b3958;
+            border-radius: 20px;
+            overflow: hidden;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.35);
+
+            text-align: center;
+        }
+
+        .profile-image-container {
+            width: 100%;
+            height: 380px;
+            background: #08172a;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-photo {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 100px;
+        }
+
+        .profile-info {
+            padding: 20px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .profile-bio {
+            margin-top: 10px;
+            color: #aebed0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 0 20px 25px;
+        }
+
+        .action-btn {
+            width: 65px;
+            height: 65px;
+
+            border-radius: 50%;
+
+            border: 1px solid #294766;
+
+            background: #08172a;
+
+            color: white;
+
+            font-size: 25px;
+
+            cursor: pointer;
+
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .skip-btn {
+            color: #ff6b81;
+        }
+
+        .like-btn {
+            color: #4da3ff;
+            border-color: #238cff;
+        }
+
+        .action-label {
+            font-size: 11px;
+            color: #91a7bd;
+            margin-top: 6px;
+        }
+
+        /* ================= NO USER ================= */
+
+        .no-user {
+            background: #102641;
+            border: 1px solid #1b3958;
+            border-radius: 18px;
+
+            padding: 40px 20px;
+
+            text-align: center;
+        }
+
+        .no-user-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .no-user h2 {
+            font-size: 20px;
+        }
+
+        .no-user p {
+            color: #91a7bd;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .home-btn {
+            display: inline-block;
+
+            margin-top: 20px;
+
+            padding: 11px 22px;
+
+            background: #238cff;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 10px;
+
+            font-weight: bold;
+        }
+
+        /* ================= MATCH POPUP ================= */
+
+        .match-popup {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.75);
+
+            z-index: 2000;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+        .match-box {
+            width: 100%;
+            max-width: 360px;
+
+            background: #102641;
+
+            border: 1px solid #238cff;
+
+            border-radius: 20px;
+
+            padding: 30px 20px;
+
+            text-align: center;
+        }
+
+        .match-heart {
+            font-size: 65px;
+        }
+
+        .match-box h2 {
+            margin-top: 10px;
+            color: #4da3ff;
+        }
+
+        .match-box p {
+            margin-top: 8px;
+            color: #aebed0;
+        }
+
+        .continue-btn {
+            margin-top: 20px;
+
+            width: 100%;
+
+            padding: 12px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #238cff;
+
+            color: white;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        /* ================= BOTTOM NAV ================= */
+
+        .bottom-nav {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            height: 68px;
+
+            background: #071426;
+
+            border-top: 1px solid #203954;
+
+            display: flex;
+
+            justify-content: space-around;
+
+            align-items: center;
+
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            color: #9cafc2;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            font-size: 11px;
+        }
+
+        .bottom-nav span {
+            display: block;
+
+            font-size: 21px;
+
+            margin-bottom: 3px;
+        }
+
+        .bottom-nav .active {
+            color: #4da3ff;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="back"
+    >
+        ←
+    </a>
+
+    <div class="logo">
+        PrivateConnect
+    </div>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+
+    <!-- TITLE -->
+
+    <div class="title">
+
+        <div class="title-heart">
+            💙
+        </div>
+
+        <h1>
+            Find Your Match
+        </h1>
+
+        <p>
+            Discover people and connect with them
+        </p>
+
+    </div>
+
+
+    {% if user %}
+
+
+    <!-- ================= PROFILE CARD ================= -->
+
+    <div class="profile-card">
+
+
+        <!-- PROFILE IMAGE -->
+
+        <div class="profile-image-container">
+
+            {% if user.profile_picture %}
+
+                <img
+                    class="profile-image"
+                    src="{{ url_for(
+                        'static',
+                        filename='uploads/' + user.profile_picture
+                    ) }}"
+                    alt="Profile"
+                >
+
+            {% else %}
+
+                <div class="no-photo">
+                    👤
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- PROFILE INFO -->
+
+        <div class="profile-info">
+
+            <div class="profile-name">
+                {{ user.name }}
+            </div>
+
+
+            {% if user.bio %}
+
+                <div class="profile-bio">
+                    {{ user.bio }}
+                </div>
+
+            {% else %}
+
+                <div class="profile-bio">
+                    No bio available
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ================= ACTION BUTTONS ================= -->
+
+        <div class="actions">
+
+
+            <!-- SKIP -->
+
+            <div>
+
+                <button
+                    type="button"
+                    class="action-btn skip-btn"
+                    onclick="skipUser({{ user.id }})"
+                >
+                    ✕
+                </button>
+
+                <div class="action-label">
+                    Skip
+                </div>
+
+            </div>
+
+
+            <!-- LIKE / MATCH -->
+
+            <div>
+
+                <button
+                    type="button"
+                    class="action-btn like-btn"
+                    onclick="likeUser({{ user.id }})"
+                >
+                    💙
+                </button>
+
+                <div class="action-label">
+                    Match
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- ================= NO USERS ================= -->
+
+    <div class="no-user">
+
+        <div class="no-user-icon">
+            💙
+        </div>
+
+        <h2>
+            No more people right now
+        </h2>
+
+        <p>
+            Check again later for new people.
+        </p>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="home-btn"
+        >
+            Back to Home
+        </a>
+
+    </div>
+
+
+    {% endif %}
+
+
+</main>
+
+
+<!-- ================= MATCH POPUP ================= -->
+
+<div
+    class="match-popup"
+    id="matchPopup"
+>
+
+    <div class="match-box">
+
+        <div class="match-heart">
+            💙
+        </div>
+
+        <h2>
+            It's a Match!
+        </h2>
+
+        <p>
+            You both liked each other.
+        </p>
+
+        <button
+            class="continue-btn"
+            onclick="continueMatching()"
+        >
+            Continue
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= BOTTOM NAV ================= -->
+
+<nav class="bottom-nav">
+
+
+    <a href="{{ url_for('dashboard') }}">
+
+        <span>⌂</span>
+
+        Home
+
+    </a>
+
+
+    <a href="{{ url_for('find_people') }}">
+
+        <span>⌕</span>
+
+        Explore
+
+    </a>
+
+
+    <a href="{{ url_for('reels') }}">
+
+        <span>▣</span>
+
+        Reels
+
+    </a>
+
+
+    <a
+        href="{{ url_for('match') }}"
+        class="active"
+    >
+
+        <span>💙</span>
+
+        Match
+
+    </a>
+
+
+    <a href="{{ url_for('profile') }}">
+
+        <span>●</span>
+
+        Profile
+
+    </a>
+
+</nav>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* =================================================
+   LIKE USER
+================================================= */
+
+function likeUser(userId) {
+
+    fetch(
+        "/profile-like/" + userId,
+        {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        }
+    )
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error("Like failed");
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to match."
+            );
+
+            return;
+        }
+
+
+        if (data.match) {
+
+            document
+                .getElementById("matchPopup")
+                .style.display = "flex";
+
+        } else {
+
+            window.location.href =
+                "{{ url_for('match') }}";
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Unable to process match."
+        );
+
+    });
+
+}
+
+
+/* =================================================
+   SKIP USER
+================================================= */
+
+function skipUser(userId) {
+
+    fetch(
+        "/profile-skip/" + userId,
+        {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        }
+    )
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error("Skip failed");
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to skip."
+            );
+
+            return;
+        }
+
+
+        window.location.href =
+            "{{ url_for('match') }}";
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert(
+            "Unable to skip this person."
+        );
+
+    });
+
+}
+
+
+/* =================================================
+   CONTINUE MATCHING
+================================================= */
+
+function continueMatching() {
+
+    document
+        .getElementById("matchPopup")
+        .style.display = "none";
+
+    window.location.href =
+        "{{ url_for('match') }}";
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

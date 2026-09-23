@@ -2,8 +2,13 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>
         {% if is_own_profile %}
@@ -12,6 +17,7 @@
             {{ person["name"] }} - PrivateConnect
         {% endif %}
     </title>
+
 
     <style>
 
@@ -33,10 +39,6 @@
             padding: 15px;
         }
 
-        /* =====================================================
-           PROFILE CARD
-        ===================================================== */
-
         .profile-card {
             background: white;
             border-radius: 18px;
@@ -45,12 +47,29 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            text-align: left;
+            padding-bottom: 20px;
+        }
+
+        .profile-photo-area {
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
         .profile-picture,
         .default-picture {
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            margin: 0 auto 15px;
+            margin: 0;
         }
 
         .profile-picture {
@@ -77,16 +96,12 @@
             font-size: 15px;
             line-height: 1.5;
             max-width: 500px;
-            margin: 0 auto 15px;
+            margin: 0 0 15px 0;
         }
-
-        /* =====================================================
-           PROFILE STATS
-        ===================================================== */
 
         .stats {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 35px;
             margin: 20px 0;
         }
@@ -106,9 +121,13 @@
             margin-top: 4px;
         }
 
-        /* =====================================================
-           BUTTONS
-        ===================================================== */
+        .profile-actions-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            margin: 20px 0 10px;
+            color: #333;
+        }
 
         .buttons {
             margin-top: 15px;
@@ -133,9 +152,18 @@
             background: #555;
         }
 
-        /* =====================================================
-           OTHER USER ACTIONS
-        ===================================================== */
+        /* SETTINGS BUTTON */
+
+        .settings-button {
+            background: #eef2ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+        }
+
+        .settings-button:hover {
+            background: #e0e7ff;
+            color: #312e81;
+        }
 
         .user-actions {
             display: flex;
@@ -160,6 +188,10 @@
             color: white;
         }
 
+        .message-button:hover {
+            background: #1769e8;
+        }
+
         .friends-button {
             background: #dff5e1;
             color: #237a2c;
@@ -170,10 +202,18 @@
             color: #222;
         }
 
+        .request-button:hover {
+            background: #ddd;
+        }
+
         .pending-button {
             background: #ddd;
             color: #777;
             cursor: default;
+        }
+
+        .pending-button:hover {
+            background: #ddd;
         }
 
         .request-link {
@@ -181,9 +221,54 @@
             color: #222;
         }
 
-        /* =====================================================
-           SECTIONS
-        ===================================================== */
+        .request-link:hover {
+            background: #ddd;
+        }
+
+        .unfriend-button {
+            background: #fff0f0;
+            color: #d92d20;
+            border: 1px solid #f5c2c0;
+        }
+
+        .unfriend-button:hover {
+            background: #ffe1e1;
+            color: #b42318;
+        }
+
+        .unsend-button {
+            background: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .unsend-button:hover {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        /* BLOCK BUTTON */
+
+        .block-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .block-button {
+            width: 100%;
+            background: #fff1f2;
+            color: #be123c;
+            border: 1px solid #fecdd3;
+            margin: 0;
+            padding: 12px;
+            font-weight: bold;
+        }
+
+        .block-button:hover {
+            background: #ffe4e6;
+            color: #9f1239;
+        }
 
         .section {
             background: white;
@@ -197,10 +282,6 @@
             margin-bottom: 15px;
             font-size: 20px;
         }
-
-        /* =====================================================
-           POSTS
-        ===================================================== */
 
         .post {
             border: 1px solid #ddd;
@@ -251,10 +332,6 @@
             background: #b71c1c;
         }
 
-        /* =====================================================
-           FRIENDS
-        ===================================================== */
-
         .friends-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -298,10 +375,6 @@
             padding: 20px;
         }
 
-        /* =====================================================
-           CROP MODAL
-        ===================================================== */
-
         .crop-modal {
             display: none;
             position: fixed;
@@ -342,10 +415,6 @@
             background: #777;
         }
 
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
         @media (max-width: 600px) {
 
             .profile-container {
@@ -356,8 +425,39 @@
                 padding: 25px 15px;
             }
 
-            .stats {
-                gap: 20px;
+            .profile-header {
+                gap: 15px;
+                text-align: left;
+            }
+
+            .profile-picture,
+            .default-picture {
+                width: 90px;
+                height: 90px;
+            }
+
+            .profile-info .name {
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+
+            .profile-info .bio {
+                font-size: 14px;
+                margin: 0 0 8px 0;
+            }
+
+            .profile-info .stats {
+                justify-content: flex-start;
+                gap: 15px;
+                margin: 8px 0 0 0;
+            }
+
+            .profile-info .stat-number {
+                font-size: 18px;
+            }
+
+            .profile-info .stat-label {
+                font-size: 12px;
             }
 
             .friends-grid {
@@ -386,109 +486,97 @@
 
 <body>
 
-
 <div class="profile-container">
-
-
-    <!-- =====================================================
-         PROFILE CARD
-    ===================================================== -->
 
     <div class="profile-card">
 
+        <div class="profile-header">
 
-        <!-- PROFILE PHOTO -->
+            <div class="profile-photo-area">
 
-        {% if person["profile_picture"] %}
+                {% if person["profile_picture"] %}
 
-            <img
-                src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
-                class="profile-picture"
-                alt="Profile Picture"
-            >
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                        class="profile-picture"
+                        alt="Profile Picture"
+                    >
 
-        {% else %}
+                {% else %}
 
-            <div class="default-picture">
-                👤
+                    <div class="default-picture">
+                        👤
+                    </div>
+
+                {% endif %}
+
             </div>
 
-        {% endif %}
+
+            <div class="profile-info">
+
+                <div class="name">
+                    {{ person["name"] }}
+                </div>
+
+                {% if person["bio"] %}
+
+                    <div class="bio">
+                        {{ person["bio"] }}
+                    </div>
+
+                {% endif %}
+
+                <div class="stats">
+
+                    <div class="stat">
+
+                        <div class="stat-number">
+                            {{ posts|length }}
+                        </div>
+
+                        <div class="stat-label">
+                            Posts
+                        </div>
+
+                    </div>
 
 
-        <!-- NAME -->
+                    <div class="stat">
 
-        <div class="name">
-            {{ person["name"] }}
+                        <div class="stat-number">
+                            {{ friends|length }}
+                        </div>
+
+                        <div class="stat-label">
+                            Friends
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <div class="stat-number">
+                            ❤️
+                        </div>
+
+                        <div class="stat-label">
+                            Likes
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
-
-        <!-- BIO -->
-
-        {% if person["bio"] %}
-
-            <div class="bio">
-                {{ person["bio"] }}
-            </div>
-
-        {% endif %}
-
-
-        <!-- =================================================
-             PROFILE STATS
-        ================================================== -->
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <div class="stat-number">
-                    {{ posts|length }}
-                </div>
-
-                <div class="stat-label">
-                    Posts
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-number">
-                    {{ friends|length }}
-                </div>
-
-                <div class="stat-label">
-                    Friends
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-number">
-                    ❤️
-                </div>
-
-                <div class="stat-label">
-                    Likes
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- =================================================
-             OWN PROFILE CONTROLS
-        ================================================== -->
 
         {% if is_own_profile %}
 
-
-            <!-- PROFILE PHOTO UPLOAD -->
+            <!-- PROFILE PHOTO -->
 
             <form
                 id="profileForm"
@@ -512,7 +600,6 @@
                     📷 Change Profile Picture
                 </button>
 
-
                 <input
                     type="hidden"
                     name="cropped_image"
@@ -522,7 +609,12 @@
             </form>
 
 
-            <!-- OWN PROFILE BUTTONS -->
+            <!-- ACCOUNT & SOCIAL -->
+
+            <div class="profile-actions-title">
+                Account & Social
+            </div>
+
 
             <div class="buttons">
 
@@ -549,23 +641,43 @@
                     🏠 Dashboard
                 </a>
 
+
+                <a
+                    href="{{ url_for('requests') }}"
+                    class="button"
+                >
+                    👥 Requests
+                </a>
+
+
+                <!-- SETTINGS -->
+
+                <a
+                    href="{{ url_for('settings') }}"
+                    class="button settings-button"
+                >
+                    ⚙️ Settings
+                </a>
+
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="button"
+                    style="background:#fff0f0;color:#d92d20;"
+                >
+                    🚪 Logout
+                </a>
+
             </div>
 
 
         {% else %}
 
-
-            <!-- =================================================
-                 OTHER USER ACTIONS
-            ================================================== -->
+            <!-- OTHER USER ACTIONS -->
 
             <div class="user-actions">
 
-
                 {% if relationship_status == "friends" %}
-
-
-                    <!-- MESSAGE -->
 
                     <a
                         href="{{ url_for('conversation', user_id=person['id']) }}"
@@ -574,22 +686,25 @@
                         💬 Message
                     </a>
 
-
-                    <!-- FRIENDS -->
-
-                    <button
-                        type="button"
-                        class="action-button friends-button"
-                        disabled
+                    <form
+                        action="{{ url_for('unfriend', user_id=person['id']) }}"
+                        method="POST"
+                        style="flex:1;"
+                        onsubmit="return confirm('Are you sure you want to unfriend {{ person['name'] }}?');"
                     >
-                        ✅ Friends
-                    </button>
+
+                        <button
+                            type="submit"
+                            class="action-button unfriend-button"
+                            style="width:100%; margin:0;"
+                        >
+                            ❌ Unfriend
+                        </button>
+
+                    </form>
 
 
                 {% elif relationship_status == "sent" %}
-
-
-                    <!-- REQUEST SENT -->
 
                     <button
                         type="button"
@@ -599,11 +714,25 @@
                         ⏳ Request Sent
                     </button>
 
+                    <form
+                        action="{{ url_for('cancel_request', user_id=person['id']) }}"
+                        method="POST"
+                        style="flex:1;"
+                        onsubmit="return confirm('Unsend your connection request to {{ person['name'] }}?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="action-button unsend-button"
+                            style="width:100%; margin:0;"
+                        >
+                            ↩️ Unsend
+                        </button>
+
+                    </form>
+
 
                 {% elif relationship_status == "received" %}
-
-
-                    <!-- RECEIVED REQUEST -->
 
                     <a
                         href="{{ url_for('requests') }}"
@@ -614,9 +743,6 @@
 
 
                 {% else %}
-
-
-                    <!-- ADD FRIEND -->
 
                     <form
                         action="{{ url_for('send_request', user_id=person['id']) }}"
@@ -634,26 +760,40 @@
 
                     </form>
 
-
                 {% endif %}
-
 
             </div>
 
 
-        {% endif %}
+            <!-- BLOCK USER -->
 
+            <div class="block-section">
+
+                <form
+                    action="{{ url_for('block_user', user_id=person['id']) }}"
+                    method="POST"
+                    onsubmit="return confirm('Are you sure you want to block {{ person['name'] }}?');"
+                >
+
+                    <button
+                        type="submit"
+                        class="block-button"
+                    >
+                        🚫 Block User
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
 
     </div>
 
 
-
-    <!-- =====================================================
-         POSTS
-    ===================================================== -->
+    <!-- POSTS -->
 
     <div class="section">
-
 
         <h2>
 
@@ -668,20 +808,13 @@
 
         {% if posts %}
 
-
             {% for post in posts %}
-
 
                 <div class="post">
 
-
-                    <!-- MEDIA -->
-
                     {% if post["media"] %}
 
-
                         {% if post["media"].lower().endswith(('.mp4', '.webm', '.mov')) %}
-
 
                             <video
                                 class="post-media"
@@ -697,9 +830,7 @@
 
                             </video>
 
-
                         {% else %}
-
 
                             <img
                                 class="post-media"
@@ -707,18 +838,12 @@
                                 alt="Post"
                             >
 
-
                         {% endif %}
-
 
                     {% endif %}
 
 
-
-                    <!-- POST CONTENT -->
-
                     <div class="post-content">
-
 
                         {% if post["caption"] %}
 
@@ -736,9 +861,6 @@
 
                         <div class="post-actions">
 
-
-                            <!-- LIKE COUNT -->
-
                             <div class="likes">
 
                                 ❤️ {{ post["like_count"] }}
@@ -752,11 +874,7 @@
                             </div>
 
 
-
-                            <!-- DELETE ONLY ON OWN PROFILE -->
-
                             {% if is_own_profile %}
-
 
                                 <form
                                     action="{{ url_for('delete_post', post_id=post['id']) }}"
@@ -773,24 +891,17 @@
 
                                 </form>
 
-
                             {% endif %}
-
 
                         </div>
 
-
                     </div>
-
 
                 </div>
 
-
             {% endfor %}
 
-
         {% else %}
-
 
             <div class="empty">
 
@@ -802,20 +913,14 @@
 
             </div>
 
-
         {% endif %}
-
 
     </div>
 
 
-
-    <!-- =====================================================
-         FRIENDS
-    ===================================================== -->
+    <!-- FRIENDS -->
 
     <div class="section">
-
 
         <h2>
 
@@ -830,18 +935,13 @@
 
         {% if friends %}
 
-
             <div class="friends-grid">
-
 
                 {% for friend in friends %}
 
-
                     <div class="friend">
 
-
                         {% if friend["profile_picture"] %}
-
 
                             <img
                                 src="{{ url_for('static', filename='uploads/' + friend['profile_picture']) }}"
@@ -849,14 +949,11 @@
                                 alt="Friend"
                             >
 
-
                         {% else %}
-
 
                             <div class="friend-default">
                                 👤
                             </div>
-
 
                         {% endif %}
 
@@ -865,18 +962,13 @@
                             {{ friend["name"] }}
                         </div>
 
-
                     </div>
-
 
                 {% endfor %}
 
-
             </div>
 
-
         {% else %}
-
 
             <div class="empty">
 
@@ -888,17 +980,12 @@
 
             </div>
 
-
         {% endif %}
-
 
     </div>
 
 
-
-    <!-- =====================================================
-         BACK / DASHBOARD
-    ===================================================== -->
+    <!-- BACK TO DASHBOARD -->
 
     <div
         style="
@@ -916,14 +1003,10 @@
 
     </div>
 
-
 </div>
 
 
-
-<!-- =========================================================
-     CROP PROFILE PICTURE MODAL
-========================================================= -->
+<!-- CROP MODAL -->
 
 {% if is_own_profile %}
 
@@ -932,20 +1015,15 @@
     id="cropModal"
 >
 
-
     <div class="crop-box">
-
 
         <h2>
             ✂️ Crop Profile Picture
         </h2>
 
-
         <canvas id="cropCanvas"></canvas>
 
-
         <div class="crop-buttons">
-
 
             <button
                 type="button"
@@ -953,7 +1031,6 @@
             >
                 ✓ Crop & Upload
             </button>
-
 
             <button
                 type="button"
@@ -963,67 +1040,42 @@
                 Cancel
             </button>
 
-
         </div>
 
-
     </div>
-
 
 </div>
 
 
 <script>
 
-
-    /* =====================================================
-       PROFILE PHOTO CROPPING
-    ===================================================== */
-
-
     const profileInput =
         document.getElementById("profileInput");
-
 
     const cropModal =
         document.getElementById("cropModal");
 
-
     const cropCanvas =
         document.getElementById("cropCanvas");
-
 
     const croppedImage =
         document.getElementById("croppedImage");
 
-
     const profileForm =
         document.getElementById("profileForm");
 
-
     let selectedImage = new Image();
 
-
-
-    /* =====================================================
-       SELECT IMAGE
-    ===================================================== */
 
     profileInput.addEventListener(
         "change",
         function () {
 
-
-            const file =
-                this.files[0];
-
+            const file = this.files[0];
 
             if (!file) {
                 return;
             }
-
-
-            /* Check image */
 
             if (!file.type.startsWith("image/")) {
 
@@ -1034,18 +1086,14 @@
                 return;
             }
 
-
             const reader =
                 new FileReader();
-
 
             reader.onload =
                 function(event) {
 
-
                     selectedImage.onload =
                         function() {
-
 
                             const size =
                                 Math.min(
@@ -1053,25 +1101,17 @@
                                     selectedImage.height
                                 );
 
-
                             cropCanvas.width = 400;
-
                             cropCanvas.height = 400;
-
 
                             const ctx =
                                 cropCanvas.getContext("2d");
 
-
-                            /* Center crop */
-
                             const sx =
                                 (selectedImage.width - size) / 2;
 
-
                             const sy =
                                 (selectedImage.height - size) / 2;
-
 
                             ctx.clearRect(
                                 0,
@@ -1079,7 +1119,6 @@
                                 400,
                                 400
                             );
-
 
                             ctx.drawImage(
                                 selectedImage,
@@ -1093,35 +1132,23 @@
                                 400
                             );
 
-
                             cropModal.style.display =
                                 "flex";
 
-
                         };
-
 
                     selectedImage.src =
                         event.target.result;
 
-
                 };
 
-
             reader.readAsDataURL(file);
-
 
         }
     );
 
 
-
-    /* =====================================================
-       CROP AND UPLOAD
-    ===================================================== */
-
     function cropImage() {
-
 
         const imageData =
             cropCanvas.toDataURL(
@@ -1129,44 +1156,30 @@
                 0.9
             );
 
-
         croppedImage.value =
             imageData;
 
-
         profileForm.submit();
-
 
     }
 
 
-
-    /* =====================================================
-       CLOSE CROP WINDOW
-    ===================================================== */
-
     function closeCrop() {
-
 
         cropModal.style.display =
             "none";
 
-
         profileInput.value =
             "";
-
 
         croppedImage.value =
             "";
 
-
     }
-
 
 </script>
 
 {% endif %}
-
 
 </body>
 

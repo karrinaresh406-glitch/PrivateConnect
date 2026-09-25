@@ -1,32 +1,401 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>PrivateConnect - Sign Up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - PrivateConnect</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background:
+                radial-gradient(circle at top, #152238 0%, #07111f 45%, #02070d 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand h1 {
+            color: #00aaff;
+            font-size: 34px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand p {
+            color: #c8d7e8;
+            font-size: 15px;
+        }
+
+        .card {
+            width: 100%;
+            padding: 30px;
+            border-radius: 20px;
+
+            background: rgba(16, 35, 57, 0.85);
+
+            border: 1px solid rgba(0, 170, 255, 0.35);
+
+            box-shadow:
+                0 15px 45px rgba(0, 0, 0, 0.45),
+                0 0 25px rgba(0, 140, 255, 0.08);
+
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            text-align: center;
+            font-size: 27px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #e8f4ff;
+        }
+
+        input {
+            width: 100%;
+            height: 52px;
+
+            padding: 0 15px;
+
+            border-radius: 12px;
+            border: 1px solid #31506e;
+
+            background: rgba(4, 15, 28, 0.8);
+
+            color: white;
+            font-size: 15px;
+
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        input::placeholder {
+            color: #7890a8;
+        }
+
+        input:focus {
+            border-color: #00aaff;
+
+            box-shadow:
+                0 0 0 2px rgba(0, 170, 255, 0.12),
+                0 0 15px rgba(0, 170, 255, 0.15);
+        }
+
+        .password-box {
+            position: relative;
+        }
+
+        .password-box input {
+            padding-right: 55px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            border: none;
+            background: none;
+
+            color: #00aaff;
+            cursor: pointer;
+
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .signup-btn {
+            width: 100%;
+            height: 52px;
+
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: linear-gradient(
+                135deg,
+                #00c6ff,
+                #008cff
+            );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            box-shadow:
+                0 8px 20px rgba(0, 145, 255, 0.25);
+        }
+
+        .signup-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 25px rgba(0, 145, 255, 0.35);
+        }
+
+        .signup-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-text {
+            text-align: center;
+            margin-top: 22px;
+
+            color: #c5d5e5;
+            font-size: 14px;
+        }
+
+        .login-text a {
+            color: #00b7ff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #c5d5e5;
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+        .home-link:hover {
+            color: #00b7ff;
+        }
+
+        .password-info {
+            color: #7f9ab4;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .brand h1 {
+                font-size: 30px;
+            }
+
+            .card {
+                padding: 24px 20px;
+                border-radius: 17px;
+            }
+
+            .card h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <h1>Create Your Account</h1>
 
-    <form action="/signup" method="POST">
-        <label>Name:</label>
-        <input type="text" name="name" placeholder="Enter your name">
-        <br><br>
+    <div class="container">
 
-        <label>Email:</label>
-        <input type="email" name="email" placeholder="Enter your email">
-        <br><br>
+        <!-- BRAND -->
+        <div class="brand">
+            <h1>PrivateConnect</h1>
 
-        <label>Password:</label>
-        <input type="password" name="password" placeholder="Create password">
-        <br><br>
+            <p>Connect privately. Connect better.</p>
+        </div>
 
-        <button type="submit">Sign Up</button>
-    </form>
 
-    <p>
-        Already have an account?
-        <a href="/login">Login</a>
-    </p>
+        <!-- SIGNUP CARD -->
+        <div class="card">
+
+            <h2>Create Account</h2>
+
+
+            <form action="/signup" method="POST">
+
+                <!-- NAME -->
+                <div class="form-group">
+
+                    <label for="name">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your name"
+                        required
+                        autocomplete="name"
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <!-- PASSWORD -->
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="password-box">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create your password"
+                            minlength="6"
+                            required
+                            autocomplete="new-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            onclick="togglePassword()"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                    <div class="password-info">
+                        Password must be at least 6 characters.
+                    </div>
+
+                </div>
+
+
+                <!-- SIGNUP BUTTON -->
+                <button
+                    type="submit"
+                    class="signup-btn"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- LOGIN -->
+            <div class="login-text">
+
+                Already have an account?
+
+                <a href="/login">
+                    Login
+                </a>
+
+            </div>
+
+
+            <!-- HOME -->
+            <a
+                href="/"
+                class="home-link"
+            >
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.querySelector(".show-password");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                button.textContent = "Hide";
+
+            } else {
+
+                password.type = "password";
+
+                button.textContent = "Show";
+            }
+        }
+
+    </script>
 
 </body>
+
 </html>

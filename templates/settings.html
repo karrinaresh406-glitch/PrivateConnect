@@ -20,17 +20,15 @@
         color: #111827;
     }
 
-    /* =========================
-       HEADER
-    ========================== */
-
     .header {
         background: #111827;
         color: white;
         padding: 16px 25px;
+
         display: flex;
         align-items: center;
         justify-content: space-between;
+
         position: sticky;
         top: 0;
         z-index: 100;
@@ -45,18 +43,17 @@
         text-decoration: none;
         color: white;
         background: #2563eb;
+
         padding: 9px 15px;
+
         border-radius: 8px;
+
         font-size: 14px;
     }
 
     .back-button:hover {
         background: #1d4ed8;
     }
-
-    /* =========================
-       MAIN
-    ========================== */
 
     .container {
         max-width: 700px;
@@ -70,27 +67,32 @@
         margin-bottom: 20px;
     }
 
-    /* =========================
-       PROFILE CARD
-    ========================== */
-
     .profile-card {
         background: white;
         border-radius: 15px;
+
         padding: 20px;
+
         display: flex;
         align-items: center;
+
         gap: 15px;
+
         margin-bottom: 20px;
+
         box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
     .profile-picture {
         width: 70px;
         height: 70px;
+
         border-radius: 50%;
+
         object-fit: cover;
+
         border: 2px solid #2563eb;
+
         flex-shrink: 0;
     }
 
@@ -100,51 +102,66 @@
 
     .profile-info h2 {
         margin: 0 0 5px;
+
         font-size: 20px;
+
         word-break: break-word;
     }
 
     .profile-info p {
         margin: 0;
+
         color: #6b7280;
+
         font-size: 14px;
+
         word-break: break-word;
     }
 
-    /* =========================
-       SECTION
-    ========================== */
-
     .section {
         background: white;
+
         border-radius: 15px;
+
         margin-bottom: 20px;
+
         overflow: hidden;
+
         box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
     .section-title {
         padding: 15px 18px;
+
         font-size: 14px;
+
         font-weight: bold;
+
         color: #6b7280;
+
         background: #f9fafb;
+
         text-transform: uppercase;
     }
 
-    /* =========================
-       SETTINGS ITEM
-    ========================== */
-
     .setting-item {
         display: flex;
+
         align-items: center;
+
         justify-content: space-between;
+
         padding: 17px 18px;
+
         border-top: 1px solid #eef0f4;
+
         text-decoration: none;
+
         color: #111827;
+
         transition: 0.2s;
+
+        cursor: pointer;
     }
 
     .setting-item:hover {
@@ -153,20 +170,30 @@
 
     .setting-left {
         display: flex;
+
         align-items: center;
+
         gap: 13px;
+
         min-width: 0;
     }
 
     .icon {
         width: 38px;
         height: 38px;
+
         min-width: 38px;
+
         border-radius: 10px;
+
         background: #eff6ff;
+
         display: flex;
+
         align-items: center;
+
         justify-content: center;
+
         font-size: 19px;
     }
 
@@ -176,26 +203,29 @@
 
     .setting-text strong {
         display: block;
+
         font-size: 15px;
     }
 
     .setting-text span {
         display: block;
+
         margin-top: 3px;
+
         color: #6b7280;
+
         font-size: 12px;
+
         line-height: 1.4;
     }
 
     .arrow {
         color: #9ca3af;
+
         font-size: 20px;
+
         margin-left: 10px;
     }
-
-    /* =========================
-       DANGER
-    ========================== */
 
     .danger .icon {
         background: #fef2f2;
@@ -205,30 +235,31 @@
         color: #dc2626;
     }
 
-    /* =========================
-       LOGOUT
-    ========================== */
-
     .logout {
         display: block;
+
         text-align: center;
+
         text-decoration: none;
+
         background: white;
+
         color: #dc2626;
+
         border: 1px solid #fecaca;
+
         padding: 14px;
+
         border-radius: 12px;
+
         margin-bottom: 30px;
+
         font-weight: bold;
     }
 
     .logout:hover {
         background: #fef2f2;
     }
-
-    /* =========================
-       MOBILE
-    ========================== */
 
     @media (max-width: 600px) {
 
@@ -250,6 +281,7 @@
 
         .back-button {
             padding: 8px 11px;
+
             font-size: 13px;
         }
 
@@ -287,9 +319,7 @@
     ← Profile
 </a>
 
-</div><!-- =========================
-     MAIN
-========================== --><div class="container"><div class="title">
+</div><div class="container"><div class="title">
     ⚙️ Settings
 </div>
 
@@ -352,8 +382,6 @@
     </div>
 
 
-    <!-- EDIT PROFILE -->
-
     <a
         href="{{ url_for('edit_profile') }}"
         class="setting-item"
@@ -386,8 +414,6 @@
     </a>
 
 
-    <!-- CHANGE PASSWORD -->
-
     <a
         href="{{ url_for('change_password') }}"
         class="setting-item"
@@ -419,8 +445,6 @@
 
     </a>
 
-
-    <!-- NOTIFICATIONS -->
 
     <a
         href="{{ url_for('notification_settings') }}"
@@ -467,8 +491,6 @@
     </div>
 
 
-    <!-- PRIVACY -->
-
     <a
         href="{{ url_for('privacy_settings') }}"
         class="setting-item"
@@ -501,8 +523,6 @@
     </a>
 
 
-    <!-- PROFILE VIEWS -->
-
     <a
         href="{{ url_for('profile_views') }}"
         class="setting-item"
@@ -534,8 +554,6 @@
 
     </a>
 
-
-    <!-- BLOCKED USERS -->
 
     <a
         href="{{ url_for('blocked_users') }}"
@@ -585,12 +603,8 @@
     <!-- PRIVACY POLICY -->
 
     <a
-        href="#"
+        href="/privacy-policy"
         class="setting-item"
-        onclick="
-            alert('Privacy Policy will be added next.');
-            return false;
-        "
     >
 
         <div class="setting-left">
@@ -620,15 +634,11 @@
     </a>
 
 
-    <!-- TERMS -->
+    <!-- TERMS OF SERVICE -->
 
     <a
-        href="#"
+        href="/terms-of-service"
         class="setting-item"
-        onclick="
-            alert('Terms of Service will be added next.');
-            return false;
-        "
     >
 
         <div class="setting-left">
@@ -658,15 +668,11 @@
     </a>
 
 
-    <!-- HELP -->
+    <!-- HELP & SUPPORT -->
 
     <a
-        href="#"
+        href="/help-support"
         class="setting-item"
-        onclick="
-            alert('Help & Support will be added next.');
-            return false;
-        "
     >
 
         <div class="setting-left">

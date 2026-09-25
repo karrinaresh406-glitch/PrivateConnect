@@ -16,8 +16,11 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
-    secrets.token_hex(32)
+    "privateconnect-development-secret-key"
 )
+
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 app.config["UPLOAD_FOLDER"] = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -483,35 +486,55 @@ def init_db():
 def heartbeat():
 
     if "user_id" not in session:
-        return jsonify({"success": False}), 401
+        return jsonify({
+            "success": False,
+            "online": False
+        }), 401
+
+    current_user = session["user_id"]
+
+    now = datetime.now().strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
     conn = get_db()
     cursor = conn.cursor()
+
+    # -----------------------------------------------------
+    # UPDATE CURRENT USER LAST SEEN
+    # -----------------------------------------------------
 
     cursor.execute("""
         UPDATE users
         SET last_seen = ?
         WHERE id = ?
     """, (
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        session["user_id"]
+        now,
+        current_user
     ))
 
-    # Mark incoming messages as DELIVERED
+    # -----------------------------------------------------
+    # MARK RECEIVED MESSAGES AS DELIVERED
+    # -----------------------------------------------------
+
     cursor.execute("""
         UPDATE messages
         SET delivered_at = ?
         WHERE receiver_id = ?
         AND delivered_at IS NULL
     """, (
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        session["user_id"]
+        now,
+        current_user
     ))
 
     conn.commit()
     conn.close()
 
-    return jsonify({"success": True})
+    return jsonify({
+        "success": True,
+        "online": True,
+        "last_seen": now
+    })
 
 
 # =========================================================
@@ -545,9 +568,9 @@ def user_status(user_id):
         )
 
         online = (
-            datetime.now() - last_seen
-            < timedelta(seconds=10)
-        )
+    datetime.now() - last_seen
+    <= timedelta(seconds=15)
+)
 
         return jsonify({
             "online": online
@@ -1157,11 +1180,12 @@ def signup():
             ""
         )
 
-
         if not name or not email or not password:
 
-            return "All fields are required.", 400
-
+            return (
+                "All fields are required.",
+                400
+            )
 
         if len(password) < 6:
 
@@ -1170,18 +1194,13 @@ def signup():
                 400
             )
 
-
         # Hash password before storing
-
         hashed_password = generate_password_hash(
             password
         )
 
-
         conn = get_db()
-
         cursor = conn.cursor()
-
 
         try:
 
@@ -1192,7 +1211,6 @@ def signup():
                     email,
                     password
                 )
-
                 VALUES (?, ?, ?)
             """, (
                 name,
@@ -1201,7 +1219,6 @@ def signup():
             ))
 
             conn.commit()
-
 
         except sqlite3.IntegrityError:
 
@@ -1212,14 +1229,13 @@ def signup():
                 400
             )
 
-
         conn.close()
-
 
         return "Sign Up Successful!"
 
-
-    return render_template("signup.html")
+    return render_template(
+        "signup.html"
+    )
 
 
 # =========================================================
@@ -1241,110 +1257,184 @@ def login():
             ""
         )
 
+        if not email or not password:
+
+            return (
+                "Email and password are required.",
+                400
+            )
 
         conn = get_db()
-
         cursor = conn.cursor()
 
-
         cursor.execute("""
-            SELECT *
+            SELECT
+                id,
+                name,
+                email,
+                password
             FROM users
             WHERE email = ?
         """, (
             email,
         ))
 
-
         user = cursor.fetchone()
-
-
-        if user is None:
-
-            conn.close()
-
-            return (
-                "Invalid email or password!",
-                401
-            )
-
-
-        stored_password = user["password"]
-
-        password_valid = False
-
-
-        # =================================================
-        # CHECK HASHED PASSWORD
-        # =================================================
-
-        try:
-
-            password_valid = check_password_hash(
-                stored_password,
-                password
-            )
-
-        except Exception:
-
-            password_valid = False
-
-
-        # =================================================
-        # SUPPORT OLD PLAIN-TEXT PASSWORDS
-        # =================================================
-
-        if not password_valid:
-
-            if stored_password == password:
-
-                password_valid = True
-
-                new_hash = generate_password_hash(
-                    password
-                )
-
-
-                cursor.execute("""
-                    UPDATE users
-
-                    SET password = ?
-
-                    WHERE id = ?
-
-                """, (
-                    new_hash,
-                    user["id"]
-                ))
-
-
-                conn.commit()
-
 
         conn.close()
 
+        # User not found
+        if not user:
 
-        if password_valid:
-
-            session["user_id"] = user["id"]
-
-            session["user_name"] = user["name"]
-
-            session["user_email"] = user["email"]
-
-
-            return redirect(
-                url_for("dashboard")
+            return (
+                "Invalid email or password.",
+                401
             )
 
+        # Check password
+        if not check_password_hash(
+            user["password"],
+            password
+        ):
 
-        return (
-            "Invalid email or password!",
-            401
+            return (
+                "Invalid email or password.",
+                401
+            )
+
+        # -------------------------------------------------
+        # CREATE SESSION
+        # -------------------------------------------------
+
+        session["user_id"] = user["id"]
+
+        session["user_name"] = user["name"]
+
+        session["user_email"] = user["email"]
+
+        # -------------------------------------------------
+        # UPDATE LAST SEEN
+        # -------------------------------------------------
+
+        now = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
         )
 
+        conn = get_db()
+        cursor = conn.cursor()
 
-    return render_template("login.html")
+        cursor.execute("""
+            UPDATE users
+            SET last_seen = ?
+            WHERE id = ?
+        """, (
+            now,
+            user["id"]
+        ))
+
+        conn.commit()
+        conn.close()
+
+        # -------------------------------------------------
+        # GO TO DASHBOARD
+        # -------------------------------------------------
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return render_template(
+        "login.html"
+    )
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form.get("email", "").strip().lower()
+
+        if not email:
+            return render_template(
+                "forgot_password.html",
+                message="Please enter your email address."
+            )
+
+        conn = get_db()
+
+        user = conn.execute(
+            "SELECT id FROM users WHERE email = ?",
+            (email,)
+        ).fetchone()
+
+        conn.close()
+
+        if not user:
+            return render_template(
+                "forgot_password.html",
+                message="No account found with this email."
+            )
+
+        # Store the email temporarily for the reset page
+        session["reset_email"] = email
+
+        return redirect(url_for("reset_password"))
+
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+
+    email = session.get("reset_email")
+
+    if not email:
+        return redirect(url_for("forgot_password"))
+
+    if request.method == "POST":
+
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not password or not confirm_password:
+            return render_template(
+                "reset_password.html",
+                message="Please enter both passwords."
+            )
+
+        if password != confirm_password:
+            return render_template(
+                "reset_password.html",
+                message="Passwords do not match."
+            )
+
+        if len(password) < 6:
+            return render_template(
+                "reset_password.html",
+                message="Password must be at least 6 characters."
+            )
+
+        hashed_password = generate_password_hash(password)
+
+        conn = get_db()
+
+        conn.execute(
+            """
+            UPDATE users
+            SET password = ?
+            WHERE email = ?
+            """,
+            (hashed_password, email)
+        )
+
+        conn.commit()
+        conn.close()
+
+        session.pop("reset_email", None)
+
+        return redirect(url_for("login"))
+
+    return render_template("reset_password.html")
 
 
 # =========================================================
@@ -5257,7 +5347,7 @@ def messages():
     )
 
 
-# =========================================================
+## =========================================================
 # CONVERSATION
 # =========================================================
 
@@ -5273,9 +5363,13 @@ def conversation(user_id):
 
     if "user_id" not in session:
 
-        return redirect(
-            url_for("login")
-        )
+        if request.method == "POST":
+            return jsonify({
+                "success": False,
+                "error": "Not logged in"
+            }), 401
+
+        return redirect(url_for("login"))
 
     current_user = session["user_id"]
 
@@ -5285,330 +5379,670 @@ def conversation(user_id):
 
     if current_user == user_id:
 
-        return redirect(
-            url_for("messages")
-        )
+        if request.method == "POST":
+            return jsonify({
+                "success": False,
+                "error": "Invalid user"
+            }), 400
+
+        return redirect(url_for("messages"))
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # -----------------------------------------------------
-    # GET USER INFORMATION
-    # -----------------------------------------------------
+    try:
 
-    cursor.execute("""
-        SELECT
-            id,
-            name,
-            email,
-            profile_picture
-        FROM users
-        WHERE id = ?
-    """, (
-        user_id,
-    ))
+        # -------------------------------------------------
+        # GET OTHER USER
+        # -------------------------------------------------
 
-    user = cursor.fetchone()
+        cursor.execute("""
+            SELECT
+                id,
+                name,
+                email,
+                profile_picture
+            FROM users
+            WHERE id = ?
+        """, (user_id,))
 
-    if user is None:
+        user = cursor.fetchone()
 
-        conn.close()
+        if user is None:
 
-        return "User not found.", 404
+            if request.method == "POST":
+                return jsonify({
+                    "success": False,
+                    "error": "User not found"
+                }), 404
 
-    # -----------------------------------------------------
-    # SEND MESSAGE
-    # -----------------------------------------------------
+            return "User not found.", 404
 
-    if request.method == "POST":
 
-        message = request.form.get(
-            "message",
-            ""
-        ).strip()
+        # =================================================
+        # POST = SEND MESSAGE
+        # =================================================
 
-        if message:
+        if request.method == "POST":
 
-            # Limit message length
+            message = request.form.get(
+                "message",
+                ""
+            ).strip()
+
+            image_file = request.files.get("image")
+
+            image_filename = None
+
+
+            # ---------------------------------------------
+            # IMAGE UPLOAD
+            # ---------------------------------------------
+
+            if image_file and image_file.filename:
+
+                original_name = secure_filename(
+                    image_file.filename
+                )
+
+                extension = os.path.splitext(
+                    original_name
+                )[1].lower()
+
+                allowed_images = {
+                    ".jpg",
+                    ".jpeg",
+                    ".png",
+                    ".gif",
+                    ".webp"
+                }
+
+                if extension not in allowed_images:
+
+                    return jsonify({
+                        "success": False,
+                        "error": "Invalid image format"
+                    }), 400
+
+
+                unique_name = (
+                    "chat_"
+                    + secrets.token_hex(12)
+                    + extension
+                )
+
+                upload_folder = app.config[
+                    "UPLOAD_FOLDER"
+                ]
+
+                os.makedirs(
+                    upload_folder,
+                    exist_ok=True
+                )
+
+                image_path = os.path.join(
+                    upload_folder,
+                    unique_name
+                )
+
+                image_file.save(image_path)
+
+                image_filename = unique_name
+
+
+            # ---------------------------------------------
+            # EMPTY MESSAGE CHECK
+            # ---------------------------------------------
+
+            if not message and not image_filename:
+
+                return jsonify({
+                    "success": False,
+                    "error": "Message or image required"
+                }), 400
+
+
+            # ---------------------------------------------
+            # MESSAGE LIMIT
+            # ---------------------------------------------
+
             message = message[:1000]
 
-            # Save message
+
+            # ---------------------------------------------
+            # CHECK RECEIVER STATUS
+            # ---------------------------------------------
+
+            cursor.execute("""
+                SELECT last_seen
+                FROM users
+                WHERE id = ?
+            """, (user_id,))
+
+            receiver = cursor.fetchone()
+
+            delivered_at = None
+
+            if receiver and receiver["last_seen"]:
+
+                try:
+
+                    last_seen = datetime.strptime(
+                        receiver["last_seen"],
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+
+                    seconds_ago = (
+                        datetime.now() - last_seen
+                    ).total_seconds()
+
+                    if seconds_ago <= 15:
+
+                        delivered_at = datetime.now().strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        )
+
+                except Exception:
+
+                    delivered_at = None
+
+
+            # ---------------------------------------------
+            # INSERT MESSAGE
+            # ---------------------------------------------
+
             cursor.execute("""
                 INSERT INTO messages
                 (
                     sender_id,
                     receiver_id,
                     message,
+                    image,
                     delivered_at,
                     read_at
                 )
-                VALUES (?, ?, ?, NULL, NULL)
+                VALUES (?, ?, ?, ?, ?, NULL)
             """, (
                 current_user,
                 user_id,
-                message
+                message,
+                image_filename,
+                delivered_at
             ))
 
-            # -------------------------------------------------
-            # SEND MESSAGE NOTIFICATION
-            # -------------------------------------------------
+
+            # ---------------------------------------------
+            # NOTIFICATION
+            # ---------------------------------------------
 
             cursor.execute("""
                 SELECT name
                 FROM users
                 WHERE id = ?
-            """, (
-                current_user,
-            ))
+            """, (current_user,))
 
             sender = cursor.fetchone()
 
             if sender:
 
-                add_notification(
-                    cursor,
-                    user_id,
-                    current_user,
-                    "message",
-                    f"{sender['name']} sent you a message 💬"
-                )
+                if image_filename:
 
-            # Save message + notification
+                    notification_text = (
+                        f"{sender['name']} sent you a photo 📷"
+                    )
+
+                elif message:
+
+                    notification_text = (
+                        f"{sender['name']} sent you a message 💬"
+                    )
+
+                else:
+
+                    notification_text = (
+                        f"{sender['name']} sent you a message"
+                    )
+
+                try:
+
+                    add_notification(
+                        cursor,
+                        user_id,
+                        current_user,
+                        "message",
+                        notification_text
+                    )
+
+                except Exception as notification_error:
+
+                    print(
+                        "NOTIFICATION ERROR:",
+                        str(notification_error)
+                    )
+
+
+            # ---------------------------------------------
+            # SAVE
+            # ---------------------------------------------
+
             conn.commit()
 
-        conn.close()
 
-        return redirect(
-            url_for(
-                "conversation",
-                user_id=user_id
-            )
+            # ---------------------------------------------
+            # IMPORTANT:
+            # RETURN JSON
+            # ---------------------------------------------
+
+            return jsonify({
+                "success": True,
+                "message": "Message sent"
+            })
+
+
+        # =================================================
+        # GET = OPEN CHAT PAGE
+        # =================================================
+
+        now = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
         )
 
-    # -----------------------------------------------------
-    # MARK RECEIVED MESSAGES AS READ
-    # -----------------------------------------------------
 
-    cursor.execute("""
-        UPDATE messages
-        SET read_at = ?
-        WHERE sender_id = ?
-        AND receiver_id = ?
-        AND read_at IS NULL
-    """, (
-        datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"
-        ),
-        user_id,
-        current_user
-    ))
+        # ---------------------------------------------
+        # MARK RECEIVED MESSAGES AS READ
+        # ---------------------------------------------
 
-    conn.commit()
+        cursor.execute("""
+            UPDATE messages
 
-    # -----------------------------------------------------
-    # GET MESSAGES
-    # -----------------------------------------------------
+            SET
+                read_at = ?,
 
-    cursor.execute("""
-        SELECT
-            id,
-            sender_id,
-            receiver_id,
-            message,
-            created_at,
-            delivered_at,
-            read_at
-        FROM messages
+                delivered_at = COALESCE(
+                    delivered_at,
+                    ?
+                )
 
-        WHERE
-            (
+            WHERE
+
                 sender_id = ?
-                AND receiver_id = ?
-            )
 
-            OR
+                AND
 
-            (
-                sender_id = ?
-                AND receiver_id = ?
-            )
+                receiver_id = ?
 
-        ORDER BY created_at ASC
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
+                AND
 
-    messages = cursor.fetchall()
+                read_at IS NULL
 
-    conn.close()
+        """, (
+            now,
+            now,
+            user_id,
+            current_user
+        ))
 
-    # -----------------------------------------------------
-    # OPEN CHAT
-    # -----------------------------------------------------
+        conn.commit()
 
-    return render_template(
-        "conversation.html",
-        user=user,
-        messages=messages
-    )
+
+        # ---------------------------------------------
+        # GET CONVERSATION
+        # ---------------------------------------------
+
+        cursor.execute("""
+            SELECT
+                id,
+                sender_id,
+                receiver_id,
+                message,
+                image,
+                created_at,
+                delivered_at,
+                read_at
+
+            FROM messages
+
+            WHERE
+
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+
+                OR
+
+                (
+                    sender_id = ?
+                    AND receiver_id = ?
+                )
+
+            ORDER BY id ASC
+
+        """, (
+            current_user,
+            user_id,
+            user_id,
+            current_user
+        ))
+
+        messages = cursor.fetchall()
+
+
+        # ---------------------------------------------
+        # RENDER CHAT
+        # ---------------------------------------------
+
+        return render_template(
+            "conversation.html",
+            user=user,
+            messages=messages
+        )
+
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "CONVERSATION ERROR:",
+            str(e)
+        )
+
+        if request.method == "POST":
+
+            return jsonify({
+                "success": False,
+                "error": str(e)
+            }), 500
+
+        return "Unable to open conversation.", 500
+
+
+    finally:
+
+        conn.close()
 
 # =========================================================
 # MESSAGE DATA FOR AUTOMATIC REFRESH
 # =========================================================
 
-@app.route(
-    "/messages/<int:user_id>/data"
-)
+@app.route("/messages/<int:user_id>/data")
 def message_data(user_id):
 
-    if "user_id" not in session:
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
 
+    if "user_id" not in session:
         return jsonify({
+            "success": False,
             "error": "Not logged in"
         }), 401
 
-
     current_user = session["user_id"]
 
+    # -----------------------------------------------------
+    # CANNOT MESSAGE YOURSELF
+    # -----------------------------------------------------
 
     if current_user == user_id:
-
         return jsonify({
+            "success": False,
             "error": "Invalid user"
         }), 400
 
-
     conn = get_db()
-
     cursor = conn.cursor()
 
+    try:
 
-    # =====================================================
-    # CHECK CONNECTION
-    # =====================================================
+        # -------------------------------------------------
+        # GET OTHER USER
+        # -------------------------------------------------
 
-    cursor.execute("""
-        SELECT id
+        cursor.execute("""
+            SELECT
+                id,
+                name,
+                profile_picture,
+                last_seen
+            FROM users
+            WHERE id = ?
+        """, (user_id,))
 
-        FROM connections
+        other_user = cursor.fetchone()
 
-        WHERE
+        if other_user is None:
 
-            (user1_id = ? AND user2_id = ?)
+            return jsonify({
+                "success": False,
+                "error": "User not found"
+            }), 404
 
-            OR
+        # -------------------------------------------------
+        # UPDATE CURRENT USER ONLINE STATUS
+        # -------------------------------------------------
 
-            (user1_id = ? AND user2_id = ?)
+        now = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
+        cursor.execute("""
+            UPDATE users
+            SET last_seen = ?
+            WHERE id = ?
+        """, (
+            now,
+            current_user
+        ))
 
+        # -------------------------------------------------
+        # MARK RECEIVED MESSAGES AS DELIVERED
+        # -------------------------------------------------
 
-    connected = cursor.fetchone()
+        cursor.execute("""
+            UPDATE messages
+            SET delivered_at = ?
+            WHERE
+                sender_id = ?
+                AND receiver_id = ?
+                AND delivered_at IS NULL
+        """, (
+            now,
+            user_id,
+            current_user
+        ))
 
+        # -------------------------------------------------
+        # MARK RECEIVED MESSAGES AS READ
+        # -------------------------------------------------
 
-    if not connected:
+        cursor.execute("""
+            UPDATE messages
+            SET
+                delivered_at = COALESCE(
+                    delivered_at,
+                    ?
+                ),
+                read_at = ?
+            WHERE
+                sender_id = ?
+                AND receiver_id = ?
+                AND read_at IS NULL
+        """, (
+            now,
+            now,
+            user_id,
+            current_user
+        ))
 
-        conn.close()
+        # -------------------------------------------------
+        # GET ALL CHAT MESSAGES
+        # -------------------------------------------------
+
+        cursor.execute("""
+            SELECT
+                messages.id,
+                messages.message,
+                messages.image,
+                messages.created_at,
+                messages.delivered_at,
+                messages.read_at,
+                messages.sender_id,
+                messages.receiver_id,
+                users.name
+
+            FROM messages
+
+            JOIN users
+            ON users.id = messages.sender_id
+
+            WHERE
+
+                (
+                    messages.sender_id = ?
+                    AND
+                    messages.receiver_id = ?
+                )
+
+                OR
+
+                (
+                    messages.sender_id = ?
+                    AND
+                    messages.receiver_id = ?
+                )
+
+            ORDER BY messages.id ASC
+        """, (
+            current_user,
+            user_id,
+            user_id,
+            current_user
+        ))
+
+        messages_data = cursor.fetchall()
+
+        # -------------------------------------------------
+        # SAVE DATABASE CHANGES
+        # -------------------------------------------------
+
+        conn.commit()
+
+        # -------------------------------------------------
+        # CHECK OTHER USER ONLINE
+        # -------------------------------------------------
+
+        online = False
+
+        if other_user["last_seen"]:
+
+            try:
+
+                last_seen = datetime.strptime(
+                    other_user["last_seen"],
+                    "%Y-%m-%d %H:%M:%S"
+                )
+
+                seconds_ago = (
+                    datetime.now() - last_seen
+                ).total_seconds()
+
+                online = seconds_ago <= 15
+
+            except Exception:
+
+                online = False
+
+        # -------------------------------------------------
+        # PREPARE MESSAGE LIST
+        # -------------------------------------------------
+
+        result_messages = []
+
+        for message in messages_data:
+
+            result_messages.append({
+
+                "id":
+                    message["id"],
+
+                "message":
+                    message["message"] or "",
+
+                "image":
+                    message["image"]
+                    if message["image"]
+                    else None,
+
+                "created_at":
+                    message["created_at"],
+
+                "delivered_at":
+                    message["delivered_at"],
+
+                "read_at":
+                    message["read_at"],
+
+                "sender_id":
+                    message["sender_id"],
+
+                "receiver_id":
+                    message["receiver_id"],
+
+                "name":
+                    message["name"]
+                    if message["name"]
+                    else ""
+            })
+
+        # -------------------------------------------------
+        # RETURN CHAT DATA
+        # -------------------------------------------------
 
         return jsonify({
-            "error": "Not connected"
-        }), 403
 
+            "success": True,
 
-    # =====================================================
-    # GET MESSAGES
-    # =====================================================
+            "user": {
 
-    cursor.execute("""
-        SELECT
+                "id":
+                    other_user["id"],
 
-    messages.id,
+                "name":
+                    other_user["name"],
 
-    messages.message,
+                "profile_picture":
+                    other_user["profile_picture"],
 
-    messages.created_at,
+                "last_seen":
+                    other_user["last_seen"],
 
-    messages.delivered_at,
+                "online":
+                    online
+            },
 
-    messages.read_at,
+            "messages":
+                result_messages
+        })
 
-    users.name,
+    except Exception as e:
 
-    messages.sender_id
+        conn.rollback()
 
-        FROM messages
+        print(
+            "MESSAGE DATA ERROR:",
+            str(e)
+        )
 
-        JOIN users
+        return jsonify({
+            "success": False,
+            "error": "Unable to load messages"
+        }), 500
 
-        ON users.id = messages.sender_id
+    finally:
 
-        WHERE
-
-            (
-                messages.sender_id = ?
-
-                AND
-
-                messages.receiver_id = ?
-
-            )
-
-            OR
-
-            (
-                messages.sender_id = ?
-
-                AND
-
-                messages.receiver_id = ?
-
-            )
-
-        ORDER BY messages.created_at ASC
-
-    """, (
-        current_user,
-        user_id,
-        user_id,
-        current_user
-    ))
-
-
-    messages_data = cursor.fetchall()
-
-    conn.close()
-
-
-    return jsonify([
-
-    {
-        "id": message["id"],
-
-        "message": message["message"],
-
-        "created_at": message["created_at"],
-
-        "delivered_at": message["delivered_at"],
-
-        "read_at": message["read_at"],
-
-        "name": message["name"],
-
-        "sender_id": message["sender_id"]
-
-    }
-
-    for message in messages_data
-
-])
+        conn.close()
 
 # =========================================================
 # MARK MESSAGES AS READ
@@ -5620,37 +6054,68 @@ def message_data(user_id):
 )
 def mark_messages_read(user_id):
 
+    # -----------------------------------------------------
+    # LOGIN CHECK
+    # -----------------------------------------------------
+
     if "user_id" not in session:
+
         return jsonify({
-            "success": False
+            "success": False,
+            "error": "Not logged in"
         }), 401
 
     current_user = session["user_id"]
 
+    # -----------------------------------------------------
+    # CANNOT READ YOUR OWN MESSAGES
+    # -----------------------------------------------------
+
     if current_user == user_id:
+
         return jsonify({
-            "success": False
+            "success": False,
+            "error": "Invalid user"
         }), 400
 
     conn = get_db()
     cursor = conn.cursor()
 
+    # -----------------------------------------------------
+    # CURRENT TIME
+    # -----------------------------------------------------
+
     now = datetime.now().strftime(
         "%Y-%m-%d %H:%M:%S"
     )
 
+    # -----------------------------------------------------
+    # MARK MESSAGES AS DELIVERED + READ
+    # -----------------------------------------------------
+
     cursor.execute("""
         UPDATE messages
+
         SET
-            read_at = ?,
             delivered_at = COALESCE(
                 delivered_at,
                 ?
-            )
+            ),
+
+            read_at = ?
+
         WHERE
+
             sender_id = ?
-            AND receiver_id = ?
-            AND read_at IS NULL
+
+            AND
+
+            receiver_id = ?
+
+            AND
+
+            read_at IS NULL
+
     """, (
         now,
         now,
@@ -5661,8 +6126,94 @@ def mark_messages_read(user_id):
     conn.commit()
     conn.close()
 
+    # -----------------------------------------------------
+    # SUCCESS
+    # -----------------------------------------------------
+
     return jsonify({
         "success": True
+    })
+
+# =========================================================
+# UNSEND MESSAGE
+# =========================================================
+
+@app.route(
+    "/messages/unsend/<int:message_id>",
+    methods=["POST"]
+)
+def unsend_message(message_id):
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False,
+            "error": "Not logged in"
+        }), 401
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            sender_id,
+            receiver_id,
+            image
+        FROM messages
+        WHERE id = ?
+    """, (message_id,))
+
+    message = cursor.fetchone()
+
+    if message is None:
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "error": "Message not found"
+        }), 404
+
+    # Only the sender can unsend the message
+    if message["sender_id"] != current_user:
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "error": "You can only unsend your own message"
+        }), 403
+
+    # Delete uploaded image file
+    if message["image"]:
+
+        image_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            message["image"]
+        )
+
+        if os.path.exists(image_path):
+            try:
+                os.remove(image_path)
+            except Exception:
+                pass
+
+    # Delete message from database
+    cursor.execute("""
+        DELETE FROM messages
+        WHERE id = ?
+        AND sender_id = ?
+    """, (
+        message_id,
+        current_user
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message_id": message_id
     })
 
 
@@ -5686,8 +6237,37 @@ def logout():
 
 init_db()
 
+# =========================================================
+# PRIVACY POLICY
+# =========================================================
+
+@app.route("/privacy-policy", methods=["GET"])
+def privacy_policy():
+    return render_template("privacy_policy.html")
+
+# =========================================================
+# TERMS OF SERVICE
+# =========================================================
+
+@app.route("/terms-of-service", methods=["GET"])
+def terms_of_service():
+    return render_template("terms_of_service.html")
+
+# =========================================================
+# HELP & SUPPORT
+# =========================================================
+
+@app.route("/help-support", methods=["GET"])
+def help_support():
+    return render_template("help_support.html")
+
+
+# =========================================================
+# RUN APPLICATION
+# =========================================================
 
 if __name__ == "__main__":
+    app.run()
 
     app.run(
         host="0.0.0.0",

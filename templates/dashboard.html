@@ -10,6 +10,11 @@
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
 
+    <meta
+        name="theme-color"
+        content="#071426"
+    >
+
     <title>PrivateConnect</title>
 
     <style>
@@ -26,7 +31,6 @@
 
         html {
             width: 100%;
-            min-height: 100%;
             background: #071426;
         }
 
@@ -34,20 +38,35 @@
             width: 100%;
             min-height: 100vh;
 
-            font-family: Arial, sans-serif;
-
             background: #071426;
-            color: white;
+            color: #ffffff;
 
-            padding-bottom: 70px;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
 
             overflow-x: hidden;
+
+            padding-bottom:
+                calc(64px + env(safe-area-inset-bottom));
         }
 
         button,
         input,
         textarea {
-            font-family: Arial, sans-serif;
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
         }
 
 
@@ -56,6 +75,7 @@
         ===================================================== */
 
         .header {
+
             position: sticky;
 
             top: 0;
@@ -64,112 +84,135 @@
             width: 100%;
             height: 54px;
 
-            background: #0b1b30;
-
-            border-bottom: 1px solid #1d3855;
-
             display: flex;
             align-items: center;
 
-            padding: 0 11px;
+            padding: 0 12px;
 
-            z-index: 1000;
+            background: rgba(7, 20, 38, 0.97);
+
+            border-bottom:
+                1px solid #1c334c;
+
+            backdrop-filter: blur(12px);
+
+            z-index: 3000;
         }
 
-        .logo {
-            font-size: 19px;
-            font-weight: bold;
 
-            color: #4da3ff;
+        .logo {
+
+            color: #ffffff;
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
 
             white-space: nowrap;
         }
+
+
+        .logo span {
+            color: #4da3ff;
+        }
+
 
         .header-spacer {
             flex: 1;
         }
 
-        .header-icon {
+
+        .header-button {
+
+            width: 38px;
+            height: 38px;
+
             display: flex;
             align-items: center;
             justify-content: center;
 
-            width: 34px;
-            height: 34px;
+            border: none;
 
-            margin-left: 7px;
+            background: transparent;
 
-            color: #dce8f5;
+            color: #ffffff;
 
             text-decoration: none;
 
-            font-size: 19px;
-
-            background: transparent;
-            border: none;
+            font-size: 21px;
 
             cursor: pointer;
+
+            position: relative;
+        }
+
+
+        .header-button:active {
+            transform: scale(.90);
         }
 
 
         /* =====================================================
-           NOTIFICATIONS
+           NOTIFICATION
         ===================================================== */
 
         .notification-wrapper {
             position: relative;
-
-            margin-left: 6px;
         }
 
+
         .notification-button {
-            position: relative;
+
+            width: 38px;
+            height: 38px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            width: 34px;
-            height: 34px;
-
             border: none;
+
             background: transparent;
 
-            color: #dce8f5;
+            color: white;
 
-            font-size: 19px;
+            font-size: 20px;
 
             cursor: pointer;
 
-            padding: 0;
+            position: relative;
         }
 
+
         .notification-badge {
+
             position: absolute;
 
-            top: -2px;
-            right: -3px;
+            top: 1px;
+            right: 0;
 
             min-width: 17px;
             height: 17px;
 
             padding: 0 4px;
 
-            background: #ff365c;
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50px;
+
+            background: #ff375f;
 
             color: white;
 
-            border: 2px solid #0b1b30;
-
-            border-radius: 999px;
+            border: 2px solid #071426;
 
             font-size: 9px;
-            font-weight: bold;
 
-            display: none;
-
-            align-items: center;
-            justify-content: center;
+            font-weight: 800;
         }
 
 
@@ -178,95 +221,108 @@
         ===================================================== */
 
         .notification-panel {
+
             position: absolute;
 
-            top: 42px;
+            top: 45px;
             right: -5px;
 
-            width: 350px;
-            max-width: calc(100vw - 20px);
+            width: 340px;
+
+            max-width:
+                calc(100vw - 20px);
 
             background: #0d1e34;
 
-            border: 1px solid #294766;
+            border:
+                1px solid #294766;
 
             border-radius: 14px;
 
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.55);
-
             overflow: hidden;
+
+            box-shadow:
+                0 18px 45px rgba(0,0,0,.55);
 
             display: none;
 
             z-index: 5000;
         }
 
+
         .notification-panel.show {
             display: block;
         }
 
-        .notification-header {
-            display: flex;
 
+        .notification-header {
+
+            height: 48px;
+
+            display: flex;
             align-items: center;
             justify-content: space-between;
 
-            padding: 13px;
+            padding: 0 14px;
 
-            border-bottom: 1px solid #203954;
+            border-bottom:
+                1px solid #203954;
         }
+
 
         .notification-title {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 700;
         }
 
+
         .notification-read-button {
+
             border: none;
 
-            background: none;
+            background: transparent;
 
             color: #4da3ff;
 
-            font-size: 10px;
+            font-size: 11px;
 
             cursor: pointer;
         }
 
+
         .notification-list {
-            max-height: 420px;
+
+            max-height: 430px;
 
             overflow-y: auto;
         }
 
-        .notification-item {
-            display: flex;
 
+        .notification-item {
+
+            display: flex;
             align-items: center;
 
-            gap: 9px;
+            gap: 10px;
 
             padding: 11px 13px;
 
-            color: white;
-
             text-decoration: none;
 
-            border-bottom: 1px solid #172f49;
+            color: white;
 
-            transition: background 0.2s;
+            border-bottom:
+                1px solid #172f49;
         }
 
-        .notification-item:hover {
-            background: #102b47;
-        }
 
         .notification-item.unread {
             background: #102b47;
         }
 
+
         .notification-avatar {
+
             width: 40px;
             height: 40px;
 
@@ -276,16 +332,19 @@
 
             object-fit: cover;
 
-            border: 1px solid #3974a9;
+            border:
+                1px solid #3974a9;
         }
+
 
         .notification-content {
             flex: 1;
-
             min-width: 0;
         }
 
+
         .notification-message {
+
             font-size: 12px;
 
             line-height: 1.4;
@@ -293,7 +352,9 @@
             word-break: break-word;
         }
 
+
         .notification-time {
+
             margin-top: 3px;
 
             color: #7890a7;
@@ -301,19 +362,23 @@
             font-size: 9px;
         }
 
+
         .notification-unread-dot {
+
             width: 7px;
             height: 7px;
 
             min-width: 7px;
 
-            background: #238cff;
-
             border-radius: 50%;
+
+            background: #238cff;
         }
+
 
         .notification-empty,
         .notification-loading {
+
             padding: 30px 15px;
 
             text-align: center;
@@ -325,62 +390,143 @@
 
 
         /* =====================================================
-           MAIN CONTAINER
+           MAIN
         ===================================================== */
 
         .container {
+
             width: 100%;
-            max-width: 700px;
+
+            max-width: 630px;
 
             margin: 0 auto;
 
-            padding: 11px;
+            padding: 0;
         }
 
 
         /* =====================================================
-           WELCOME
+           WELCOME / TOP AREA
         ===================================================== */
 
         .welcome {
-            background: #102641;
 
-            padding: 13px;
-
-            border-radius: 12px;
-
-            margin-bottom: 11px;
+            padding: 15px 12px 10px;
 
             font-size: 17px;
 
-            font-weight: bold;
+            font-weight: 700;
         }
 
 
         /* =====================================================
-           QUICK MENU
+           QUICK ACTIONS
         ===================================================== */
 
         .quick-menu {
-            display: grid;
 
-            grid-template-columns: repeat(4, 1fr);
+            display: flex;
 
-            gap: 6px;
+            gap: 7px;
 
-            margin-bottom: 13px;
+            padding:
+                0 12px 12px;
+
+            overflow-x: auto;
+
+            scrollbar-width: none;
         }
 
+
+        .quick-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+
         .quick-menu a {
-            background: #102641;
 
-            border: 1px solid #1b3958;
+            flex: 0 0 auto;
 
-            border-radius: 10px;
+            height: 36px;
 
-            min-height: 70px;
+            display: flex;
 
-            padding: 7px 3px;
+            align-items: center;
+
+            gap: 5px;
+
+            padding:
+                0 12px;
+
+            border:
+                1px solid #294766;
+
+            border-radius: 20px;
+
+            background: #0d2038;
+
+            color: #dce8f5;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+        }
+
+
+        .quick-menu a:active {
+            transform: scale(.96);
+        }
+
+
+        .quick-menu span {
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           PEOPLE / STORIES
+        ===================================================== */
+
+        .section-title {
+
+            padding:
+                8px 12px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+
+        .people {
+
+            display: flex;
+
+            gap: 13px;
+
+            overflow-x: auto;
+
+            padding:
+                2px 12px 14px;
+
+            scrollbar-width: none;
+        }
+
+
+        .people::-webkit-scrollbar {
+            display: none;
+        }
+
+
+        .person {
+
+            width: 62px;
+
+            min-width: 62px;
 
             display: flex;
 
@@ -388,118 +534,67 @@
 
             align-items: center;
 
-            justify-content: center;
-
-            text-align: center;
-
-            color: white;
-
             text-decoration: none;
 
-            font-size: 11px;
+            color: white;
         }
 
-        .quick-menu a:active {
-            transform: scale(0.97);
-        }
 
-        .quick-menu a:hover {
-            background: #14304f;
-        }
+        .person-image-wrapper {
 
-        .quick-menu span {
-            display: block;
+            width: 58px;
+            height: 58px;
 
-            font-size: 20px;
+            padding: 2px;
 
-            line-height: 1;
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #238cff,
+                    #7b61ff,
+                    #ff4d8d
+                );
 
             margin-bottom: 5px;
         }
 
 
-        /* =====================================================
-           SECTION TITLES
-        ===================================================== */
-
-        .section-title {
-            font-size: 16px;
-
-            margin: 14px 0 8px;
-        }
-
-
-        /* =====================================================
-           PEOPLE
-        ===================================================== */
-
-        .people {
-            display: flex;
-
-            gap: 7px;
-
-            overflow-x: auto;
-
-            padding-bottom: 3px;
-
-            scrollbar-width: none;
-        }
-
-        .people::-webkit-scrollbar {
-            display: none;
-        }
-
-        .person {
-            min-width: 88px;
-
-            background: #102641;
-
-            border: 1px solid #1b3958;
-
-            border-radius: 10px;
-
-            padding: 8px;
-
-            text-align: center;
-
-            text-decoration: none;
-
-            color: white;
-        }
-
-        .person:active {
-            transform: scale(0.97);
-        }
-
         .person img {
-            width: 48px;
-            height: 48px;
+
+            width: 100%;
+            height: 100%;
 
             border-radius: 50%;
 
             object-fit: cover;
 
-            border: 2px solid #238cff;
-
-            margin-bottom: 4px;
+            border:
+                2px solid #071426;
         }
 
-        .person-name {
-            font-size: 12px;
 
-            white-space: nowrap;
+        .person-name {
+
+            width: 62px;
+
+            text-align: center;
+
+            font-size: 10px;
+
+            color: #e5edf6;
 
             overflow: hidden;
+
+            white-space: nowrap;
 
             text-overflow: ellipsis;
         }
 
+
         .person-status {
-            font-size: 9px;
-
-            color: #8fa5bd;
-
-            margin-top: 3px;
+            display: none;
         }
 
 
@@ -508,65 +603,111 @@
         ===================================================== */
 
         .create-post {
-            background: #102641;
 
-            border: 1px solid #1b3958;
-
-            border-radius: 12px;
-
-            padding: 11px;
-
-            margin-top: 10px;
-        }
-
-        .create-post textarea {
-            width: 100%;
-
-            min-height: 65px;
-
-            max-height: 180px;
-
-            resize: vertical;
+            margin:
+                2px 12px 14px;
 
             padding: 10px;
 
-            border-radius: 9px;
+            background: #0d1e34;
 
-            border: 1px solid #294766;
+            border:
+                1px solid #1d3855;
+
+            border-radius: 13px;
+        }
+
+
+        .create-post textarea {
+
+            width: 100%;
+
+            min-height: 44px;
+
+            max-height: 130px;
+
+            resize: vertical;
+
+            padding: 11px 12px;
+
+            border:
+                1px solid #294766;
+
+            border-radius: 11px;
+
+            outline: none;
 
             background: #08172a;
 
             color: white;
-
-            outline: none;
 
             font-size: 13px;
 
             line-height: 1.4;
         }
 
+
         .create-post textarea::placeholder {
             color: #71859b;
         }
 
-        .create-post input[type="file"] {
-            width: 100%;
+
+        .create-bottom {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
 
             margin-top: 8px;
-
-            color: #aebed0;
-
-            font-size: 11px;
         }
 
+
+        .file-label {
+
+            flex: 1;
+
+            min-width: 0;
+
+            height: 38px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border:
+                1px solid #294766;
+
+            border-radius: 9px;
+
+            background: #102641;
+
+            color: #c8d7e6;
+
+            font-size: 11px;
+
+            cursor: pointer;
+        }
+
+
+        .file-label:active {
+            transform: scale(.97);
+        }
+
+
+        .file-label input {
+            display: none;
+        }
+
+
         .post-button {
-            margin-top: 8px;
 
-            width: 100%;
+            width: 78px;
 
-            min-height: 40px;
-
-            padding: 9px;
+            height: 38px;
 
             border: none;
 
@@ -576,19 +717,31 @@
 
             color: white;
 
-            font-size: 14px;
+            font-size: 12px;
 
-            font-weight: bold;
+            font-weight: 700;
 
             cursor: pointer;
         }
 
+
         .post-button:active {
-            transform: scale(0.98);
+            transform: scale(.96);
         }
 
-        .post-button:hover {
-            background: #147de6;
+
+        /* =====================================================
+           FEED
+        ===================================================== */
+
+        .feed-title {
+
+            padding:
+                2px 12px 8px;
+
+            font-size: 14px;
+
+            font-weight: 700;
         }
 
 
@@ -597,58 +750,121 @@
         ===================================================== */
 
         .post {
+
+            width: 100%;
+
             background: #0d1e34;
 
-            border: 1px solid #1a3653;
+            border-top:
+                1px solid #1c334c;
 
-            border-radius: 12px;
+            border-bottom:
+                1px solid #1c334c;
 
-            margin-top: 10px;
+            margin-bottom: 10px;
 
             overflow: hidden;
         }
 
+
+        /* =====================================================
+           POST HEADER
+        ===================================================== */
+
         .post-header {
+
+            min-height: 58px;
+
             display: flex;
 
             align-items: center;
 
-            padding: 9px;
+            padding:
+                9px 12px;
         }
 
+
         .post-avatar {
-            width: 38px;
-            height: 38px;
+
+            width: 40px;
+            height: 40px;
+
+            min-width: 40px;
 
             border-radius: 50%;
 
             object-fit: cover;
 
-            margin-right: 8px;
+            margin-right: 9px;
 
-            border: 1px solid #3974a9;
+            border:
+                1px solid #3974a9;
         }
+
+
+        .post-user-info {
+
+            min-width: 0;
+
+            flex: 1;
+        }
+
 
         .post-user {
-            font-weight: bold;
+
+            color: white;
 
             font-size: 13px;
+
+            font-weight: 700;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
         }
 
+
         .post-time {
+
+            margin-top: 2px;
+
             color: #8298ad;
 
             font-size: 9px;
-
-            margin-top: 2px;
         }
 
+
+        .post-more {
+
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #9cafc2;
+
+            font-size: 18px;
+        }
+
+
+        /* =====================================================
+           CAPTION
+        ===================================================== */
+
         .post-caption {
-            padding: 0 9px 9px;
+
+            padding:
+                0 12px 10px;
+
+            color: #edf4fa;
 
             font-size: 13px;
 
-            line-height: 1.4;
+            line-height: 1.45;
 
             white-space: pre-wrap;
 
@@ -657,19 +873,38 @@
 
 
         /* =====================================================
-           POST MEDIA
+           MEDIA
         ===================================================== */
 
         .post-media {
-            width: 100%;
-
-            max-height: 480px;
-
-            object-fit: cover;
 
             display: block;
 
-            background: black;
+            width: 100%;
+
+            height: auto;
+
+            max-height: 750px;
+
+            object-fit: cover;
+
+            background: #000;
+        }
+
+
+        img.post-media {
+
+            aspect-ratio: 4 / 5;
+
+            object-fit: cover;
+        }
+
+
+        video.post-media {
+
+            aspect-ratio: 4 / 5;
+
+            object-fit: cover;
         }
 
 
@@ -678,64 +913,105 @@
         ===================================================== */
 
         .post-actions {
+
             display: flex;
 
             align-items: center;
 
-            border-top: 1px solid #1b344e;
+            gap: 4px;
 
-            border-bottom: 1px solid #1b344e;
-
-            padding: 7px 8px;
-
-            gap: 10px;
+            padding:
+                7px 10px 4px;
         }
+
 
         .action-form {
             margin: 0;
         }
 
+
         .action-button {
+
+            min-width: 42px;
+
+            height: 34px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+
+            padding:
+                0 5px;
+
             border: none;
 
-            background: none;
+            background: transparent;
 
-            color: #d9e5f1;
-
-            cursor: pointer;
+            color: #dce8f5;
 
             font-size: 12px;
 
-            padding: 3px;
+            cursor: pointer;
 
-            white-space: nowrap;
+            border-radius: 8px;
         }
+
 
         .action-button:active {
-            transform: scale(0.95);
+            transform: scale(.91);
         }
+
+
+        .action-icon {
+
+            font-size: 21px;
+
+            line-height: 1;
+        }
+
 
         .liked {
-            color: #ff4d6d;
+            color: #ff3b68;
         }
 
+
+        .like-count,
+        .comment-count {
+
+            font-size: 11px;
+
+            color: #aebed0;
+        }
+
+
         .delete-button {
+
             margin-left: auto;
 
-            color: #ff687c;
+            color: #ff6578;
         }
 
 
         /* =====================================================
-           COMMENTS
+           COMMENT AREA
         ===================================================== */
 
         .comments {
-            padding: 8px 9px;
+
+            padding:
+                0 12px 11px;
         }
 
+
         .comment {
+
             margin-bottom: 6px;
+
+            color: #dce8f5;
 
             font-size: 12px;
 
@@ -744,60 +1020,103 @@
             word-break: break-word;
         }
 
+
         .comment strong {
-            color: #63adff;
 
             margin-right: 4px;
+
+            color: #63adff;
         }
+
 
         .comment-form {
+
             display: flex;
 
-            gap: 5px;
+            gap: 6px;
 
-            margin-top: 7px;
+            margin-top: 8px;
         }
 
+
         .comment-form input {
+
             flex: 1;
 
             min-width: 0;
 
-            padding: 8px;
+            height: 36px;
 
-            border-radius: 8px;
+            padding:
+                0 10px;
 
-            border: 1px solid #294766;
+            border:
+                1px solid #294766;
+
+            border-radius: 18px;
+
+            outline: none;
 
             background: #08172a;
 
             color: white;
 
-            outline: none;
-
-            font-size: 12px;
+            font-size: 11px;
         }
 
+
         .comment-form button {
-            padding: 7px 10px;
+
+            width: 55px;
+
+            height: 36px;
 
             border: none;
 
-            border-radius: 8px;
+            border-radius: 18px;
 
             background: #238cff;
 
             color: white;
 
-            cursor: pointer;
+            font-size: 11px;
 
-            font-size: 12px;
+            font-weight: 700;
+
+            cursor: pointer;
         }
 
-        .comment-form button:disabled {
-            opacity: 0.6;
 
-            cursor: not-allowed;
+        .comment-form button:disabled {
+            opacity: .5;
+        }
+
+
+        /* =====================================================
+           EMPTY POSTS
+        ===================================================== */
+
+        .empty-posts {
+
+            margin:
+                10px 12px;
+
+            padding: 35px 15px;
+
+            text-align: center;
+
+            background: #0d1e34;
+
+            border:
+                1px solid #1d3855;
+
+            border-radius: 13px;
+
+            color: #9cafc2;
+
+            font-size: 13px;
+
+            line-height: 1.6;
         }
 
 
@@ -806,6 +1125,7 @@
         ===================================================== */
 
         .bottom-nav {
+
             position: fixed;
 
             left: 0;
@@ -814,35 +1134,35 @@
 
             width: 100%;
 
-            height: 58px;
+            height:
+                calc(58px + env(safe-area-inset-bottom));
 
-            padding-bottom: env(safe-area-inset-bottom);
-
-            background: #071426;
-
-            border-top: 1px solid #203954;
+            padding-bottom:
+                env(safe-area-inset-bottom);
 
             display: flex;
 
-            justify-content: space-around;
-
             align-items: center;
 
-            z-index: 2000;
+            justify-content: space-around;
+
+            background:
+                rgba(7,20,38,.98);
+
+            border-top:
+                1px solid #203954;
+
+            z-index: 4000;
+
+            backdrop-filter: blur(15px);
         }
 
+
         .bottom-nav a {
+
             flex: 1;
 
-            color: #9cafc2;
-
-            text-decoration: none;
-
-            text-align: center;
-
-            font-size: 9px;
-
-            height: 100%;
+            height: 58px;
 
             display: flex;
 
@@ -851,24 +1171,39 @@
             align-items: center;
 
             justify-content: center;
+
+            gap: 2px;
+
+            color: #8398ad;
+
+            text-decoration: none;
+
+            font-size: 9px;
+
+            font-weight: 500;
         }
+
 
         .bottom-nav span {
+
             display: block;
 
-            font-size: 18px;
+            font-size: 21px;
 
-            line-height: 1;
-
-            margin-bottom: 2px;
+            line-height: 21px;
         }
+
 
         .bottom-nav .active {
+
             color: #4da3ff;
+
+            font-weight: 700;
         }
 
+
         .bottom-nav a:active {
-            transform: scale(0.95);
+            transform: scale(.91);
         }
 
 
@@ -876,63 +1211,85 @@
            DESKTOP
         ===================================================== */
 
-        @media (min-width: 800px) {
+        @media (min-width: 700px) {
 
             body {
-                padding-bottom: 75px;
+                padding-bottom: 20px;
             }
+
 
             .header {
+
                 height: 60px;
+
+                padding:
+                    0 20px;
             }
+
 
             .logo {
-                font-size: 21px;
+                font-size: 22px;
             }
+
 
             .container {
-                max-width: 750px;
 
-                padding: 15px;
+                max-width: 630px;
+
+                padding-top: 5px;
             }
 
-            .welcome {
-                padding: 16px;
-
-                font-size: 18px;
-            }
-
-            .quick-menu {
-                gap: 8px;
-            }
-
-            .quick-menu a {
-                min-height: 85px;
-
-                padding: 12px 5px;
-
-                font-size: 12px;
-            }
-
-            .quick-menu span {
-                font-size: 21px;
-            }
-
-            .post-media {
-                max-height: 650px;
-            }
 
             .bottom-nav {
-                height: 68px;
+
+                position: fixed;
+
+                width: 500px;
+
+                height: 56px;
+
+                left: 50%;
+
+                right: auto;
+
+                bottom: 15px;
+
+                transform:
+                    translateX(-50%);
+
+                border:
+                    1px solid #294766;
+
+                border-radius: 20px;
+
+                padding: 0;
+
+                box-shadow:
+                    0 10px 40px rgba(0,0,0,.4);
             }
+
 
             .bottom-nav a {
-                font-size: 11px;
+                height: 55px;
             }
 
-            .bottom-nav span {
-                font-size: 21px;
+
+            .post {
+
+                border:
+                    1px solid #1c334c;
+
+                border-radius: 12px;
+
+                margin-bottom: 15px;
             }
+
+
+            .post-media {
+
+                max-height: 780px;
+            }
+
         }
 
 
@@ -942,79 +1299,78 @@
 
         @media (max-width: 360px) {
 
-            .container {
-                padding: 8px;
+            .header {
+                padding: 0 9px;
             }
+
 
             .logo {
-                font-size: 17px;
+                font-size: 18px;
             }
 
-            .header {
-                padding: 0 8px;
+
+            .header-button,
+            .notification-button {
+                width: 34px;
+                height: 34px;
             }
 
-            .quick-menu {
-                gap: 4px;
-            }
-
-            .quick-menu a {
-                min-height: 64px;
-
-                font-size: 10px;
-            }
-
-            .quick-menu span {
-                font-size: 17px;
-
-                margin-bottom: 3px;
-            }
 
             .welcome {
-                padding: 10px;
-
                 font-size: 15px;
             }
 
-            .post-actions {
-                gap: 6px;
+
+            .people {
+                gap: 10px;
             }
+
+
+            .person {
+                width: 58px;
+                min-width: 58px;
+            }
+
+
+            .person-image-wrapper {
+                width: 54px;
+                height: 54px;
+            }
+
+
+            .person-name {
+                width: 58px;
+                font-size: 9px;
+            }
+
+
+            .post-caption {
+                font-size: 12px;
+            }
+
 
             .action-button {
-                font-size: 11px;
+                min-width: 38px;
             }
 
-            .post-media {
-                max-height: 420px;
+
+            .action-icon {
+                font-size: 19px;
             }
 
-            .bottom-nav span {
-                font-size: 17px;
-            }
-
-            .bottom-nav a {
-                font-size: 8px;
-            }
         }
 
 
         /* =====================================================
-           VERY SMALL HEIGHT / LANDSCAPE
+           REDUCED MOTION
         ===================================================== */
 
-        @media (max-height: 500px) and (orientation: landscape) {
+        @media (prefers-reduced-motion: reduce) {
 
-            .header {
-                height: 48px;
+            * {
+                scroll-behavior: auto !important;
             }
 
-            .bottom-nav {
-                height: 50px;
-            }
-
-            .container {
-                padding: 8px;
-            }
         }
 
     </style>
@@ -1032,25 +1388,21 @@
 <header class="header">
 
     <div class="logo">
-        PrivateConnect
+        Private<span>Connect</span>
     </div>
 
 
     <div class="header-spacer"></div>
 
 
-    <!-- SEARCH -->
-
     <a
         href="{{ url_for('find_people') }}"
-        class="header-icon"
+        class="header-button"
         aria-label="Search"
     >
         🔍
     </a>
 
-
-    <!-- NOTIFICATIONS -->
 
     <div class="notification-wrapper">
 
@@ -1072,8 +1424,6 @@
 
         </button>
 
-
-        <!-- NOTIFICATION PANEL -->
 
         <div
             id="notificationPanel"
@@ -1122,9 +1472,7 @@
 <main class="container">
 
 
-    <!-- =================================================
-         WELCOME
-    ================================================= -->
+    <!-- WELCOME -->
 
     <div class="welcome">
 
@@ -1134,53 +1482,36 @@
 
 
     <!-- =================================================
-         QUICK MENU
+         QUICK ACTIONS
     ================================================= -->
 
     <div class="quick-menu">
 
-
         <a href="{{ url_for('find_people') }}">
-
             <span>🔎</span>
-
             Search
-
         </a>
-
 
         <a href="{{ url_for('messages') }}">
-
             <span>💬</span>
-
             Chats
-
         </a>
-
 
         <a href="{{ url_for('match') }}">
-
             <span>💙</span>
-
             Match
-
         </a>
-
 
         <a href="{{ url_for('connections') }}">
-
             <span>👥</span>
-
             Connections
-
         </a>
-
 
     </div>
 
 
     <!-- =================================================
-         PEOPLE
+         PEOPLE / STORIES
     ================================================= -->
 
     <div class="section-title">
@@ -1192,12 +1523,9 @@
 
     <div class="people">
 
-
         {% if users %}
 
-
             {% for user in users %}
-
 
                 <a
                     href="{{ url_for(
@@ -1207,30 +1535,29 @@
                     class="person"
                 >
 
+                    <div class="person-image-wrapper">
 
-                    {% if user.profile_picture %}
+                        {% if user.profile_picture %}
 
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' +
+                                    user.profile_picture
+                                ) }}"
+                                alt="{{ user.name }}"
+                            >
 
-                        <img
-                            src="{{ url_for(
-                                'static',
-                                filename='uploads/' +
-                                user.profile_picture
-                            ) }}"
-                            alt="Profile"
-                        >
+                        {% else %}
 
+                            <img
+                                src="https://via.placeholder.com/100"
+                                alt="{{ user.name }}"
+                            >
 
-                    {% else %}
+                        {% endif %}
 
-
-                        <img
-                            src="https://via.placeholder.com/100"
-                            alt="Profile"
-                        >
-
-
-                    {% endif %}
+                    </div>
 
 
                     <div class="person-name">
@@ -1239,47 +1566,23 @@
 
                     </div>
 
-
-                    <div class="person-status">
-
-
-                        {% if user.last_seen %}
-
-                            Active
-
-                        {% else %}
-
-                            New user
-
-                        {% endif %}
-
-
-                    </div>
-
-
                 </a>
-
 
             {% endfor %}
 
-
         {% else %}
 
-
-            <p
+            <div
                 style="
                     color:#8298ad;
-                    font-size:12px;
+                    font-size:11px;
+                    padding:0 12px 12px;
                 "
             >
-
                 No other users yet.
-
-            </p>
-
+            </div>
 
         {% endif %}
-
 
     </div>
 
@@ -1288,22 +1591,13 @@
          CREATE POST
     ================================================= -->
 
-    <div class="section-title">
-
-        Create Post
-
-    </div>
-
-
     <div class="create-post">
-
 
         <form
             method="POST"
             action="{{ url_for('create_post') }}"
             enctype="multipart/form-data"
         >
-
 
             <textarea
                 name="caption"
@@ -1312,40 +1606,48 @@
             ></textarea>
 
 
-            <input
-                type="file"
-                name="media"
-                accept="
-                    image/png,
-                    image/jpeg,
-                    image/gif,
-                    video/mp4,
-                    video/webm
-                "
-            >
+            <div class="create-bottom">
+
+                <label class="file-label">
+
+                    📷 Add photo/video
+
+                    <input
+                        type="file"
+                        name="media"
+                        accept="
+                            image/png,
+                            image/jpeg,
+                            image/gif,
+                            image/webp,
+                            video/mp4,
+                            video/webm,
+                            video/quicktime
+                        "
+                    >
+
+                </label>
 
 
-            <button
-                type="submit"
-                class="post-button"
-            >
+                <button
+                    type="submit"
+                    class="post-button"
+                >
+                    Post
+                </button>
 
-                Post
-
-            </button>
-
+            </div>
 
         </form>
-
 
     </div>
 
 
     <!-- =================================================
-         POSTS
+         FEED
     ================================================= -->
 
-    <div class="section-title">
+    <div class="feed-title">
 
         Posts
 
@@ -1354,9 +1656,7 @@
 
     {% if posts %}
 
-
         {% for post in posts %}
-
 
             <article
                 class="post"
@@ -1368,9 +1668,7 @@
 
                 <div class="post-header">
 
-
                     {% if post.profile_picture %}
-
 
                         <img
                             class="post-avatar"
@@ -1379,25 +1677,21 @@
                                 filename='uploads/' +
                                 post.profile_picture
                             ) }}"
-                            alt="Profile"
+                            alt="{{ post.name }}"
                         >
 
-
                     {% else %}
-
 
                         <img
                             class="post-avatar"
                             src="https://via.placeholder.com/100"
-                            alt="Profile"
+                            alt="{{ post.name }}"
                         >
-
 
                     {% endif %}
 
 
-                    <div>
-
+                    <div class="post-user-info">
 
                         <div class="post-user">
 
@@ -1405,16 +1699,20 @@
 
                         </div>
 
-
                         <div class="post-time">
 
                             {{ post.created_at }}
 
                         </div>
 
-
                     </div>
 
+
+                    <div class="post-more">
+
+                        ⋯
+
+                    </div>
 
                 </div>
 
@@ -1423,13 +1721,11 @@
 
                 {% if post.caption %}
 
-
                     <div class="post-caption">
 
                         {{ post.caption }}
 
                     </div>
-
 
                 {% endif %}
 
@@ -1438,13 +1734,13 @@
 
                 {% if post.media %}
 
-
                     {% if
                         post.media.lower().endswith('.mp4')
                         or
                         post.media.lower().endswith('.webm')
+                        or
+                        post.media.lower().endswith('.mov')
                     %}
-
 
                         <video
                             class="post-media"
@@ -1463,9 +1759,7 @@
 
                         </video>
 
-
                     {% else %}
-
 
                         <img
                             class="post-media"
@@ -1475,11 +1769,10 @@
                                 post.media
                             ) }}"
                             alt="Post"
+                            loading="lazy"
                         >
 
-
                     {% endif %}
-
 
                 {% endif %}
 
@@ -1513,16 +1806,12 @@
                         "
                     >
 
-                        <span class="like-icon">
+                        <span class="action-icon like-icon">
 
                             {% if post.user_liked %}
-
                                 ❤️
-
                             {% else %}
-
                                 🤍
-
                             {% endif %}
 
                         </span>
@@ -1550,7 +1839,9 @@
                         "
                     >
 
-                        💬
+                        <span class="action-icon">
+                            💬
+                        </span>
 
                         <span class="comment-count">
 
@@ -1574,7 +1865,13 @@
                         "
                     >
 
-                        ↗ Share
+                        <span class="action-icon">
+                            ↗
+                        </span>
+
+                        <span>
+                            Share
+                        </span>
 
                     </button>
 
@@ -1597,10 +1894,7 @@
 
                         <button
                             type="submit"
-                            class="
-                                action-button
-                                delete-button
-                            "
+                            class="action-button delete-button"
                         >
 
                             🗑️
@@ -1608,7 +1902,6 @@
                         </button>
 
                     </form>
-
 
                 </div>
 
@@ -1622,30 +1915,20 @@
                     id="comments-{{ post.id }}"
                 >
 
-
                     {% for comment in post.comments %}
-
 
                         <div class="comment">
 
-
                             <strong>
-
                                 {{ comment.name }}
-
                             </strong>
-
 
                             {{ comment.comment }}
 
-
                         </div>
-
 
                     {% endfor %}
 
-
-                    <!-- COMMENT FORM -->
 
                     <form
                         class="comment-form"
@@ -1676,45 +1959,27 @@
 
                     </form>
 
-
                 </div>
 
 
             </article>
-
 
         {% endfor %}
 
 
     {% else %}
 
+        <div class="empty-posts">
 
-        <div class="create-post">
+            No posts yet. 🎉
 
+            <br>
 
-            <p
-                style="
-                    text-align:center;
-                    color:#9cafc2;
-                    font-size:13px;
-                    line-height:1.5;
-                "
-            >
-
-                No posts yet.
-
-                <br>
-
-                Create the first post! 🎉
-
-            </p>
-
+            Create the first post!
 
         </div>
 
-
     {% endif %}
-
 
 </main>
 
@@ -1781,7 +2046,6 @@
 
     </a>
 
-
 </nav>
 
 
@@ -1841,11 +2105,9 @@ function likePost(postId, button) {
     .then(response => {
 
         if (!response.ok) {
-
             throw new Error(
                 "Like request failed"
             );
-
         }
 
         return response.json();
@@ -1863,7 +2125,6 @@ function likePost(postId, button) {
             );
 
             return;
-
         }
 
 
@@ -1885,8 +2146,7 @@ function likePost(postId, button) {
 
             icon.textContent = "❤️";
 
-        }
-        else {
+        } else {
 
             button.classList.remove("liked");
 
@@ -1917,7 +2177,7 @@ function likePost(postId, button) {
 
 
 /* =====================================================
-   COMMENT WITHOUT PAGE RELOAD
+   COMMENT
 ===================================================== */
 
 function submitComment(
@@ -1946,15 +2206,13 @@ function submitComment(
 
 
     if (!text) {
-
         return false;
-
     }
 
 
     button.disabled = true;
 
-    button.textContent = "Sending...";
+    button.textContent = "…";
 
 
     fetch(
@@ -1975,9 +2233,7 @@ function submitComment(
 
             body:
                 new URLSearchParams({
-
                     comment: text
-
                 })
 
         }
@@ -2008,7 +2264,6 @@ function submitComment(
             );
 
             return;
-
         }
 
 
@@ -2089,8 +2344,7 @@ function submitComment(
 
         if (
             commentCount &&
-            data.comment_count !==
-                undefined
+            data.comment_count !== undefined
         ) {
 
             commentCount.textContent =
@@ -2123,12 +2377,11 @@ function submitComment(
 
 
     return false;
-
 }
 
 
 /* =====================================================
-   SHARE POST
+   SHARE
 ===================================================== */
 
 function sharePost(postId) {
@@ -2156,37 +2409,35 @@ function sharePost(postId) {
 
     .then(data => {
 
-        if (data.success) {
-
-            if (
-                navigator.clipboard &&
-                navigator.clipboard.writeText
-            ) {
-
-                navigator.clipboard.writeText(
-                    data.url
-                );
-
-                alert(
-                    "Post link copied!"
-                );
-
-            }
-            else {
-
-                prompt(
-                    "Copy this link:",
-                    data.url
-                );
-
-            }
-
-        }
-        else {
+        if (!data.success) {
 
             alert(
                 data.error ||
                 "Unable to share."
+            );
+
+            return;
+        }
+
+
+        if (
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ) {
+
+            navigator.clipboard.writeText(
+                data.url
+            );
+
+            alert(
+                "Post link copied!"
+            );
+
+        } else {
+
+            prompt(
+                "Copy this link:",
+                data.url
             );
 
         }
@@ -2207,7 +2458,7 @@ function sharePost(postId) {
 
 
 /* =====================================================
-   UPDATE NOTIFICATION BADGE
+   NOTIFICATION BADGE
 ===================================================== */
 
 function updateNotificationBadge() {
@@ -2239,9 +2490,7 @@ function updateNotificationBadge() {
 
 
         if (!badge) {
-
             return;
-
         }
 
 
@@ -2261,8 +2510,7 @@ function updateNotificationBadge() {
             badge.style.display =
                 "flex";
 
-        }
-        else {
+        } else {
 
             badge.style.display =
                 "none";
@@ -2296,9 +2544,7 @@ function toggleNotifications() {
 
 
     if (!panel) {
-
         return;
-
     }
 
 
@@ -2329,9 +2575,7 @@ function loadNotifications() {
 
 
     if (!list) {
-
         return;
-
     }
 
 
@@ -2380,7 +2624,6 @@ function loadNotifications() {
             `;
 
             return;
-
         }
 
 
@@ -2423,59 +2666,103 @@ function loadNotifications() {
                     : "https://via.placeholder.com/100";
 
 
-                const safeMessage =
+                const message =
                     notification.message ||
                     "New notification";
 
 
-                const safeTime =
+                const time =
                     notification.created_at ||
                     "";
 
 
-                item.innerHTML = `
+                const avatarElement =
+                    document.createElement(
+                        "img"
+                    );
 
-                    <img
-                        class="notification-avatar"
-                        src="${avatar}"
-                        alt="Profile"
-                    >
 
-                    <div
-                        class="notification-content"
-                    >
+                avatarElement.className =
+                    "notification-avatar";
 
-                        <div
-                            class="notification-message"
-                        >
-                            ${escapeHtml(
-                                safeMessage
-                            )}
-                        </div>
+                avatarElement.src =
+                    avatar;
 
-                        <div
-                            class="notification-time"
-                        >
-                            ${escapeHtml(
-                                safeTime
-                            )}
-                        </div>
+                avatarElement.alt =
+                    "Profile";
 
-                    </div>
 
-                    ${
-                        !notification.is_read
-                        ? `
-                            <span
-                                class="
-                                    notification-unread-dot
-                                "
-                            ></span>
-                        `
-                        : ""
-                    }
+                const content =
+                    document.createElement(
+                        "div"
+                    );
 
-                `;
+
+                content.className =
+                    "notification-content";
+
+
+                const messageElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                messageElement.className =
+                    "notification-message";
+
+                messageElement.textContent =
+                    message;
+
+
+                const timeElement =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                timeElement.className =
+                    "notification-time";
+
+                timeElement.textContent =
+                    time;
+
+
+                content.appendChild(
+                    messageElement
+                );
+
+                content.appendChild(
+                    timeElement
+                );
+
+
+                item.appendChild(
+                    avatarElement
+                );
+
+                item.appendChild(
+                    content
+                );
+
+
+                if (
+                    !notification.is_read
+                ) {
+
+                    const dot =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    dot.className =
+                        "notification-unread-dot";
+
+
+                    item.appendChild(dot);
+
+                }
 
 
                 list.appendChild(item);
@@ -2491,10 +2778,8 @@ function loadNotifications() {
 
         list.innerHTML = `
             <div class="notification-empty">
-
                 Notifications are
                 temporarily unavailable.
-
             </div>
         `;
 
@@ -2545,28 +2830,7 @@ function markNotificationsRead() {
 
 
 /* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHtml(value) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        value;
-
-
-    return div.innerHTML;
-
-}
-
-
-/* =====================================================
-   CLOSE NOTIFICATIONS WHEN CLICKING OUTSIDE
+   CLOSE NOTIFICATIONS
 ===================================================== */
 
 document.addEventListener(
@@ -2604,21 +2868,20 @@ document.addEventListener(
 
 
 /* =====================================================
-   INITIAL NOTIFICATION CHECK
+   INITIAL LOAD
 ===================================================== */
 
 updateNotificationBadge();
 
 
 /* =====================================================
-   CHECK EVERY 5 SECONDS
+   CHECK NOTIFICATIONS
 ===================================================== */
 
 setInterval(
     updateNotificationBadge,
     5000
 );
-
 
 </script>
 

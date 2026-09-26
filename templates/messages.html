@@ -15,56 +15,54 @@
             padding: 0;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
+        html {
+            scroll-behavior: smooth;
+        }
 
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
             background:
                 radial-gradient(
-                    circle at 10% 0%,
-                    rgba(59, 130, 246, 0.12),
+                    circle at 15% 0%,
+                    rgba(59, 130, 246, 0.15),
                     transparent 30%
                 ),
                 radial-gradient(
                     circle at 100% 100%,
-                    rgba(239, 68, 68, 0.08),
-                    transparent 30%
+                    rgba(99, 102, 241, 0.10),
+                    transparent 35%
                 ),
                 #020617;
-
             color: #f8fafc;
-
-            padding: 20px 12px;
+            padding: 16px 12px 30px;
         }
 
 
         /* =========================
-           MAIN CONTAINER
+           MAIN
         ========================= */
 
         .container {
             width: 100%;
             max-width: 720px;
-
-            margin: auto;
+            margin: 0 auto;
 
             background:
                 linear-gradient(
-                    135deg,
+                    145deg,
                     rgba(15, 23, 42, 0.98),
-                    rgba(30, 41, 59, 0.98)
+                    rgba(15, 31, 52, 0.98)
                 );
 
-            border: 1px solid rgba(255, 255, 255, 0.10);
-
+            border: 1px solid rgba(148, 163, 184, 0.16);
             border-radius: 24px;
-
-            padding: 22px;
+            padding: 20px;
 
             box-shadow:
-                0 20px 50px rgba(0, 0, 0, 0.35);
+                0 25px 60px rgba(0, 0, 0, 0.40);
 
-            backdrop-filter: blur(14px);
+            backdrop-filter: blur(18px);
         }
 
 
@@ -74,21 +72,16 @@
 
         .header {
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-
         .title {
-            font-size: 30px;
-
+            font-size: 31px;
             font-weight: 800;
-
-            letter-spacing: -0.5px;
+            letter-spacing: -0.8px;
 
             background:
                 linear-gradient(
@@ -99,35 +92,37 @@
                 );
 
             -webkit-background-clip: text;
-
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-
         .message-icon {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
-            border-radius: 15px;
-
-            font-size: 22px;
+            border-radius: 16px;
 
             background:
                 linear-gradient(
-                    135deg,
+                    145deg,
                     #2563eb,
-                    #1e293b
+                    #1e3a8a
                 );
 
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255,255,255,0.14);
 
             box-shadow:
-                0 8px 20px rgba(0, 0, 0, 0.25);
+                0 10px 25px rgba(37,99,235,0.22);
+        }
+
+        .message-icon svg {
+            width: 27px;
+            height: 27px;
         }
 
 
@@ -137,39 +132,37 @@
 
         .search-wrapper {
             position: relative;
-
             margin-bottom: 18px;
         }
 
-
         .search-icon {
             position: absolute;
-
-            left: 16px;
-
+            left: 17px;
             top: 50%;
 
             transform: translateY(-50%);
 
+            width: 20px;
+            height: 20px;
+
             color: #64748b;
 
-            font-size: 16px;
+            pointer-events: none;
         }
-
 
         .search {
             width: 100%;
 
-            padding: 14px 18px 14px 45px;
+            padding: 15px 18px 15px 48px;
 
-            border-radius: 14px;
+            border-radius: 15px;
 
             outline: none;
 
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(148,163,184,0.16);
 
             background:
-                rgba(2, 6, 23, 0.65);
+                rgba(2,6,23,0.72);
 
             color: #f8fafc;
 
@@ -178,20 +171,18 @@
             transition: 0.25s;
         }
 
-
         .search::placeholder {
             color: #64748b;
         }
 
-
         .search:focus {
-            border-color: rgba(59, 130, 246, 0.65);
-
-            background:
-                rgba(2, 6, 23, 0.85);
+            border-color: rgba(59,130,246,0.65);
 
             box-shadow:
-                0 0 0 3px rgba(59, 130, 246, 0.10);
+                0 0 0 3px rgba(59,130,246,0.10);
+
+            background:
+                rgba(2,6,23,0.90);
         }
 
 
@@ -201,9 +192,7 @@
 
         .chat-list {
             display: flex;
-
             flex-direction: column;
-
             gap: 10px;
         }
 
@@ -216,43 +205,36 @@
             position: relative;
 
             display: flex;
-
             align-items: center;
 
             width: 100%;
 
-            padding: 13px 14px;
+            min-height: 78px;
+
+            padding: 11px 13px;
 
             border-radius: 18px;
 
             text-decoration: none;
-
             color: #f8fafc;
 
             background:
                 linear-gradient(
                     135deg,
-                    #0f172a 0%,
-                    #1e293b 100%
+                    rgba(15,23,42,0.96),
+                    rgba(30,41,59,0.96)
                 );
 
-            box-shadow:
-                0 4px 6px -1px rgba(0, 0, 0, 0.10),
-                0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-            border: 1px solid rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(148,163,184,0.13);
 
             overflow: hidden;
 
             transition:
-                transform 0.22s ease,
-                border-color 0.22s ease,
-                box-shadow 0.22s ease,
-                background 0.22s ease;
+                transform 0.2s ease,
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
         }
-
-
-        /* subtle blue/red accent */
 
         .chat-card::before {
             content: "";
@@ -269,31 +251,28 @@
                 linear-gradient(
                     180deg,
                     #3b82f6,
-                    #64748b,
-                    #ef4444
+                    #6366f1
                 );
 
-            opacity: 0.85;
+            opacity: 0.75;
         }
 
-
         .chat-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
 
             border-color:
-                rgba(96, 165, 250, 0.28);
-
-            box-shadow:
-                0 12px 25px rgba(0, 0, 0, 0.28);
+                rgba(96,165,250,0.32);
 
             background:
                 linear-gradient(
                     135deg,
-                    #111c31 0%,
-                    #243247 100%
+                    rgba(17,28,49,0.98),
+                    rgba(36,50,71,0.98)
                 );
-        }
 
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.24);
+        }
 
         .chat-card:active {
             transform: scale(0.985);
@@ -310,16 +289,15 @@
 
             min-width: 56px;
 
-            border-radius: 50%;
-
             object-fit: cover;
 
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+
+            border: 2px solid rgba(255,255,255,0.14);
 
             box-shadow:
-                0 5px 15px rgba(0, 0, 0, 0.30);
+                0 5px 16px rgba(0,0,0,0.30);
         }
-
 
         .avatar-fallback {
             width: 56px;
@@ -328,17 +306,10 @@
             min-width: 56px;
 
             display: flex;
-
             align-items: center;
             justify-content: center;
 
             border-radius: 50%;
-
-            color: white;
-
-            font-size: 20px;
-
-            font-weight: 700;
 
             background:
                 linear-gradient(
@@ -347,53 +318,45 @@
                     #475569
                 );
 
-            border: 2px solid rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255,255,255,0.14);
 
-            box-shadow:
-                0 5px 15px rgba(0, 0, 0, 0.30);
+            font-size: 20px;
+            font-weight: 800;
+
+            color: white;
         }
 
 
         /* =========================
-           CHAT INFORMATION
+           CHAT INFO
         ========================= */
 
         .chat-info {
             flex: 1;
-
             min-width: 0;
-
             margin-left: 14px;
         }
 
-
         .name-row {
             display: flex;
-
             align-items: center;
-
             gap: 8px;
 
             margin-bottom: 5px;
         }
 
-
         .name {
-            font-size: 17px;
+            max-width: 100%;
 
+            font-size: 17px;
             font-weight: 700;
 
             color: #f8fafc;
 
             white-space: nowrap;
-
             overflow: hidden;
-
             text-overflow: ellipsis;
         }
-
-
-        /* status dot */
 
         .online {
             width: 8px;
@@ -406,22 +369,19 @@
             background: #22c55e;
 
             box-shadow:
-                0 0 8px rgba(34, 197, 94, 0.45);
+                0 0 8px rgba(34,197,94,0.45);
         }
 
-
         .preview {
+            max-width: 100%;
+
             font-size: 14px;
 
             color: #94a3b8;
 
             white-space: nowrap;
-
             overflow: hidden;
-
             text-overflow: ellipsis;
-
-            max-width: 95%;
         }
 
 
@@ -431,11 +391,8 @@
 
         .chat-right {
             display: flex;
-
             flex-direction: column;
-
             align-items: flex-end;
-
             justify-content: center;
 
             gap: 7px;
@@ -443,30 +400,32 @@
             margin-left: 10px;
         }
 
-
         .time {
             font-size: 11px;
-
             color: #64748b;
-
             white-space: nowrap;
         }
 
-
         .arrow {
-            font-size: 23px;
+            width: 22px;
+            height: 22px;
 
-            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             color: #64748b;
 
             transition: 0.2s;
         }
 
+        .arrow svg {
+            width: 17px;
+            height: 17px;
+        }
 
         .chat-card:hover .arrow {
             color: #93c5fd;
-
             transform: translateX(2px);
         }
 
@@ -478,50 +437,56 @@
         .empty {
             text-align: center;
 
-            padding: 60px 20px;
-
-            color: #94a3b8;
-        }
-
-
-        .empty-icon {
-            width: 70px;
-            height: 70px;
-
-            margin: 0 auto 18px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
+            padding: 55px 20px 45px;
 
             border-radius: 20px;
 
-            font-size: 32px;
+            background:
+                rgba(2,6,23,0.28);
+
+            border: 1px solid rgba(148,163,184,0.08);
+        }
+
+        .empty-icon {
+            width: 76px;
+            height: 76px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 22px;
 
             background:
                 linear-gradient(
-                    135deg,
+                    145deg,
                     #1e3a8a,
                     #334155
                 );
 
-            border: 1px solid rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255,255,255,0.10);
+
+            box-shadow:
+                0 12px 28px rgba(0,0,0,0.28);
         }
 
+        .empty-icon svg {
+            width: 38px;
+            height: 38px;
+        }
 
         .empty h3 {
             color: #e2e8f0;
 
             margin-bottom: 8px;
 
-            font-size: 18px;
+            font-size: 20px;
         }
-
 
         .empty p {
             color: #64748b;
-
             font-size: 14px;
         }
 
@@ -532,33 +497,41 @@
 
         .buttons {
             display: flex;
-
             gap: 10px;
 
-            margin-top: 22px;
+            margin-top: 20px;
         }
-
 
         .btn {
             flex: 1;
 
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+
+            min-height: 50px;
+
+            padding: 13px 15px;
+
+            border-radius: 14px;
 
             text-decoration: none;
 
             color: white;
 
-            padding: 13px;
+            font-size: 15px;
+            font-weight: 700;
 
-            border-radius: 13px;
-
-            font-weight: 600;
-
-            border: 1px solid rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255,255,255,0.10);
 
             transition: 0.22s;
         }
 
+        .btn svg {
+            width: 19px;
+            height: 19px;
+        }
 
         .find {
             background:
@@ -569,9 +542,8 @@
                 );
 
             box-shadow:
-                0 6px 18px rgba(37, 99, 235, 0.20);
+                0 7px 20px rgba(37,99,235,0.22);
         }
-
 
         .dashboard {
             background:
@@ -582,12 +554,50 @@
                 );
         }
 
-
         .btn:hover {
             transform: translateY(-2px);
 
             box-shadow:
-                0 10px 22px rgba(0, 0, 0, 0.25);
+                0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+
+        /* =========================
+           SEARCH EMPTY
+        ========================= */
+
+        .search-empty {
+            display: none;
+
+            text-align: center;
+
+            padding: 45px 20px;
+
+            color: #94a3b8;
+        }
+
+        .search-empty svg {
+            width: 44px;
+            height: 44px;
+
+            margin-bottom: 12px;
+
+            color: #64748b;
+        }
+
+        .search-empty h3 {
+            color: #e2e8f0;
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .search-empty p {
+            font-size: 14px;
+            color: #64748b;
         }
 
 
@@ -599,18 +609,14 @@
             width: 7px;
         }
 
-
         ::-webkit-scrollbar-track {
             background: #020617;
         }
 
-
         ::-webkit-scrollbar-thumb {
             background: #334155;
-
             border-radius: 10px;
         }
-
 
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
@@ -627,62 +633,93 @@
                 padding: 8px;
             }
 
-
             .container {
-                padding: 16px;
-
+                padding: 15px;
                 border-radius: 20px;
             }
 
-
             .title {
-                font-size: 25px;
+                font-size: 26px;
             }
-
 
             .message-icon {
-                width: 43px;
-                height: 43px;
-
-                font-size: 20px;
-
-                border-radius: 13px;
+                width: 45px;
+                height: 45px;
+                border-radius: 14px;
             }
 
+            .message-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .search {
+                padding: 14px 15px 14px 46px;
+                font-size: 14px;
+            }
+
+            .chat-card {
+                min-height: 72px;
+                padding: 10px 10px 10px 13px;
+                border-radius: 16px;
+            }
 
             .avatar,
             .avatar-fallback {
                 width: 50px;
                 height: 50px;
-
                 min-width: 50px;
             }
 
-
-            .chat-card {
-                padding: 12px 10px 12px 14px;
-
-                border-radius: 16px;
-            }
-
-
             .chat-info {
-                margin-left: 12px;
+                margin-left: 11px;
             }
-
 
             .name {
                 font-size: 16px;
             }
 
-
             .preview {
                 font-size: 13px;
             }
 
+            .time {
+                font-size: 10px;
+            }
 
             .buttons {
                 flex-direction: column;
+            }
+
+            .btn {
+                min-height: 52px;
+            }
+        }
+
+
+        @media (max-width: 360px) {
+
+            .title {
+                font-size: 23px;
+            }
+
+            .avatar,
+            .avatar-fallback {
+                width: 46px;
+                height: 46px;
+                min-width: 46px;
+            }
+
+            .chat-info {
+                margin-left: 9px;
+            }
+
+            .name {
+                font-size: 15px;
+            }
+
+            .preview {
+                font-size: 12px;
             }
         }
 
@@ -697,7 +734,9 @@
 <div class="container">
 
 
-    <!-- HEADER -->
+    <!-- =========================
+         HEADER
+    ========================= -->
 
     <div class="header">
 
@@ -706,32 +745,70 @@
         </h1>
 
         <div class="message-icon">
-            💬
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8
+                       8.5 8.5 0 0 1-7.6 4.7
+                       8.38 8.38 0 0 1-3.8-.9
+                       L3 21l1.9-5.7
+                       A8.38 8.38 0 0 1 4 11.5
+                       8.5 8.5 0 0 1 8.7 3.9
+                       8.38 8.38 0 0 1 12.5 3
+                       h.5a8.5 8.5 0 0 1 8 8.5z"
+                />
+
+                <circle cx="8.5" cy="12" r="0.8"/>
+                <circle cx="12" cy="12" r="0.8"/>
+                <circle cx="15.5" cy="12" r="0.8"/>
+            </svg>
+
         </div>
 
     </div>
 
 
-    <!-- SEARCH -->
+    <!-- =========================
+         SEARCH
+    ========================= -->
 
     <div class="search-wrapper">
 
-        <span class="search-icon">
-            🔍
-        </span>
+        <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m20 20-4-4"/>
+        </svg>
+
 
         <input
             type="text"
             id="searchBox"
             class="search"
             placeholder="Search conversations..."
-            onkeyup="searchChats()"
+            autocomplete="off"
         >
 
     </div>
 
 
-    <!-- CHAT LIST -->
+    <!-- =========================
+         CHAT LIST
+    ========================= -->
 
     <div
         class="chat-list"
@@ -749,7 +826,7 @@
                 >
 
 
-                    <!-- PROFILE -->
+                    <!-- PROFILE IMAGE -->
 
                     {% if person[3] %}
 
@@ -765,15 +842,13 @@
                     {% else %}
 
                         <div class="avatar-fallback">
-
                             {{ person[1][0] | upper }}
-
                         </div>
 
                     {% endif %}
 
 
-                    <!-- CHAT INFO -->
+                    <!-- INFORMATION -->
 
                     <div class="chat-info">
 
@@ -796,7 +871,7 @@
 
                             {% else %}
 
-                                Start a conversation 👋
+                                Start a conversation
 
                             {% endif %}
 
@@ -805,7 +880,7 @@
                     </div>
 
 
-                    <!-- TIME + ARROW -->
+                    <!-- RIGHT SIDE -->
 
                     <div class="chat-right">
 
@@ -817,29 +892,103 @@
 
                         {% endif %}
 
+
                         <span class="arrow">
-                            ›
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+
                         </span>
 
                     </div>
-
 
                 </a>
 
             {% endfor %}
 
 
+            <!-- SEARCH RESULT EMPTY -->
+
+            <div
+                class="search-empty"
+                id="searchEmpty"
+            >
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m20 20-4-4"/>
+                </svg>
+
+                <h3>
+                    No conversations found
+                </h3>
+
+                <p>
+                    Try searching with another name.
+                </p>
+
+            </div>
+
+
         {% else %}
+
+
+            <!-- =========================
+                 NO CONVERSATIONS
+            ========================= -->
 
             <div class="empty">
 
                 <div class="empty-icon">
-                    💬
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8
+                               8.5 8.5 0 0 1-7.6 4.7
+                               8.38 8.38 0 0 1-3.8-.9
+                               L3 21l1.9-5.7
+                               A8.38 8.38 0 0 1 4 11.5
+                               8.5 8.5 0 0 1 8.7 3.9
+                               8.38 8.38 0 0 1 12.5 3
+                               h.5a8.5 8.5 0 0 1 8 8.5z"
+                        />
+
+                        <circle cx="8.5" cy="12" r="0.7"/>
+                        <circle cx="12" cy="12" r="0.7"/>
+                        <circle cx="15.5" cy="12" r="0.7"/>
+
+                    </svg>
+
                 </div>
+
 
                 <h3>
                     No conversations yet
                 </h3>
+
 
                 <p>
                     Find people and start chatting.
@@ -852,15 +1001,36 @@
     </div>
 
 
-    <!-- BUTTONS -->
+    <!-- =========================
+         BUTTONS
+    ========================= -->
 
     <div class="buttons">
+
 
         <a
             href="{{ url_for('find_people') }}"
             class="btn find"
         >
-            👥 Find People
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+
+            <span>
+                Find People
+            </span>
+
         </a>
 
 
@@ -868,8 +1038,26 @@
             href="{{ url_for('dashboard') }}"
             class="btn dashboard"
         >
-            🏠 Dashboard
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="m3 10 9-7 9 7"/>
+                <path d="M5 9v11h14V9"/>
+                <path d="M9 20v-6h6v6"/>
+            </svg>
+
+            <span>
+                Dashboard
+            </span>
+
         </a>
+
 
     </div>
 
@@ -879,39 +1067,73 @@
 
 <script>
 
-function searchChats() {
+    /* =========================
+       SEARCH CONVERSATIONS
+    ========================= */
 
-    const input =
-        document
-        .getElementById("searchBox")
-        .value
-        .toLowerCase()
-        .trim();
+    const searchBox =
+        document.getElementById("searchBox");
 
-
-    const chats =
+    const chatCards =
         document.querySelectorAll(".chat-card");
 
-
-    chats.forEach(function(chat) {
-
-        const name =
-            chat.getAttribute("data-name");
+    const searchEmpty =
+        document.getElementById("searchEmpty");
 
 
-        if (name.includes(input)) {
+    if (searchBox) {
 
-            chat.style.display = "flex";
+        searchBox.addEventListener("input", function () {
 
-        } else {
+            const search =
+                this.value
+                    .toLowerCase()
+                    .trim();
 
-            chat.style.display = "none";
+            let visibleCount = 0;
 
-        }
 
-    });
+            chatCards.forEach(function (chat) {
 
-}
+                const name =
+                    chat.getAttribute("data-name") || "";
+
+
+                if (name.includes(search)) {
+
+                    chat.style.display = "flex";
+
+                    visibleCount++;
+
+                } else {
+
+                    chat.style.display = "none";
+
+                }
+
+            });
+
+
+            if (searchEmpty) {
+
+                if (
+                    search.length > 0 &&
+                    visibleCount === 0
+                ) {
+
+                    searchEmpty.style.display = "block";
+
+                } else {
+
+                    searchEmpty.style.display = "none";
+
+                }
+
+            }
+
+        });
+
+    }
 
 </script>
 

@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <title>Reels - PrivateConnect</title>
+    <title>Messages - PrivateConnect</title>
 
     <style>
 
@@ -20,12 +20,8 @@
             padding: 0;
         }
 
-        html {
-            background: #050505;
-        }
-
         body {
-            margin: 0;
+
             min-height: 100vh;
 
             font-family:
@@ -36,13 +32,13 @@
                 Arial,
                 sans-serif;
 
-            background: #050505;
+            background: #071426;
+
             color: #ffffff;
 
             overflow-x: hidden;
 
-            padding-bottom:
-                calc(82px + env(safe-area-inset-bottom));
+            padding-bottom: 75px;
         }
 
 
@@ -58,7 +54,7 @@
 
             z-index: 100;
 
-            height: 68px;
+            height: 64px;
 
             display: flex;
 
@@ -66,66 +62,103 @@
 
             justify-content: space-between;
 
-            padding:
-                0 16px;
+            padding: 0 16px;
 
-            padding-top:
-                env(safe-area-inset-top);
-
-            background:
-                rgba(5, 5, 5, 0.94);
+            background: #0b1b30;
 
             border-bottom:
-                1px solid rgba(255,255,255,0.07);
+                1px solid rgba(255,255,255,0.08);
 
-            backdrop-filter:
-                blur(18px);
-
-            -webkit-backdrop-filter:
-                blur(18px);
         }
 
 
-        .brand {
+        .header-left {
 
             display: flex;
 
             align-items: center;
 
             gap: 10px;
-
-            font-size: 24px;
-
-            font-weight: 800;
-
-            letter-spacing: -0.6px;
         }
 
 
-        .brand-icon {
+        .back-button {
 
-            width: 36px;
-            height: 36px;
+            width: 40px;
+
+            height: 40px;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
-            border-radius: 10px;
+            border: 0;
+
+            border-radius: 50%;
 
             background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #7c3aed
-                );
+                rgba(255,255,255,0.07);
+
+            color: white;
+
+            text-decoration: none;
+
+            cursor: pointer;
         }
 
 
-        .brand-icon svg {
+        .back-button svg {
 
             width: 21px;
+
+            height: 21px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        .page-title {
+
+            font-size: 21px;
+
+            font-weight: 800;
+        }
+
+
+        .new-chat {
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background: #1877f2;
+
+            color: white;
+
+            text-decoration: none;
+        }
+
+
+        .new-chat svg {
+
+            width: 21px;
+
             height: 21px;
 
             stroke: white;
@@ -136,153 +169,19 @@
         }
 
 
-        .upload-btn {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 7px;
-
-            height: 40px;
-
-            padding:
-                0 15px;
-
-            border: 0;
-
-            border-radius: 12px;
-
-            background:
-                #1877f2;
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            text-decoration: none;
-
-            box-shadow:
-                0 5px 18px rgba(24,119,242,0.25);
-        }
-
-
-        .upload-btn svg {
-
-            width: 18px;
-            height: 18px;
-
-            stroke: white;
-
-            fill: none;
-
-            stroke-width: 2;
-        }
-
-
         /* =====================================================
-           REELS AREA
+           SEARCH
         ===================================================== */
 
-        .reels-container {
+        .search-area {
 
-            width: 100%;
+            padding: 14px 15px 10px;
 
-            max-width: 620px;
-
-            margin:
-                0 auto;
-
-            padding:
-                14px 10px 25px;
+            background: #071426;
         }
 
 
-        .reel-card {
-
-            position: relative;
-
-            width: 100%;
-
-            min-height: 650px;
-
-            margin-bottom: 18px;
-
-            overflow: hidden;
-
-            border-radius: 18px;
-
-            background:
-                #111111;
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            box-shadow:
-                0 15px 45px rgba(0,0,0,0.45);
-        }
-
-
-        .reel-media {
-
-            width: 100%;
-
-            height: 650px;
-
-            display: block;
-
-            object-fit: cover;
-
-            background: #111111;
-        }
-
-
-        video.reel-media {
-
-            object-fit: cover;
-        }
-
-
-        /* =====================================================
-           MEDIA GRADIENT
-        ===================================================== */
-
-        .reel-overlay {
-
-            position: absolute;
-
-            inset: 0;
-
-            pointer-events: none;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    rgba(0,0,0,0.18),
-                    transparent 38%,
-                    transparent 52%,
-                    rgba(0,0,0,0.82) 100%
-                );
-        }
-
-
-        /* =====================================================
-           PROFILE
-        ===================================================== */
-
-        .reel-user {
-
-            position: absolute;
-
-            left: 15px;
-
-            bottom: 112px;
-
-            z-index: 5;
+        .search-box {
 
             display: flex;
 
@@ -290,38 +189,166 @@
 
             gap: 10px;
 
-            max-width: 70%;
+            height: 44px;
+
+            padding: 0 14px;
+
+            border-radius: 13px;
+
+            background:
+                #10233c;
+
+            border:
+                1px solid rgba(255,255,255,0.06);
         }
 
 
-        .reel-avatar {
+        .search-box svg {
 
-            width: 44px;
-            height: 44px;
+            width: 19px;
+
+            height: 19px;
+
+            stroke: #8fa3ba;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        .search-box input {
+
+            width: 100%;
+
+            border: 0;
+
+            outline: none;
+
+            background: transparent;
+
+            color: white;
+
+            font-size: 14px;
+        }
+
+
+        .search-box input::placeholder {
+
+            color: #7890a8;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .messages-container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            margin: 0 auto;
+
+            padding: 4px 10px 20px;
+        }
+
+
+        /* =====================================================
+           MESSAGE PERSON
+        ===================================================== */
+
+        .person-card {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            width: 100%;
+
+            padding: 13px 9px;
+
+            border: 0;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.06);
+
+            background: transparent;
+
+            color: white;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition:
+                background .15s ease;
+        }
+
+
+        .person-card:hover {
+
+            background:
+                rgba(255,255,255,0.04);
+        }
+
+
+        .person-card:active {
+
+            background:
+                rgba(255,255,255,0.07);
+        }
+
+
+        /* =====================================================
+           AVATAR
+        ===================================================== */
+
+        .avatar-wrapper {
+
+            position: relative;
+
+            flex-shrink: 0;
+        }
+
+
+        .avatar {
+
+            width: 54px;
+
+            height: 54px;
 
             border-radius: 50%;
 
             object-fit: cover;
 
-            border:
-                2px solid rgba(255,255,255,0.9);
+            display: block;
 
-            background:
-                #334155;
+            background: #263b55;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
         }
 
 
-        .reel-avatar-fallback {
+        .avatar-fallback {
 
-            width: 44px;
-            height: 44px;
+            width: 54px;
+
+            height: 54px;
+
+            border-radius: 50%;
 
             display: flex;
 
             align-items: center;
-            justify-content: center;
 
-            border-radius: 50%;
+            justify-content: center;
 
             background:
                 linear-gradient(
@@ -332,20 +359,55 @@
 
             color: white;
 
-            font-weight: 800;
+            font-size: 20px;
 
-            border:
-                2px solid rgba(255,255,255,0.9);
+            font-weight: 800;
         }
 
 
-        .reel-name {
+        .online-dot {
+
+            position: absolute;
+
+            right: 1px;
+
+            bottom: 2px;
+
+            width: 13px;
+
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            border: 2px solid #071426;
+        }
+
+
+        /* =====================================================
+           PERSON INFO
+        ===================================================== */
+
+        .person-info {
+
+            min-width: 0;
+
+            flex: 1;
+        }
+
+
+        .person-name {
+
+            display: block;
 
             color: white;
 
-            font-size: 15px;
+            font-size: 16px;
 
             font-weight: 700;
+
+            margin-bottom: 5px;
 
             white-space: nowrap;
 
@@ -355,209 +417,92 @@
         }
 
 
-        /* =====================================================
-           CAPTION
-        ===================================================== */
+        .last-message {
 
-        .reel-caption {
+            display: block;
 
-            position: absolute;
+            color: #8296ad;
 
-            left: 16px;
+            font-size: 13px;
 
-            right: 75px;
+            line-height: 1.35;
 
-            bottom: 60px;
+            white-space: nowrap;
 
-            z-index: 5;
+            overflow: hidden;
 
-            color: white;
+            text-overflow: ellipsis;
 
-            font-size: 14px;
-
-            line-height: 1.45;
-
-            text-shadow:
-                0 2px 8px rgba(0,0,0,0.7);
+            max-width: 90%;
         }
 
 
-        /* =====================================================
-           ACTIONS
-        ===================================================== */
+        .message-time {
 
-        .reel-actions {
+            flex-shrink: 0;
 
-            position: absolute;
+            align-self: flex-start;
 
-            right: 12px;
+            padding-top: 5px;
 
-            bottom: 55px;
-
-            z-index: 10;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 18px;
-        }
-
-
-        .action {
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            gap: 4px;
-
-            background: none;
-
-            border: 0;
-
-            color: white;
-
-            cursor: pointer;
-
-            padding: 0;
-
-            -webkit-tap-highlight-color: transparent;
-        }
-
-
-        .action-icon {
-
-            width: 45px;
-            height: 45px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 50%;
-
-            background:
-                rgba(0,0,0,0.38);
-
-            backdrop-filter:
-                blur(8px);
-
-            -webkit-backdrop-filter:
-                blur(8px);
-
-            transition:
-                transform .18s ease,
-                background .18s ease;
-        }
-
-
-        .action:active .action-icon {
-
-            transform:
-                scale(0.88);
-        }
-
-
-        .action svg {
-
-            width: 24px;
-            height: 24px;
-
-            stroke: white;
-
-            fill: none;
-
-            stroke-width: 1.9;
-
-            stroke-linecap: round;
-
-            stroke-linejoin: round;
-        }
-
-
-        .action.like.active .action-icon {
-
-            background:
-                rgba(239,68,68,0.22);
-        }
-
-
-        .action.like.active svg {
-
-            stroke: #ff3040;
-
-            fill: #ff3040;
-        }
-
-
-        .action-count {
+            color: #71869e;
 
             font-size: 11px;
-
-            font-weight: 600;
-
-            color: white;
-
-            text-shadow:
-                0 2px 5px rgba(0,0,0,0.7);
         }
 
 
         /* =====================================================
-           EMPTY REELS
+           EMPTY
         ===================================================== */
 
         .empty {
 
-            min-height: 500px;
+            min-height: 55vh;
 
             display: flex;
+
+            flex-direction: column;
 
             align-items: center;
 
             justify-content: center;
 
-            flex-direction: column;
-
             text-align: center;
 
-            padding: 30px;
+            padding: 35px;
         }
 
 
         .empty-icon {
 
-            width: 72px;
-            height: 72px;
+            width: 76px;
+
+            height: 76px;
 
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
-            border-radius: 22px;
-
             margin-bottom: 18px;
+
+            border-radius: 24px;
 
             background:
                 linear-gradient(
                     135deg,
-                    #1d4ed8,
-                    #4f46e5
+                    #2563eb,
+                    #7c3aed
                 );
         }
 
 
         .empty-icon svg {
 
-            width: 36px;
-            height: 36px;
+            width: 37px;
+
+            height: 37px;
 
             stroke: white;
 
@@ -569,7 +514,7 @@
 
         .empty h2 {
 
-            font-size: 22px;
+            font-size: 21px;
 
             margin-bottom: 8px;
         }
@@ -577,9 +522,41 @@
 
         .empty p {
 
-            color: #8b8b8b;
+            color: #7e93aa;
 
             font-size: 14px;
+
+            line-height: 1.5;
+
+            max-width: 300px;
+        }
+
+
+        .find-button {
+
+            margin-top: 20px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 18px;
+
+            border-radius: 12px;
+
+            background: #1877f2;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 700;
         }
 
 
@@ -592,6 +569,7 @@
             position: fixed;
 
             left: 0;
+
             right: 0;
 
             bottom: 0;
@@ -611,19 +589,16 @@
             justify-content: space-around;
 
             background:
-                rgba(10,10,10,0.96);
+                rgba(10,25,43,0.97);
 
             border-top:
-                1px solid rgba(255,255,255,0.09);
-
-            box-shadow:
-                0 -8px 30px rgba(0,0,0,0.35);
+                1px solid rgba(255,255,255,0.08);
 
             backdrop-filter:
-                blur(20px);
+                blur(18px);
 
             -webkit-backdrop-filter:
-                blur(20px);
+                blur(18px);
         }
 
 
@@ -643,22 +618,20 @@
 
             gap: 4px;
 
-            color: #858585;
+            color: #71869e;
 
             text-decoration: none;
 
             font-size: 11px;
 
             font-weight: 600;
-
-            transition:
-                color .18s ease;
         }
 
 
         .nav-item svg {
 
             width: 23px;
+
             height: 23px;
 
             stroke: currentColor;
@@ -693,7 +666,7 @@
 
             body {
 
-                padding-bottom: 30px;
+                padding-bottom: 95px;
             }
 
 
@@ -720,119 +693,44 @@
                 border-radius: 18px;
             }
 
-
-            .reels-container {
-
-                padding-bottom: 100px;
-            }
         }
 
 
         /* =====================================================
-           SMALL PHONES
+           SMALL PHONE
         ===================================================== */
 
         @media (max-width: 430px) {
 
             .top-header {
 
-                height: 62px;
+                height: 60px;
 
-                padding-left: 12px;
-
-                padding-right: 12px;
+                padding: 0 12px;
             }
 
 
-            .brand {
+            .page-title {
 
-                font-size: 22px;
+                font-size: 20px;
             }
 
 
-            .brand-icon {
-
-                width: 34px;
-                height: 34px;
-            }
-
-
-            .upload-btn {
-
-                height: 38px;
+            .person-card {
 
                 padding:
-                    0 12px;
-
-                font-size: 13px;
+                    12px 7px;
             }
 
 
-            .reels-container {
+            .avatar,
+            .avatar-fallback {
 
-                padding:
-                    8px 6px 18px;
+                width: 51px;
+
+                height: 51px;
             }
 
-
-            .reel-card {
-
-                min-height:
-                    calc(100vh - 155px);
-
-                border-radius: 14px;
-            }
-
-
-            .reel-media {
-
-                height:
-                    calc(100vh - 155px);
-
-                min-height: 560px;
-            }
-
-
-            .reel-actions {
-
-                right: 9px;
-
-                bottom: 48px;
-
-                gap: 15px;
-            }
-
-
-            .action-icon {
-
-                width: 42px;
-                height: 42px;
-            }
-
-
-            .action svg {
-
-                width: 22px;
-                height: 22px;
-            }
-
-
-            .reel-user {
-
-                left: 12px;
-
-                bottom: 105px;
-            }
-
-
-            .reel-caption {
-
-                left: 12px;
-
-                right: 68px;
-
-                bottom: 53px;
-            }
         }
 
     </style>
@@ -844,46 +742,50 @@
 
 
 <!-- =========================================================
-     TOP HEADER
+     HEADER
 ========================================================= -->
 
 <header class="top-header">
 
-    <div class="brand">
+    <div class="header-left">
 
-        <div class="brand-icon">
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-button"
+            aria-label="Back to Home"
+        >
 
             <svg viewBox="0 0 24 24">
 
-                <path
-                    d="M8 5.5v13l11-6.5z"
-                />
+                <path d="M19 12H5"></path>
+
+                <path d="M12 19l-7-7 7-7"></path>
 
             </svg>
 
-        </div>
+        </a>
 
-        <span>Reels</span>
+
+        <div class="page-title">
+            Messages
+        </div>
 
     </div>
 
 
     <a
-        href="{{ url_for('create_post') }}"
-        class="upload-btn"
+        href="{{ url_for('find_people') }}"
+        class="new-chat"
+        aria-label="New chat"
     >
 
         <svg viewBox="0 0 24 24">
 
-            <path d="M12 16V4"></path>
+            <path d="M12 5v14"></path>
 
-            <path d="M7 9l5-5 5 5"></path>
-
-            <path d="M5 20h14"></path>
+            <path d="M5 12h14"></path>
 
         </svg>
-
-        Upload Reel
 
     </a>
 
@@ -892,288 +794,148 @@
 
 
 <!-- =========================================================
-     REELS
+     SEARCH
 ========================================================= -->
 
-<main class="reels-container">
+<section class="search-area">
+
+    <div class="search-box">
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+            ></circle>
+
+            <path
+                d="m20 20-4-4"
+            ></path>
+
+        </svg>
 
 
-    {% if reels %}
+        <input
+            type="text"
+            id="messageSearch"
+            placeholder="Search conversations..."
+            autocomplete="off"
+        >
+
+    </div>
+
+</section>
 
 
-        {% for reel in reels %}
 
+<!-- =========================================================
+     MESSAGES
+========================================================= -->
 
-        <article class="reel-card">
+<main class="messages-container">
 
+    {% if people %}
 
-            <!-- MEDIA -->
+        <div id="peopleList">
 
-            {% if reel.media %}
+            {% for person in people %}
 
-                {% set media_path = reel.media %}
+                <a
+                    href="{{ url_for('conversation', user_id=person['id']) }}"
+                    class="person-card"
+                    data-name="{{ person['name']|lower }}"
+                    data-email="{{ person['email']|lower }}"
+                >
 
-                {% if media_path.endswith('.mp4') or
-                      media_path.endswith('.webm') or
-                      media_path.endswith('.mov') %}
+                    <div class="avatar-wrapper">
 
-                    <video
-                        class="reel-media"
-                        src="{{ url_for('static', filename='uploads/' + reel.media) }}"
-                        controls
-                        playsinline
-                        preload="metadata"
-                    ></video>
+                        {% if person['profile_picture'] %}
 
-                {% else %}
+                            <img
+                                class="avatar"
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + person['profile_picture']
+                                ) }}"
+                                alt="{{ person['name'] }}"
+                            >
 
-                    <img
-                        class="reel-media"
-                        src="{{ url_for('static', filename='uploads/' + reel.media) }}"
-                        alt="Reel"
-                    >
+                        {% else %}
 
-                {% endif %}
+                            <div class="avatar-fallback">
 
-            {% endif %}
+                                {{ person['name'][0]|upper }}
 
+                            </div>
 
-            <div class="reel-overlay"></div>
-
-
-            <!-- USER -->
-
-            <div class="reel-user">
-
-                {% if reel.profile_picture %}
-
-                    <img
-                        class="reel-avatar"
-                        src="{{ url_for(
-                            'static',
-                            filename='uploads/' + reel.profile_picture
-                        ) }}"
-                        alt="{{ reel.name }}"
-                    >
-
-                {% else %}
-
-                    <div class="reel-avatar-fallback">
-
-                        {{ reel.name[0] | upper }}
+                        {% endif %}
 
                     </div>
 
-                {% endif %}
 
+                    <div class="person-info">
 
-                <span class="reel-name">
+                        <span class="person-name">
 
-                    {{ reel.name }}
+                            {{ person['name'] }}
 
-                </span>
+                        </span>
 
-            </div>
 
+                        <span class="last-message">
 
-            <!-- CAPTION -->
+                            {% if person['last_message'] %}
 
-            {% if reel.caption %}
+                                {{ person['last_message'] }}
 
-                <div class="reel-caption">
+                            {% else %}
 
-                    {{ reel.caption }}
+                                Start a conversation
 
-                </div>
+                            {% endif %}
 
-            {% endif %}
+                        </span>
 
+                    </div>
 
 
-            <!-- =================================================
-                 ACTION BUTTONS
-            ================================================= -->
+                    {% if person['last_time'] %}
 
-            <div class="reel-actions">
+                        <span class="message-time">
 
+                            {{ person['last_time'] }}
 
-                <!-- LIKE -->
+                        </span>
 
-                <button
-                    type="button"
-                    class="action like {% if reel.user_liked %}active{% endif %}"
-                    data-id="{{ reel.id }}"
-                    onclick="toggleLike(this)"
-                >
+                    {% endif %}
 
-                    <span class="action-icon">
+                </a>
 
-                        <svg viewBox="0 0 24 24">
+            {% endfor %}
 
-                            <path
-                                d="M20.8 8.6c0 5.4-8.8 10.1-8.8 10.1S3.2 14 3.2 8.6A4.6 4.6 0 0 1 12 6.2a4.6 4.6 0 0 1 8.8 2.4Z"
-                            />
+        </div>
 
-                        </svg>
 
-                    </span>
-
-
-                    <span class="action-count">
-
-                        {{ reel.like_count or 0 }}
-
-                    </span>
-
-                </button>
-
-
-
-                <!-- COMMENT -->
-
-                <button
-                    type="button"
-                    class="action"
-                    onclick="openComments('{{ reel.id }}')"
-                >
-
-                    <span class="action-icon">
-
-                        <svg viewBox="0 0 24 24">
-
-                            <path
-                                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"
-                            />
-
-                            <path
-                                d="M8.5 11.5h.01"
-                            />
-
-                            <path
-                                d="M12 11.5h.01"
-                            />
-
-                            <path
-                                d="M15.5 11.5h.01"
-                            />
-
-                        </svg>
-
-                    </span>
-
-
-                    <span class="action-count">
-
-                        {{ reel.comment_count or 0 }}
-
-                    </span>
-
-                </button>
-
-
-
-                <!-- SHARE -->
-
-                <button
-                    type="button"
-                    class="action"
-                    onclick="shareReel('{{ reel.id }}')"
-                >
-
-                    <span class="action-icon">
-
-                        <svg viewBox="0 0 24 24">
-
-                            <path
-                                d="M21 3 10 14"
-                            />
-
-                            <path
-                                d="m21 3-7 18-4-7-7-4Z"
-                            />
-
-                        </svg>
-
-                    </span>
-
-
-                    <span class="action-count">
-                        Share
-                    </span>
-
-                </button>
-
-
-
-                <!-- DELETE -->
-
-                {% if reel.user_id == session.get('user_id') %}
-
-                <button
-                    type="button"
-                    class="action"
-                    onclick="deleteReel('{{ reel.id }}')"
-                >
-
-                    <span class="action-icon">
-
-                        <svg viewBox="0 0 24 24">
-
-                            <path
-                                d="M4 7h16"
-                            />
-
-                            <path
-                                d="M10 11v6"
-                            />
-
-                            <path
-                                d="M14 11v6"
-                            />
-
-                            <path
-                                d="M6 7l1 13h10l1-13"
-                            />
-
-                            <path
-                                d="M9 7V4h6v3"
-                            />
-
-                        </svg>
-
-                    </span>
-
-
-                    <span class="action-count">
-                        Delete
-                    </span>
-
-                </button>
-
-                {% endif %}
-
-
-            </div>
-
-
-        </article>
-
-
-        {% endfor %}
-
-
-    {% else %}
-
-
-        <section class="empty">
+        <div
+            id="noSearchResults"
+            class="empty"
+            style="display:none;"
+        >
 
             <div class="empty-icon">
 
                 <svg viewBox="0 0 24 24">
 
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    ></circle>
+
                     <path
-                        d="M8 5.5v13l11-6.5z"
-                    />
+                        d="m20 20-4-4"
+                    ></path>
 
                 </svg>
 
@@ -1181,19 +943,57 @@
 
 
             <h2>
-                No reels yet
+                No conversations found
             </h2>
 
 
             <p>
-                Upload your first reel and share it with people.
+                Try searching for another person.
             </p>
+
+        </div>
+
+    {% else %}
+
+        <section class="empty">
+
+            <div class="empty-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"></path>
+
+                    <path d="M8.5 11.5h.01"></path>
+
+                    <path d="M12 11.5h.01"></path>
+
+                    <path d="M15.5 11.5h.01"></path>
+
+                </svg>
+
+            </div>
+
+
+            <h2>
+                No messages yet
+            </h2>
+
+
+            <p>
+                Connect with people and start your first conversation.
+            </p>
+
+
+            <a
+                href="{{ url_for('find_people') }}"
+                class="find-button"
+            >
+                Find People
+            </a>
 
         </section>
 
-
     {% endif %}
-
 
 </main>
 
@@ -1215,17 +1015,11 @@
 
         <svg viewBox="0 0 24 24">
 
-            <path
-                d="m3 10 9-7 9 7"
-            />
+            <path d="m3 10 9-7 9 7"></path>
 
-            <path
-                d="M5 9v11h14V9"
-            />
+            <path d="M5 9v11h14V9"></path>
 
-            <path
-                d="M9 20v-6h6v6"
-            />
+            <path d="M9 20v-6h6v6"></path>
 
         </svg>
 
@@ -1248,21 +1042,21 @@
                 cx="9"
                 cy="8"
                 r="3"
-            />
+            ></circle>
 
             <path
                 d="M3 20a6 6 0 0 1 12 0"
-            />
+            ></path>
 
             <circle
                 cx="17"
                 cy="9"
                 r="2.5"
-            />
+            ></circle>
 
             <path
                 d="M17 14a5 5 0 0 1 4 4"
-            />
+            ></path>
 
         </svg>
 
@@ -1272,11 +1066,44 @@
 
 
 
+    <!-- CHAT -->
+
+    <a
+        href="{{ url_for('messages') }}"
+        class="nav-item active"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"
+            ></path>
+
+            <path
+                d="M8.5 11.5h.01"
+            ></path>
+
+            <path
+                d="M12 11.5h.01"
+            ></path>
+
+            <path
+                d="M15.5 11.5h.01"
+            ></path>
+
+        </svg>
+
+        <span>Chat</span>
+
+    </a>
+
+
+
     <!-- REELS -->
 
     <a
         href="{{ url_for('reels') }}"
-        class="nav-item active"
+        class="nav-item"
     >
 
         <svg viewBox="0 0 24 24">
@@ -1287,19 +1114,19 @@
                 width="18"
                 height="16"
                 rx="2"
-            />
+            ></rect>
 
             <path
                 d="m8 4 3 5"
-            />
+            ></path>
 
             <path
                 d="m14 4 3 5"
-            />
+            ></path>
 
             <path
                 d="M10 12.5v3l4-1.5-4-1.5Z"
-            />
+            ></path>
 
         </svg>
 
@@ -1322,18 +1149,17 @@
                 cx="12"
                 cy="8"
                 r="3.5"
-            />
+            ></circle>
 
             <path
                 d="M5 21a7 7 0 0 1 14 0"
-            />
+            ></path>
 
         </svg>
 
         <span>Profile</span>
 
     </a>
-
 
 </nav>
 
@@ -1342,183 +1168,93 @@
 <script>
 
 /* =========================================================
-   LIKE
+   SEARCH CONVERSATIONS
 ========================================================= */
 
-async function toggleLike(button) {
+const searchInput =
+    document.getElementById(
+        "messageSearch"
+    );
 
-    const postId =
-        button.dataset.id;
+const peopleList =
+    document.getElementById(
+        "peopleList"
+    );
 
-    try {
+const noSearchResults =
+    document.getElementById(
+        "noSearchResults"
+    );
 
-        const response =
-            await fetch(
-                "/like/" + postId,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json"
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            const search =
+                this.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (!peopleList) {
+                return;
+            }
+
+
+            const cards =
+                peopleList.querySelectorAll(
+                    ".person-card"
+                );
+
+
+            let visibleCount = 0;
+
+
+            cards.forEach(
+                function (card) {
+
+                    const name =
+                        card.dataset.name || "";
+
+                    const email =
+                        card.dataset.email || "";
+
+
+                    if (
+                        name.includes(search)
+                        ||
+                        email.includes(search)
+                    ) {
+
+                        card.style.display =
+                            "flex";
+
+                        visibleCount++;
+
+                    } else {
+
+                        card.style.display =
+                            "none";
                     }
+
                 }
             );
 
 
-        const data =
-            await response.json();
+            if (noSearchResults) {
 
+                noSearchResults.style.display =
+                    visibleCount === 0
+                    ? "flex"
+                    : "none";
 
-        if (!data.success) {
-            return;
-        }
-
-
-        const count =
-            button.querySelector(
-                ".action-count"
-            );
-
-
-        count.textContent =
-            data.like_count;
-
-
-        if (data.liked) {
-
-            button.classList.add("active");
-
-        } else {
-
-            button.classList.remove("active");
+            }
 
         }
-
-    } catch (error) {
-
-        console.error(error);
-
-    }
-
-}
-
-
-
-/* =========================================================
-   SHARE
-========================================================= */
-
-async function shareReel(id) {
-
-    const url =
-        window.location.origin +
-        "/reels#" +
-        id;
-
-
-    try {
-
-        if (
-            navigator.share
-        ) {
-
-            await navigator.share({
-                title:
-                    "PrivateConnect Reel",
-                url: url
-            });
-
-        } else {
-
-            await navigator.clipboard.writeText(url);
-
-            alert(
-                "Reel link copied."
-            );
-
-        }
-
-    } catch (error) {
-
-        console.log(error);
-
-    }
-
-}
-
-
-
-/* =========================================================
-   COMMENTS
-========================================================= */
-
-function openComments(id) {
-
-    /*
-       Keep your existing comment system here.
-
-       This prevents the button from
-       changing page unexpectedly.
-    */
-
-    window.location.href =
-        "/dashboard#post-" + id;
-
-}
-
-
-
-/* =========================================================
-   DELETE
-========================================================= */
-
-async function deleteReel(id) {
-
-    const confirmed =
-        confirm(
-            "Delete this reel?"
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/delete_post/" + id,
-                {
-                    method: "POST"
-                }
-            );
-
-
-        if (
-            response.ok
-        ) {
-
-            location.reload();
-
-        } else {
-
-            alert(
-                "Unable to delete this reel."
-            );
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Something went wrong."
-        );
-
-    }
+    );
 
 }
 

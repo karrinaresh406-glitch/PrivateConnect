@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -8,15 +9,15 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
 >
 
-<meta name="theme-color" content="#071426">
+<meta name="theme-color" content="#07111f">
 
 <title>PrivateConnect</title>
 
 <style>
 
-/* =====================================================
-   GLOBAL RESET
-===================================================== */
+/* =========================================================
+   RESET
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -25,9 +26,8 @@
 }
 
 html {
+    background: #07111f;
     width: 100%;
-    min-height: 100%;
-    background: #071426;
 }
 
 body {
@@ -35,10 +35,8 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
 
-    margin: 0;
-
-    background: #071426;
-    color: #fff;
+    background: #07111f;
+    color: #ffffff;
 
     font-family:
         -apple-system,
@@ -50,12 +48,11 @@ body {
 
     overflow-x: hidden;
 
-    /*
-       IMPORTANT:
-       Space for the fixed header and bottom navigation.
-    */
-    padding-top: calc(64px + env(safe-area-inset-top, 0px));
-    padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+    padding-top:
+        calc(64px + env(safe-area-inset-top, 0px));
+
+    padding-bottom:
+        calc(76px + env(safe-area-inset-bottom, 0px));
 }
 
 button,
@@ -64,28 +61,25 @@ textarea {
     font: inherit;
 }
 
-button {
-    -webkit-tap-highlight-color: transparent;
-}
-
+button,
 a {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* =====================================================
-   SVG ICONS
-===================================================== */
+
+/* =========================================================
+   ICON SYSTEM
+========================================================= */
 
 .icon {
-    width: 21px;
-    height: 21px;
+    width: 22px;
+    height: 22px;
 
     display: block;
 
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.9;
-
+    stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
@@ -96,9 +90,9 @@ a {
 }
 
 
-/* =====================================================
+/* =========================================================
    HEADER
-===================================================== */
+========================================================= */
 
 .header {
     position: fixed;
@@ -107,36 +101,26 @@ a {
     left: 0;
     right: 0;
 
-    width: 100%;
-
-    min-height: calc(
-        64px + env(safe-area-inset-top, 0px)
-    );
+    height:
+        calc(64px + env(safe-area-inset-top, 0px));
 
     padding:
         env(safe-area-inset-top, 0px)
-        15px
+        14px
         0;
 
     display: flex;
     align-items: center;
 
-    background: #071426;
+    background: rgba(7,17,31,.97);
 
-    border-bottom: 1px solid #1c334c;
+    border-bottom: 1px solid #1b3047;
 
-    z-index: 1000;
-
-    isolation: isolate;
-
-    box-shadow:
-        0 2px 12px rgba(0,0,0,.20);
+    z-index: 5000;
 }
 
 .logo {
-    position: relative;
-
-    color: #fff;
+    color: #ffffff;
 
     font-size: 22px;
     font-weight: 800;
@@ -150,12 +134,11 @@ a {
     color: #4da3ff;
 }
 
-.header-spacer {
+.header-space {
     flex: 1;
 }
 
-.header-button,
-.notification-button {
+.header-action {
     width: 42px;
     height: 42px;
 
@@ -163,58 +146,49 @@ a {
     align-items: center;
     justify-content: center;
 
-    border: 0;
-
-    background: transparent;
-    color: #e8f2fc;
-
-    cursor: pointer;
+    color: #e7f0fa;
 
     text-decoration: none;
 
-    position: relative;
-    z-index: 2;
+    border-radius: 50%;
 }
 
-.header-button:active,
-.notification-button:active {
-    transform: scale(.90);
+.header-action:active {
+    background: #142941;
+    transform: scale(.92);
 }
 
 
-/* =====================================================
+/* =========================================================
    NOTIFICATION
-===================================================== */
+========================================================= */
 
 .notification-wrapper {
     position: relative;
-    z-index: 3000;
 }
 
 .notification-badge {
     position: absolute;
 
-    top: 1px;
-    right: 0;
+    top: 0;
+    right: -1px;
 
-    min-width: 18px;
-    height: 18px;
+    min-width: 17px;
+    height: 17px;
 
     padding: 0 4px;
 
     display: none;
-
     align-items: center;
     justify-content: center;
 
+    background: #ff365f;
+    color: #ffffff;
+
+    border: 2px solid #07111f;
     border-radius: 20px;
 
-    background: #ff3d67;
-    color: #fff;
-
-    border: 2px solid #071426;
-
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 800;
 }
 
@@ -224,24 +198,24 @@ a {
     top: 48px;
     right: -5px;
 
-    width: 340px;
+    width: 330px;
     max-width: calc(100vw - 20px);
 
-    max-height: 480px;
+    max-height: 450px;
 
-    background: #0d1e34;
+    background: #0b1a2c;
 
-    border: 1px solid #294766;
+    border: 1px solid #243e5a;
     border-radius: 16px;
 
     overflow: hidden;
 
     box-shadow:
-        0 18px 45px rgba(0,0,0,.55);
+        0 20px 50px rgba(0,0,0,.6);
 
     display: none;
 
-    z-index: 5000;
+    z-index: 9000;
 }
 
 .notification-panel.show {
@@ -249,7 +223,7 @@ a {
 }
 
 .notification-header {
-    height: 50px;
+    height: 48px;
 
     display: flex;
     align-items: center;
@@ -257,28 +231,28 @@ a {
 
     padding: 0 14px;
 
-    border-bottom: 1px solid #203954;
+    border-bottom: 1px solid #20364e;
 }
 
 .notification-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
 }
 
 .notification-read-button {
     border: 0;
+    background: none;
 
-    background: transparent;
     color: #4da3ff;
 
     font-size: 11px;
+    font-weight: 600;
 
     cursor: pointer;
 }
 
 .notification-list {
-    max-height: 430px;
-
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -290,15 +264,14 @@ a {
 
     padding: 11px 13px;
 
-    color: #fff;
-
+    color: #ffffff;
     text-decoration: none;
 
-    border-bottom: 1px solid #172f49;
+    border-bottom: 1px solid #172b40;
 }
 
 .notification-item.unread {
-    background: #102b47;
+    background: #102943;
 }
 
 .notification-avatar {
@@ -307,11 +280,11 @@ a {
 
     min-width: 40px;
 
-    border-radius: 50%;
-
     object-fit: cover;
 
-    border: 1px solid #3974a9;
+    border-radius: 50%;
+
+    border: 1px solid #31587c;
 }
 
 .notification-content {
@@ -322,14 +295,12 @@ a {
 .notification-message {
     font-size: 12px;
     line-height: 1.4;
-
-    word-break: break-word;
 }
 
 .notification-time {
     margin-top: 3px;
 
-    color: #7890a7;
+    color: #7890a8;
 
     font-size: 9px;
 }
@@ -351,86 +322,62 @@ a {
 
     text-align: center;
 
-    color: #8298ad;
+    color: #7f94aa;
 
     font-size: 12px;
 }
 
 
-/* =====================================================
-   MAIN CONTAINER
-===================================================== */
+/* =========================================================
+   MAIN
+========================================================= */
 
 .container {
-    position: relative;
-
     width: 100%;
     max-width: 680px;
 
     margin: 0 auto;
 
     padding:
-        8px
+        10px
         0
         30px;
-
-    min-height:
-        calc(
-            100vh
-            - 64px
-            - 82px
-        );
-
-    min-height:
-        calc(
-            100dvh
-            - 64px
-            - 82px
-        );
-
-    z-index: 1;
 }
 
 
-/* =====================================================
+/* =========================================================
    WELCOME
-===================================================== */
+========================================================= */
 
 .welcome {
-    margin: 8px 12px 13px;
+    margin: 0 12px 14px;
 
     padding: 16px 18px;
 
-    min-height: 64px;
-
-    display: flex;
-    align-items: center;
-
-    border: 1px solid #173b5c;
-
-    border-radius: 18px;
+    border: 1px solid #1b3c5b;
+    border-radius: 17px;
 
     background:
         linear-gradient(
             135deg,
-            #0d2b49,
-            #0b2440
+            #0d2945,
+            #0b2036
         );
 
-    font-size: 21px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 750;
 }
 
 
-/* =====================================================
-   QUICK MENU
-===================================================== */
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
 
 .quick-menu {
     display: grid;
 
     grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+        repeat(4, 1fr);
 
     gap: 8px;
 
@@ -442,10 +389,9 @@ a {
 .quick-menu a {
     min-width: 0;
 
-    height: 82px;
+    height: 76px;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
@@ -453,66 +399,51 @@ a {
 
     gap: 7px;
 
-    border: 1px solid #214866;
-
-    border-radius: 15px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #0d2944,
-            #0b223a
-        );
-
-    color: #e9f2fa;
+    color: #dce9f5;
 
     text-decoration: none;
 
-    font-size: 11px;
-    font-weight: 600;
+    background: #0b1b2d;
 
-    text-align: center;
+    border: 1px solid #1e3851;
+    border-radius: 14px;
 
-    overflow: hidden;
+    font-size: 10px;
+    font-weight: 650;
 }
 
 .quick-menu a:active {
-    transform: scale(.96);
-
-    background: #123451;
+    transform: scale(.95);
+    background: #102941;
 }
 
 .quick-icon {
-    width: 25px;
-    height: 25px;
+    width: 23px;
+    height: 23px;
 
-    color: #63adff;
-}
-
-.quick-menu strong {
-    font-weight: 600;
+    color: #68b1ff;
 }
 
 
-/* =====================================================
-   SECTION TITLE
-===================================================== */
+/* =========================================================
+   SECTION TITLES
+========================================================= */
 
 .section-title,
 .feed-title {
     padding:
-        4px
+        3px
         14px
         9px;
 
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 750;
 }
 
 
-/* =====================================================
+/* =========================================================
    PEOPLE
-===================================================== */
+========================================================= */
 
 .people {
     display: flex;
@@ -524,11 +455,9 @@ a {
     padding:
         2px
         14px
-        17px;
+        18px;
 
     scrollbar-width: none;
-
-    overscroll-behavior-x: contain;
 }
 
 .people::-webkit-scrollbar {
@@ -536,23 +465,22 @@ a {
 }
 
 .person {
-    width: 64px;
-    min-width: 64px;
+    width: 62px;
+    min-width: 62px;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
 
-    color: #fff;
+    color: #ffffff;
 
     text-decoration: none;
 }
 
 .person-image-wrapper {
-    width: 60px;
-    height: 60px;
+    width: 58px;
+    height: 58px;
 
     padding: 2px;
 
@@ -562,8 +490,7 @@ a {
         linear-gradient(
             135deg,
             #238cff,
-            #7b61ff,
-            #ff4d8d
+            #7b61ff
         );
 
     margin-bottom: 5px;
@@ -573,45 +500,45 @@ a {
     width: 100%;
     height: 100%;
 
-    border-radius: 50%;
-
     object-fit: cover;
 
-    border: 2px solid #071426;
+    border-radius: 50%;
+
+    border: 2px solid #07111f;
 }
 
 .person-name {
-    width: 64px;
-
-    text-align: center;
-
-    font-size: 10px;
-
-    color: #e5edf6;
+    width: 62px;
 
     overflow: hidden;
 
     white-space: nowrap;
 
     text-overflow: ellipsis;
+
+    text-align: center;
+
+    font-size: 10px;
+
+    color: #dbe6f1;
 }
 
 
-/* =====================================================
+/* =========================================================
    CREATE POST
-===================================================== */
+========================================================= */
 
 .create-post {
     margin:
-        3px
+        2px
         12px
         17px;
 
     padding: 14px;
 
-    background: #0d1e34;
+    background: #0b1b2d;
 
-    border: 1px solid #1d3855;
+    border: 1px solid #1d3853;
 
     border-radius: 17px;
 }
@@ -619,36 +546,32 @@ a {
 .create-post textarea {
     width: 100%;
 
-    min-height: 92px;
-    max-height: 180px;
+    min-height: 90px;
 
     resize: vertical;
 
     padding: 13px;
 
-    border: 1px solid #294766;
+    border: 1px solid #294663;
 
-    border-radius: 13px;
+    border-radius: 12px;
 
     outline: none;
 
-    background: #08172a;
-    color: #fff;
+    background: #071625;
+    color: #ffffff;
 
     font-size: 14px;
-    line-height: 1.4;
 }
 
 .create-post textarea::placeholder {
-    color: #71859b;
+    color: #71869c;
 }
 
 .create-bottom {
     display: flex;
 
-    align-items: center;
-
-    gap: 9px;
+    gap: 8px;
 
     margin-top: 10px;
 }
@@ -656,38 +579,25 @@ a {
 .file-label {
     flex: 1;
 
-    min-width: 0;
-
-    height: 43px;
+    height: 42px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
     gap: 7px;
 
-    border: 1px solid #294766;
+    background: #10253c;
 
-    border-radius: 11px;
+    border: 1px solid #294663;
+    border-radius: 10px;
 
-    background: #102641;
+    color: #cbd9e7;
 
-    color: #c8d7e6;
-
-    font-size: 12px;
-
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 650;
 
     cursor: pointer;
-
-    overflow: hidden;
-
-    white-space: nowrap;
-}
-
-.file-label:active {
-    transform: scale(.97);
 }
 
 .file-label input {
@@ -695,60 +605,51 @@ a {
 }
 
 .post-button {
-    width: 82px;
-    height: 43px;
-
-    flex-shrink: 0;
+    width: 78px;
 
     border: 0;
-
-    border-radius: 11px;
+    border-radius: 10px;
 
     background: #238cff;
+    color: #ffffff;
 
-    color: #fff;
-
-    font-size: 13px;
-
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 750;
 
     cursor: pointer;
 }
 
 .post-button:active {
-    transform: scale(.96);
+    transform: scale(.95);
 }
 
 
-/* =====================================================
+/* =========================================================
    POST
-===================================================== */
+========================================================= */
 
 .post {
     width: 100%;
 
-    margin-bottom: 12px;
+    margin-bottom: 13px;
 
-    background: #0d1e34;
+    background: #0b1b2d;
 
-    border-top: 1px solid #1c334c;
-    border-bottom: 1px solid #1c334c;
+    border-top: 1px solid #1b344c;
+    border-bottom: 1px solid #1b344c;
 
     overflow: hidden;
-
-    position: relative;
 }
 
 
-/* =====================================================
+/* =========================================================
    POST HEADER
-===================================================== */
+========================================================= */
 
 .post-header {
-    min-height: 63px;
+    min-height: 62px;
 
     display: flex;
-
     align-items: center;
 
     padding: 10px 13px;
@@ -762,37 +663,31 @@ a {
 
     margin-right: 10px;
 
-    border-radius: 50%;
-
     object-fit: cover;
 
-    border: 1px solid #3974a9;
+    border-radius: 50%;
+
+    border: 1px solid #345d80;
 }
 
 .post-user-info {
     flex: 1;
-
     min-width: 0;
 }
 
 .post-user {
-    color: #fff;
-
     font-size: 14px;
-
     font-weight: 700;
 
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .post-time {
     margin-top: 3px;
 
-    color: #8298ad;
+    color: #7d94aa;
 
     font-size: 10px;
 }
@@ -802,23 +697,21 @@ a {
     height: 38px;
 
     display: flex;
-
     align-items: center;
     justify-content: center;
 
-    color: #9cafc2;
-
+    border: 0;
     border-radius: 50%;
 
-    border: 0;
-
     background: transparent;
+
+    color: #8ca2b8;
 }
 
 
-/* =====================================================
+/* =========================================================
    CAPTION
-===================================================== */
+========================================================= */
 
 .post-caption {
     padding:
@@ -826,63 +719,53 @@ a {
         13px
         12px;
 
-    color: #edf4fa;
+    color: #e9f1f8;
 
     font-size: 14px;
-
     line-height: 1.5;
 
     white-space: pre-wrap;
-
     word-break: break-word;
 }
 
 
-/* =====================================================
+/* =========================================================
    MEDIA
-===================================================== */
+========================================================= */
 
 .post-media {
     display: block;
 
     width: 100%;
 
-    height: auto;
-
     max-height: 760px;
 
-    object-fit: cover;
-
     background: #000;
+
+    object-fit: cover;
 }
 
 img.post-media,
 video.post-media {
     aspect-ratio: 4 / 5;
-
-    object-fit: cover;
 }
 
 
-/* =====================================================
-   ACTION BAR
-===================================================== */
+/* =========================================================
+   REAL SOCIAL MEDIA ACTION BAR
+========================================================= */
 
 .post-actions {
-    display: flex;
+    min-height: 50px;
 
+    display: flex;
     align-items: center;
 
-    gap: 2px;
-
     padding:
-        7px
-        9px
-        6px;
+        4px
+        8px;
 
-    border-top:
-        1px solid
-        rgba(255,255,255,.035);
+    border-top: 1px solid rgba(255,255,255,.04);
 }
 
 .action-form {
@@ -890,67 +773,64 @@ video.post-media {
 }
 
 .action-button {
-    min-width: 45px;
-
-    height: 39px;
+    min-width: 48px;
+    height: 42px;
 
     display: inline-flex;
-
     align-items: center;
     justify-content: center;
 
-    gap: 6px;
+    gap: 5px;
 
     padding:
         0
-        7px;
+        8px;
 
     border: 0;
-
-    border-radius: 10px;
+    border-radius: 9px;
 
     background: transparent;
 
-    color: #dce8f5;
+    color: #dce8f4;
 
     cursor: pointer;
 }
 
-.action-button:hover {
-    background:
-        rgba(255,255,255,.045);
+.action-button:active {
+    transform: scale(.88);
 }
 
-.action-button:active {
-    transform: scale(.91);
+.action-button:hover {
+    background: rgba(255,255,255,.05);
 }
 
 .action-icon {
-    width: 21px;
-    height: 21px;
+    width: 23px;
+    height: 23px;
 }
 
 .like-icon {
-    color: #dce8f5;
+    color: #e0eaf4;
 }
 
 .liked {
-    color: #ff3b68;
+    color: #ff3d68;
 }
 
 .liked .like-icon {
-    color: #ff3b68;
+    color: #ff3d68;
 }
 
 .like-count,
 .comment-count {
-    color: #aebed0;
+    color: #a9bacb;
 
     font-size: 11px;
+    font-weight: 600;
 }
 
-.share-text {
-    font-size: 11px;
+.share-button {
+    color: #dce8f4;
 }
 
 .delete-button {
@@ -960,9 +840,9 @@ video.post-media {
 }
 
 
-/* =====================================================
+/* =========================================================
    COMMENTS
-===================================================== */
+========================================================= */
 
 .comments {
     padding:
@@ -974,19 +854,16 @@ video.post-media {
 .comment {
     margin-bottom: 8px;
 
-    color: #dce8f5;
+    color: #d8e4ef;
 
     font-size: 12px;
-
     line-height: 1.45;
-
-    word-break: break-word;
 }
 
 .comment strong {
-    margin-right: 4px;
+    color: #62adff;
 
-    color: #63adff;
+    margin-right: 4px;
 }
 
 .comment-form {
@@ -994,7 +871,7 @@ video.post-media {
 
     gap: 7px;
 
-    margin-top: 9px;
+    margin-top: 8px;
 }
 
 .comment-form input {
@@ -1004,86 +881,69 @@ video.post-media {
 
     height: 39px;
 
-    padding:
-        0
-        12px;
+    padding: 0 13px;
 
-    border: 1px solid #294766;
+    background: #071625;
 
+    border: 1px solid #294663;
     border-radius: 20px;
 
     outline: none;
 
-    background: #08172a;
-
-    color: #fff;
+    color: #ffffff;
 
     font-size: 12px;
 }
 
 .comment-form input::placeholder {
-    color: #71859b;
+    color: #71869c;
 }
 
 .comment-form button {
     width: 58px;
-
     height: 39px;
 
-    flex-shrink: 0;
-
     border: 0;
-
     border-radius: 20px;
 
     background: #238cff;
-
-    color: #fff;
+    color: #ffffff;
 
     font-size: 11px;
-
     font-weight: 700;
-
-    cursor: pointer;
-}
-
-.comment-form button:disabled {
-    opacity: .5;
 }
 
 
-/* =====================================================
-   EMPTY POSTS
-===================================================== */
+/* =========================================================
+   EMPTY
+========================================================= */
 
 .empty-posts {
     margin:
         10px
         12px;
 
-    padding:
-        38px
-        15px;
+    padding: 40px 15px;
 
     text-align: center;
 
-    background: #0d1e34;
+    background: #0b1b2d;
 
-    border: 1px solid #1d3855;
-
+    border: 1px solid #1d3853;
     border-radius: 17px;
 
-    color: #9cafc2;
+    color: #8ba0b5;
 
     font-size: 14px;
-
     line-height: 1.7;
 }
 
 
-/* =====================================================
+/* =========================================================
    BOTTOM NAVIGATION
-===================================================== */
+   IMPORTANT:
+   Home | People | Chat | Reels | Profile
+========================================================= */
 
 .bottom-nav {
     position: fixed;
@@ -1092,44 +952,31 @@ video.post-media {
     right: 0;
     bottom: 0;
 
-    width: 100%;
+    height:
+        calc(64px + env(safe-area-inset-bottom, 0px));
 
-    min-height:
-        calc(
-            68px
-            + env(safe-area-inset-bottom, 0px)
-        );
-
-    padding:
-        0
-        0
+    padding-bottom:
         env(safe-area-inset-bottom, 0px);
 
     display: flex;
-
     align-items: center;
-    justify-content: space-around;
 
-    background: #071426;
+    background: rgba(7,17,31,.98);
 
-    border-top: 1px solid #203954;
-
-    z-index: 2000;
-
-    isolation: isolate;
+    border-top: 1px solid #1d344b;
 
     box-shadow:
-        0 -5px 20px
-        rgba(0,0,0,.25);
+        0 -8px 25px rgba(0,0,0,.30);
+
+    z-index: 6000;
 }
 
 .bottom-nav a {
     flex: 1;
 
-    height: 68px;
+    height: 64px;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
@@ -1137,36 +984,31 @@ video.post-media {
 
     gap: 4px;
 
-    color: #8398ad;
+    color: #748ba1;
 
     text-decoration: none;
 
     font-size: 9px;
-
-    font-weight: 600;
-
-    position: relative;
-
-    z-index: 2;
+    font-weight: 650;
 }
 
 .bottom-nav .nav-icon {
-    width: 21px;
-    height: 21px;
+    width: 22px;
+    height: 22px;
 }
 
-.bottom-nav .active {
+.bottom-nav a.active {
     color: #4da3ff;
 }
 
 .bottom-nav a:active {
-    transform: scale(.91);
+    transform: scale(.90);
 }
 
 
-/* =====================================================
+/* =========================================================
    DESKTOP
-===================================================== */
+========================================================= */
 
 @media (min-width: 700px) {
 
@@ -1177,159 +1019,104 @@ video.post-media {
 
     .header {
         height: 64px;
-
         min-height: 64px;
-
-        padding:
-            0
-            15px;
+        padding: 0 15px;
     }
 
     .container {
-        max-width: 680px;
-
-        padding:
-            10px
-            0
-            30px;
-
-        min-height: auto;
-    }
-
-    .quick-menu a {
-        height: 88px;
+        padding-top: 10px;
     }
 
     .post {
-        border: 1px solid #1c334c;
-
-        border-radius: 13px;
+        border: 1px solid #1b344c;
+        border-radius: 14px;
     }
 
     .bottom-nav {
-        width: 510px;
-
-        min-height: 58px;
-        height: 58px;
-
         left: 50%;
         right: auto;
         bottom: 15px;
 
-        transform:
-            translateX(-50%);
+        width: 500px;
+        height: 58px;
 
-        border: 1px solid #294766;
+        transform: translateX(-50%);
 
-        border-radius: 20px;
+        border:
+            1px solid #29435c;
+
+        border-radius: 18px;
 
         padding: 0;
 
         box-shadow:
-            0 10px 40px
-            rgba(0,0,0,.4);
+            0 12px 40px rgba(0,0,0,.45);
     }
 
     .bottom-nav a {
-        height: 57px;
+        height: 56px;
     }
 }
 
 
-/* =====================================================
+/* =========================================================
    SMALL PHONES
-===================================================== */
+========================================================= */
 
-@media (max-width: 360px) {
-
-    body {
-        padding-top:
-            calc(
-                58px
-                + env(safe-area-inset-top, 0px)
-            );
-
-        padding-bottom:
-            calc(
-                80px
-                + env(safe-area-inset-bottom, 0px)
-            );
-    }
-
-    .header {
-        min-height:
-            calc(
-                58px
-                + env(safe-area-inset-top, 0px)
-            );
-
-        padding-left: 9px;
-        padding-right: 9px;
-    }
+@media (max-width: 380px) {
 
     .logo {
         font-size: 19px;
     }
 
-    .header-button,
-    .notification-button {
-        width: 37px;
-        height: 37px;
-    }
-
-    .container {
-        padding-top: 7px;
-    }
-
-    .welcome {
-        margin-left: 9px;
-        margin-right: 9px;
-
-        font-size: 19px;
-    }
-
     .quick-menu {
         gap: 5px;
-
         padding-left: 9px;
         padding-right: 9px;
     }
 
     .quick-menu a {
-        height: 78px;
-
+        height: 72px;
         font-size: 9px;
     }
 
     .quick-icon {
-        width: 22px;
-        height: 22px;
-    }
-
-    .section-title,
-    .feed-title {
-        padding-left: 12px;
-    }
-
-    .create-post {
-        margin-left: 9px;
-        margin-right: 9px;
+        width: 21px;
+        height: 21px;
     }
 
     .action-button {
-        min-width: 40px;
+        min-width: 42px;
+        padding: 0 6px;
     }
 
-    .share-text {
+    .share-button span {
         display: none;
     }
+
+    .bottom-nav a {
+        font-size: 8px;
+    }
+
+    .bottom-nav .nav-icon {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+
+/* =========================================================
+   NOTIFICATION MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
 
     .notification-panel {
         position: fixed;
 
         top:
             calc(
-                58px
+                64px
                 + env(safe-area-inset-top, 0px)
                 + 5px
             );
@@ -1338,61 +1125,21 @@ video.post-media {
         right: 10px;
 
         width: auto;
-
         max-width: none;
     }
 }
 
-
-/* =====================================================
-   VERY SMALL SCREENS
-===================================================== */
-
-@media (max-width: 320px) {
-
-    .logo {
-        font-size: 17px;
-    }
-
-    .quick-menu a {
-        height: 74px;
-    }
-
-    .quick-menu strong {
-        font-size: 8px;
-    }
-
-    .bottom-nav a {
-        font-size: 8px;
-    }
-}
-
-
-/* =====================================================
-   REDUCED MOTION
-===================================================== */
-
-@media (prefers-reduced-motion: reduce) {
-
-    * {
-        scroll-behavior: auto !important;
-
-        transition: none !important;
-
-        animation: none !important;
-    }
-}
-
 </style>
+
 </head>
 
 
 <body>
 
 
-<!-- =====================================================
+<!-- =========================================================
      HEADER
-===================================================== -->
+========================================================= -->
 
 <header class="header">
 
@@ -1401,14 +1148,60 @@ video.post-media {
     </div>
 
 
-    <div class="header-spacer"></div>
+    <div class="header-space"></div>
+
+
+    <!-- CHAT -->
+
+    <a
+        href="{{ url_for('messages') }}"
+        class="header-action"
+        aria-label="Messages"
+    >
+
+        <svg
+            class="icon"
+            viewBox="0 0 24 24"
+        >
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+            ></path>
+
+            <circle
+                cx="9"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="15"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+        </svg>
+
+    </a>
 
 
     <!-- SEARCH -->
 
     <a
         href="{{ url_for('find_people') }}"
-        class="header-button"
+        class="header-action"
         aria-label="Search"
     >
 
@@ -1416,13 +1209,17 @@ video.post-media {
             class="icon"
             viewBox="0 0 24 24"
         >
+
             <circle
-                cx="11"
-                cy="11"
-                r="6.5"
+                cx="10.8"
+                cy="10.8"
+                r="6.8"
             ></circle>
 
-            <path d="M16 16l5 5"></path>
+            <path
+                d="M16 16l5 5"
+            ></path>
+
         </svg>
 
     </a>
@@ -1434,7 +1231,7 @@ video.post-media {
 
         <button
             type="button"
-            class="notification-button"
+            class="header-action"
             onclick="toggleNotifications()"
             aria-label="Notifications"
         >
@@ -1448,7 +1245,9 @@ video.post-media {
                     d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
                 ></path>
 
-                <path d="M10 21h4"></path>
+                <path
+                    d="M10 21h4"
+                ></path>
 
             </svg>
 
@@ -1473,7 +1272,6 @@ video.post-media {
                 <span class="notification-title">
                     Notifications
                 </span>
-
 
                 <button
                     type="button"
@@ -1504,23 +1302,19 @@ video.post-media {
 </header>
 
 
-<!-- =====================================================
+<!-- =========================================================
      MAIN
-===================================================== -->
+========================================================= -->
 
 <main class="container">
 
-
-    <!-- WELCOME -->
 
     <div class="welcome">
         Welcome
     </div>
 
 
-    <!-- =================================================
-         QUICK ACTIONS
-    ================================================= -->
+    <!-- QUICK ACTIONS -->
 
     <div class="quick-menu">
 
@@ -1535,23 +1329,21 @@ video.post-media {
             >
 
                 <circle
-                    cx="11"
-                    cy="11"
-                    r="6.5"
+                    cx="10.8"
+                    cy="10.8"
+                    r="6.8"
                 ></circle>
 
                 <path d="M16 16l5 5"></path>
 
             </svg>
 
-            <strong>
-                Search
-            </strong>
+            <strong>Search</strong>
 
         </a>
 
 
-        <!-- CHATS -->
+        <!-- CHAT -->
 
         <a href="{{ url_for('messages') }}">
 
@@ -1564,11 +1356,33 @@ video.post-media {
                     d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
                 ></path>
 
+                <circle
+                    cx="9"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
+                <circle
+                    cx="15"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
             </svg>
 
-            <strong>
-                Chats
-            </strong>
+            <strong>Chats</strong>
 
         </a>
 
@@ -1588,9 +1402,7 @@ video.post-media {
 
             </svg>
 
-            <strong>
-                Match
-            </strong>
+            <strong>Match</strong>
 
         </a>
 
@@ -1626,18 +1438,14 @@ video.post-media {
 
             </svg>
 
-            <strong>
-                Connections
-            </strong>
+            <strong>Connections</strong>
 
         </a>
 
     </div>
 
 
-    <!-- =================================================
-         PEOPLE
-    ================================================= -->
+    <!-- PEOPLE -->
 
     <div class="section-title">
         People Near You
@@ -1651,16 +1459,11 @@ video.post-media {
             {% for user in users %}
 
                 <a
-                    href="{{ url_for(
-                        'profile',
-                        user_id=user.id
-                    ) }}"
+                    href="{{ url_for('profile', user_id=user.id) }}"
                     class="person"
                 >
 
-                    <div
-                        class="person-image-wrapper"
-                    >
+                    <div class="person-image-wrapper">
 
                         {% if user.profile_picture %}
 
@@ -1682,7 +1485,6 @@ video.post-media {
                         {% endif %}
 
                     </div>
-
 
                     <div class="person-name">
                         {{ user.name }}
@@ -1709,9 +1511,7 @@ video.post-media {
     </div>
 
 
-    <!-- =================================================
-         CREATE POST
-    ================================================= -->
+    <!-- CREATE POST -->
 
     <div class="create-post">
 
@@ -1729,7 +1529,6 @@ video.post-media {
 
 
             <div class="create-bottom">
-
 
                 <label class="file-label">
 
@@ -1759,7 +1558,6 @@ video.post-media {
                     </svg>
 
                     Add photo/video
-
 
                     <input
                         type="file"
@@ -1792,9 +1590,7 @@ video.post-media {
     </div>
 
 
-    <!-- =================================================
-         FEED
-    ================================================= -->
+    <!-- POSTS -->
 
     <div class="feed-title">
         Posts
@@ -1814,7 +1610,6 @@ video.post-media {
                 <!-- POST HEADER -->
 
                 <div class="post-header">
-
 
                     {% if post.profile_picture %}
 
@@ -1866,18 +1661,24 @@ video.post-media {
                                 cx="5"
                                 cy="12"
                                 r="1"
+                                fill="currentColor"
+                                stroke="none"
                             ></circle>
 
                             <circle
                                 cx="12"
                                 cy="12"
                                 r="1"
+                                fill="currentColor"
+                                stroke="none"
                             ></circle>
 
                             <circle
                                 cx="19"
                                 cy="12"
                                 r="1"
+                                fill="currentColor"
+                                stroke="none"
                             ></circle>
 
                         </svg>
@@ -1943,9 +1744,7 @@ video.post-media {
                 {% endif %}
 
 
-                <!-- =================================================
-                     ACTIONS
-                ================================================= -->
+                <!-- ACTIONS -->
 
                 <div class="post-actions">
 
@@ -1959,17 +1758,15 @@ video.post-media {
                             like-button
                             {% if post.user_liked %}liked{% endif %}
                         "
-                        data-post-id="{{ post.id }}"
                         onclick="
-                            event.preventDefault();
                             likePost({{ post.id }}, this);
                             return false;
                         "
-                        aria-label="Like post"
+                        aria-label="Like"
                     >
 
                         <svg
-                            class="icon like-icon"
+                            class="icon action-icon like-icon"
                             viewBox="0 0 24 24"
                         >
 
@@ -1981,7 +1778,6 @@ video.post-media {
                             ></path>
 
                         </svg>
-
 
                         <span class="like-count">
                             {{ post.like_count }}
@@ -2003,7 +1799,7 @@ video.post-media {
                     >
 
                         <svg
-                            class="icon"
+                            class="icon action-icon"
                             viewBox="0 0 24 24"
                         >
 
@@ -2012,7 +1808,6 @@ video.post-media {
                             ></path>
 
                         </svg>
-
 
                         <span class="comment-count">
                             {{ post.comment_count }}
@@ -2025,29 +1820,48 @@ video.post-media {
 
                     <button
                         type="button"
-                        class="action-button"
+                        class="action-button share-button"
                         onclick="
                             sharePost({{ post.id }});
                             return false;
                         "
-                        aria-label="Share post"
+                        aria-label="Share"
                     >
 
                         <svg
-                            class="icon"
+                            class="icon action-icon"
                             viewBox="0 0 24 24"
                         >
 
-                            <path d="M12 16V4"></path>
+                            <circle
+                                cx="18"
+                                cy="5"
+                                r="2.5"
+                            ></circle>
 
-                            <path d="M7 9l5-5 5 5"></path>
+                            <circle
+                                cx="6"
+                                cy="12"
+                                r="2.5"
+                            ></circle>
 
-                            <path d="M5 13v6h14v-6"></path>
+                            <circle
+                                cx="18"
+                                cy="19"
+                                r="2.5"
+                            ></circle>
+
+                            <path
+                                d="M8.3 10.8l7.4-4.1"
+                            ></path>
+
+                            <path
+                                d="M8.3 13.2l7.4 4.1"
+                            ></path>
 
                         </svg>
 
-
-                        <span class="share-text">
+                        <span>
                             Share
                         </span>
 
@@ -2071,11 +1885,11 @@ video.post-media {
                         <button
                             type="submit"
                             class="action-button delete-button"
-                            aria-label="Delete post"
+                            aria-label="Delete"
                         >
 
                             <svg
-                                class="icon"
+                                class="icon action-icon"
                                 viewBox="0 0 24 24"
                             >
 
@@ -2098,15 +1912,12 @@ video.post-media {
                 </div>
 
 
-                <!-- =================================================
-                     COMMENTS
-                ================================================= -->
+                <!-- COMMENTS -->
 
                 <div
                     class="comments"
                     id="comments-{{ post.id }}"
                 >
-
 
                     {% for comment in post.comments %}
 
@@ -2143,7 +1954,6 @@ video.post-media {
                             required
                         >
 
-
                         <button type="submit">
                             Send
                         </button>
@@ -2159,7 +1969,6 @@ video.post-media {
 
     {% else %}
 
-
         <div class="empty-posts">
 
             No posts yet.
@@ -2170,15 +1979,14 @@ video.post-media {
 
         </div>
 
-
     {% endif %}
 
 </main>
 
 
-<!-- =====================================================
+<!-- =========================================================
      BOTTOM NAVIGATION
-===================================================== -->
+========================================================= -->
 
 <nav class="bottom-nav">
 
@@ -2195,76 +2003,30 @@ video.post-media {
             viewBox="0 0 24 24"
         >
 
-            <path d="M3 10.5L12 3l9 7.5"></path>
+            <path
+                d="M3 10.5L12 3l9 7.5"
+            ></path>
 
-            <path d="M5 9v11h14V9"></path>
+            <path
+                d="M5 9v11h14V9"
+            ></path>
 
-            <path d="M9 20v-6h6v6"></path>
+            <path
+                d="M9 20v-6h6v6"
+            ></path>
 
         </svg>
 
-        Home
+        <span>Home</span>
 
     </a>
 
 
     <!-- PEOPLE -->
 
-    <a href="{{ url_for('find_people') }}">
-
-        <svg
-            class="icon nav-icon"
-            viewBox="0 0 24 24"
-        >
-
-            <circle
-                cx="11"
-                cy="11"
-                r="6.5"
-            ></circle>
-
-            <path d="M16 16l5 5"></path>
-
-        </svg>
-
-        People
-
-    </a>
-
-
-    <!-- REELS -->
-
-    <a href="{{ url_for('reels') }}">
-
-        <svg
-            class="icon nav-icon"
-            viewBox="0 0 24 24"
-        >
-
-            <rect
-                x="3"
-                y="4"
-                width="18"
-                height="16"
-                rx="2"
-            ></rect>
-
-            <path d="M8 4l3 4"></path>
-
-            <path d="M14 4l3 4"></path>
-
-            <path d="M10 11l5 3-5 3z"></path>
-
-        </svg>
-
-        Reels
-
-    </a>
-
-
-    <!-- MATCH -->
-
-    <a href="{{ url_for('connections') }}">
+    <a
+        href="{{ url_for('find_people') }}"
+    >
 
         <svg
             class="icon nav-icon"
@@ -2284,23 +2046,113 @@ video.post-media {
             ></circle>
 
             <path
-                d="M3 19c0-3 2.7-5 6-5s6 2 6 5"
+                d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"
             ></path>
 
             <path
-                d="M15 14c3 0 5 1.8 5 4"
+                d="M15 15c3 0 5 1.7 5 4"
             ></path>
 
         </svg>
 
-        Match
+        <span>People</span>
+
+    </a>
+
+
+    <!-- CHAT
+         THIS NOW GOES DIRECTLY TO /messages
+    -->
+
+    <a
+        href="{{ url_for('messages') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+            ></path>
+
+            <circle
+                cx="9"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="15"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+        </svg>
+
+        <span>Chat</span>
+
+    </a>
+
+
+    <!-- REELS -->
+
+    <a
+        href="{{ url_for('reels') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+            ></rect>
+
+            <path
+                d="M8 4l3 4"
+            ></path>
+
+            <path
+                d="M14 4l3 4"
+            ></path>
+
+            <path
+                d="M10 11l5 3-5 3z"
+                fill="currentColor"
+                stroke="none"
+            ></path>
+
+        </svg>
+
+        <span>Reels</span>
 
     </a>
 
 
     <!-- PROFILE -->
 
-    <a href="{{ url_for('profile') }}">
+    <a
+        href="{{ url_for('profile') }}"
+    >
 
         <svg
             class="icon nav-icon"
@@ -2319,53 +2171,53 @@ video.post-media {
 
         </svg>
 
-        Profile
+        <span>Profile</span>
 
     </a>
 
 </nav>
 
 
-<!-- =====================================================
+<!-- =========================================================
      JAVASCRIPT
-===================================================== -->
+========================================================= -->
 
 <script>
 
-/* =====================================================
-   FOCUS COMMENT
-===================================================== */
+
+/* =========================================================
+   COMMENT
+========================================================= */
 
 function focusComment(postId) {
 
-    const box =
+    const input =
         document.querySelector(
             "#comments-" +
             postId +
             " input"
         );
 
-    if (!box) {
+    if (!input) {
         return;
     }
 
-    box.focus();
+    input.focus();
 
     setTimeout(function () {
 
-        box.scrollIntoView({
+        input.scrollIntoView({
             behavior: "smooth",
             block: "center"
         });
 
     }, 100);
-
 }
 
 
-/* =====================================================
-   LIKE POST
-===================================================== */
+/* =========================================================
+   LIKE
+========================================================= */
 
 function likePost(postId, button) {
 
@@ -2384,11 +2236,7 @@ function likePost(postId, button) {
     .then(function(response) {
 
         if (!response.ok) {
-
-            throw new Error(
-                "Like request failed"
-            );
-
+            throw new Error("Like failed");
         }
 
         return response.json();
@@ -2408,12 +2256,10 @@ function likePost(postId, button) {
             return;
         }
 
-
         const icon =
             button.querySelector(
                 ".like-icon"
             );
-
 
         const count =
             button.querySelector(
@@ -2423,42 +2269,28 @@ function likePost(postId, button) {
 
         if (data.liked) {
 
-            button.classList.add(
-                "liked"
-            );
+            button.classList.add("liked");
 
             if (icon) {
-
                 icon.style.fill =
                     "currentColor";
-
             }
 
         } else {
 
-            button.classList.remove(
-                "liked"
-            );
+            button.classList.remove("liked");
 
             if (icon) {
-
                 icon.style.fill =
                     "none";
-
             }
-
         }
 
 
         if (count) {
-
             count.textContent =
                 data.like_count;
-
         }
-
-
-        updateNotificationBadge();
 
     })
 
@@ -2471,13 +2303,12 @@ function likePost(postId, button) {
         );
 
     });
-
 }
 
 
-/* =====================================================
+/* =========================================================
    COMMENT
-===================================================== */
+========================================================= */
 
 function submitComment(
     event,
@@ -2487,35 +2318,28 @@ function submitComment(
 
     event.preventDefault();
 
-
     const input =
         form.querySelector(
             "input[name='comment']"
         );
-
 
     const button =
         form.querySelector(
             "button"
         );
 
-
     if (!input || !button) {
         return false;
     }
 
-
     const text =
         input.value.trim();
-
 
     if (!text) {
         return false;
     }
 
-
     button.disabled = true;
-
     button.textContent = "…";
 
 
@@ -2542,11 +2366,9 @@ function submitComment(
     .then(function(response) {
 
         if (!response.ok) {
-
             throw new Error(
-                "Comment request failed"
+                "Comment failed"
             );
-
         }
 
         return response.json();
@@ -2573,7 +2395,6 @@ function submitComment(
                 postId
             );
 
-
         if (!commentsBox) {
             return;
         }
@@ -2590,7 +2411,6 @@ function submitComment(
                 "div"
             );
 
-
         newComment.className =
             "comment";
 
@@ -2599,7 +2419,6 @@ function submitComment(
             document.createElement(
                 "strong"
             );
-
 
         name.textContent =
             data.name;
@@ -2612,10 +2431,7 @@ function submitComment(
             );
 
 
-        newComment.appendChild(
-            name
-        );
-
+        newComment.appendChild(name);
 
         newComment.appendChild(
             commentText
@@ -2640,37 +2456,22 @@ function submitComment(
 
         if (post) {
 
-            const commentButton =
+            const count =
                 post.querySelector(
-                    ".comment-button"
+                    ".comment-count"
                 );
 
+            if (
+                count &&
+                data.comment_count !==
+                undefined
+            ) {
 
-            if (commentButton) {
-
-                const commentCount =
-                    commentButton.querySelector(
-                        ".comment-count"
-                    );
-
-
-                if (
-                    commentCount &&
-                    data.comment_count !==
-                    undefined
-                ) {
-
-                    commentCount.textContent =
-                        data.comment_count;
-
-                }
+                count.textContent =
+                    data.comment_count;
 
             }
-
         }
-
-
-        updateNotificationBadge();
 
     })
 
@@ -2687,7 +2488,6 @@ function submitComment(
     .finally(function() {
 
         button.disabled = false;
-
         button.textContent = "Send";
 
     });
@@ -2697,9 +2497,9 @@ function submitComment(
 }
 
 
-/* =====================================================
-   SHARE POST
-===================================================== */
+/* =========================================================
+   SHARE
+========================================================= */
 
 function sharePost(postId) {
 
@@ -2713,11 +2513,9 @@ function sharePost(postId) {
     .then(function(response) {
 
         if (!response.ok) {
-
             throw new Error(
-                "Share request failed"
+                "Share failed"
             );
-
         }
 
         return response.json();
@@ -2738,6 +2536,25 @@ function sharePost(postId) {
 
 
         if (
+            navigator.share
+        ) {
+
+            navigator.share({
+                title:
+                    "PrivateConnect",
+                text:
+                    "Check out this post",
+                url:
+                    data.url
+            })
+
+            .catch(function() {});
+
+            return;
+        }
+
+
+        if (
             navigator.clipboard &&
             navigator.clipboard.writeText
         ) {
@@ -2745,6 +2562,7 @@ function sharePost(postId) {
             navigator.clipboard.writeText(
                 data.url
             )
+
             .then(function() {
 
                 alert(
@@ -2752,6 +2570,7 @@ function sharePost(postId) {
                 );
 
             })
+
             .catch(function() {
 
                 prompt(
@@ -2767,7 +2586,6 @@ function sharePost(postId) {
                 "Copy this link:",
                 data.url
             );
-
         }
 
     })
@@ -2781,13 +2599,12 @@ function sharePost(postId) {
         );
 
     });
-
 }
 
 
-/* =====================================================
+/* =========================================================
    NOTIFICATION BADGE
-===================================================== */
+========================================================= */
 
 function updateNotificationBadge() {
 
@@ -2798,11 +2615,9 @@ function updateNotificationBadge() {
     .then(function(response) {
 
         if (!response.ok) {
-
             throw new Error(
                 "Notification count failed"
             );
-
         }
 
         return response.json();
@@ -2815,7 +2630,6 @@ function updateNotificationBadge() {
             document.getElementById(
                 "notificationBadge"
             );
-
 
         if (!badge) {
             return;
@@ -2842,7 +2656,6 @@ function updateNotificationBadge() {
 
             badge.style.display =
                 "none";
-
         }
 
     })
@@ -2850,18 +2663,17 @@ function updateNotificationBadge() {
     .catch(function(error) {
 
         console.error(
-            "Notification badge:",
+            "Notification:",
             error
         );
 
     });
-
 }
 
 
-/* =====================================================
-   TOGGLE NOTIFICATIONS
-===================================================== */
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
 
 function toggleNotifications() {
 
@@ -2869,7 +2681,6 @@ function toggleNotifications() {
         document.getElementById(
             "notificationPanel"
         );
-
 
     if (!panel) {
         return;
@@ -2888,15 +2699,9 @@ function toggleNotifications() {
     ) {
 
         loadNotifications();
-
     }
-
 }
 
-
-/* =====================================================
-   LOAD NOTIFICATIONS
-===================================================== */
 
 function loadNotifications() {
 
@@ -2904,7 +2709,6 @@ function loadNotifications() {
         document.getElementById(
             "notificationList"
         );
-
 
     if (!list) {
         return;
@@ -2925,11 +2729,9 @@ function loadNotifications() {
     .then(function(response) {
 
         if (!response.ok) {
-
             throw new Error(
-                "Notification loading failed"
+                "Notifications failed"
             );
-
         }
 
         return response.json();
@@ -2959,12 +2761,10 @@ function loadNotifications() {
         data.notifications.forEach(
             function(notification) {
 
-
                 const item =
                     document.createElement(
                         "a"
                     );
-
 
                 item.className =
                     "notification-item";
@@ -2977,7 +2777,6 @@ function loadNotifications() {
                     item.classList.add(
                         "unread"
                     );
-
                 }
 
 
@@ -2993,29 +2792,16 @@ function loadNotifications() {
                     : "https://via.placeholder.com/100";
 
 
-                const message =
-                    notification.message ||
-                    "New notification";
-
-
-                const time =
-                    notification.created_at ||
-                    "";
-
-
                 const avatarElement =
                     document.createElement(
                         "img"
                     );
 
-
                 avatarElement.className =
                     "notification-avatar";
 
-
                 avatarElement.src =
                     avatar;
-
 
                 avatarElement.alt =
                     "Profile";
@@ -3026,53 +2812,48 @@ function loadNotifications() {
                         "div"
                     );
 
-
                 content.className =
                     "notification-content";
 
 
-                const messageElement =
+                const message =
                     document.createElement(
                         "div"
                     );
 
-
-                messageElement.className =
+                message.className =
                     "notification-message";
 
+                message.textContent =
+                    notification.message ||
+                    "New notification";
 
-                messageElement.textContent =
-                    message;
 
-
-                const timeElement =
+                const time =
                     document.createElement(
                         "div"
                     );
 
-
-                timeElement.className =
+                time.className =
                     "notification-time";
 
-
-                timeElement.textContent =
-                    time;
+                time.textContent =
+                    notification.created_at ||
+                    "";
 
 
                 content.appendChild(
-                    messageElement
+                    message
                 );
 
-
                 content.appendChild(
-                    timeElement
+                    time
                 );
 
 
                 item.appendChild(
                     avatarElement
                 );
-
 
                 item.appendChild(
                     content
@@ -3088,15 +2869,12 @@ function loadNotifications() {
                             "span"
                         );
 
-
                     dot.className =
                         "notification-unread-dot";
-
 
                     item.appendChild(
                         dot
                     );
-
                 }
 
 
@@ -3113,22 +2891,19 @@ function loadNotifications() {
 
         console.error(error);
 
-
         list.innerHTML = `
             <div class="notification-empty">
-                Notifications are
-                temporarily unavailable.
+                Notifications are temporarily unavailable.
             </div>
         `;
 
     });
-
 }
 
 
-/* =====================================================
-   MARK NOTIFICATIONS READ
-===================================================== */
+/* =========================================================
+   MARK READ
+========================================================= */
 
 function markNotificationsRead() {
 
@@ -3152,7 +2927,6 @@ function markNotificationsRead() {
             updateNotificationBadge();
 
             loadNotifications();
-
         }
 
     })
@@ -3160,18 +2934,17 @@ function markNotificationsRead() {
     .catch(function(error) {
 
         console.error(
-            "Mark notifications:",
+            "Mark read:",
             error
         );
 
     });
-
 }
 
 
-/* =====================================================
+/* =========================================================
    CLOSE NOTIFICATIONS
-===================================================== */
+========================================================= */
 
 document.addEventListener(
     "click",
@@ -3181,7 +2954,6 @@ document.addEventListener(
             document.querySelector(
                 ".notification-wrapper"
             );
-
 
         const panel =
             document.getElementById(
@@ -3200,16 +2972,15 @@ document.addEventListener(
             panel.classList.remove(
                 "show"
             );
-
         }
 
     }
 );
 
 
-/* =====================================================
-   INITIAL LOAD
-===================================================== */
+/* =========================================================
+   START
+========================================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -3221,17 +2992,12 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   CHECK NOTIFICATIONS
-===================================================== */
-
 setInterval(
     updateNotificationBadge,
     5000
 );
 
 </script>
-
 
 </body>
 </html>

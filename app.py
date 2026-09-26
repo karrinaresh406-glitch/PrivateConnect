@@ -6054,12 +6054,7 @@ def message_data(user_id):
 )
 def mark_messages_read(user_id):
 
-    # -----------------------------------------------------
-    # LOGIN CHECK
-    # -----------------------------------------------------
-
     if "user_id" not in session:
-
         return jsonify({
             "success": False,
             "error": "Not logged in"
@@ -6067,12 +6062,7 @@ def mark_messages_read(user_id):
 
     current_user = session["user_id"]
 
-    # -----------------------------------------------------
-    # CANNOT READ YOUR OWN MESSAGES
-    # -----------------------------------------------------
-
     if current_user == user_id:
-
         return jsonify({
             "success": False,
             "error": "Invalid user"
@@ -6081,58 +6071,72 @@ def mark_messages_read(user_id):
     conn = get_db()
     cursor = conn.cursor()
 
-    # -----------------------------------------------------
-    # CURRENT TIME
-    # -----------------------------------------------------
+    try:
 
-    now = datetime.now().strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
+        # Check that the other user exists
+        cursor.execute("""
+            SELECT id
+            FROM users
+            WHERE id = ?
+        """, (user_id,))
 
-    # -----------------------------------------------------
-    # MARK MESSAGES AS DELIVERED + READ
-    # -----------------------------------------------------
+        user = cursor.fetchone()
 
-    cursor.execute("""
-        UPDATE messages
+        if user is None:
+            return jsonify({
+                "success": False,
+                "error": "User not found"
+            }), 404
 
-        SET
-            delivered_at = COALESCE(
-                delivered_at,
-                ?
-            ),
+        now = datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
-            read_at = ?
+        cursor.execute("""
+            UPDATE messages
 
-        WHERE
+            SET
+                delivered_at = COALESCE(
+                    delivered_at,
+                    ?
+                ),
+                read_at = ?
 
-            sender_id = ?
+            WHERE
+                sender_id = ?
+                AND receiver_id = ?
+                AND read_at IS NULL
 
-            AND
+        """, (
+            now,
+            now,
+            user_id,
+            current_user
+        ))
 
-            receiver_id = ?
+        conn.commit()
 
-            AND
+        return jsonify({
+            "success": True
+        })
 
-            read_at IS NULL
+    except Exception as e:
 
-    """, (
-        now,
-        now,
-        user_id,
-        current_user
-    ))
+        conn.rollback()
 
-    conn.commit()
-    conn.close()
+        print(
+            "MARK READ ERROR:",
+            str(e)
+        )
 
-    # -----------------------------------------------------
-    # SUCCESS
-    # -----------------------------------------------------
+        return jsonify({
+            "success": False,
+            "error": "Unable to mark messages as read"
+        }), 500
 
-    return jsonify({
-        "success": True
-    })
+    finally:
+        conn.close()
+
 
 # =========================================================
 # UNSEND MESSAGE
@@ -6155,66 +6159,86 @@ def unsend_message(message_id):
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT
-            id,
-            sender_id,
-            receiver_id,
-            image
-        FROM messages
-        WHERE id = ?
-    """, (message_id,))
+    try:
 
-    message = cursor.fetchone()
+        cursor.execute("""
+            SELECT
+                id,
+                sender_id,
+                receiver_id,
+                image
+            FROM messages
+            WHERE id = ?
+        """, (message_id,))
 
-    if message is None:
-        conn.close()
+        message = cursor.fetchone()
+
+        if message is None:
+            return jsonify({
+                "success": False,
+                "error": "Message not found"
+            }), 404
+
+        # Only sender can unsend
+        if message["sender_id"] != current_user:
+            return jsonify({
+                "success": False,
+                "error": "You can only unsend your own message"
+            }), 403
+
+        # Delete image file if present
+        if message["image"]:
+
+            image_path = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                message["image"]
+            )
+
+            if os.path.exists(image_path):
+
+                try:
+                    os.remove(image_path)
+
+                except Exception as image_error:
+
+                    print(
+                        "IMAGE DELETE ERROR:",
+                        str(image_error)
+                    )
+
+        # Delete message
+        cursor.execute("""
+            DELETE FROM messages
+            WHERE id = ?
+            AND sender_id = ?
+        """, (
+            message_id,
+            current_user
+        ))
+
+        conn.commit()
 
         return jsonify({
-            "success": False,
-            "error": "Message not found"
-        }), 404
+            "success": True,
+            "message_id": message_id
+        })
 
-    # Only the sender can unsend the message
-    if message["sender_id"] != current_user:
-        conn.close()
+    except Exception as e:
 
-        return jsonify({
-            "success": False,
-            "error": "You can only unsend your own message"
-        }), 403
+        conn.rollback()
 
-    # Delete uploaded image file
-    if message["image"]:
-
-        image_path = os.path.join(
-            app.config["UPLOAD_FOLDER"],
-            message["image"]
+        print(
+            "UNSEND MESSAGE ERROR:",
+            str(e)
         )
 
-        if os.path.exists(image_path):
-            try:
-                os.remove(image_path)
-            except Exception:
-                pass
+        return jsonify({
+            "success": False,
+            "error": "Unable to unsend message"
+        }), 500
 
-    # Delete message from database
-    cursor.execute("""
-        DELETE FROM messages
-        WHERE id = ?
-        AND sender_id = ?
-    """, (
-        message_id,
-        current_user
-    ))
-
-    conn.commit()
-    conn.close()
-
-    return jsonify({
-        "success": True,
-        "message_id": message_id
-    })
+    finally:
+        conn.close()
 
 
 # =========================================================
@@ -6232,34 +6256,55 @@ def logout():
 
 
 # =========================================================
-# START APPLICATION
+# INITIALIZE DATABASE
 # =========================================================
 
 init_db()
+
 
 # =========================================================
 # PRIVACY POLICY
 # =========================================================
 
-@app.route("/privacy-policy", methods=["GET"])
+@app.route(
+    "/privacy-policy",
+    methods=["GET"]
+)
 def privacy_policy():
-    return render_template("privacy_policy.html")
+
+    return render_template(
+        "privacy_policy.html"
+    )
+
 
 # =========================================================
 # TERMS OF SERVICE
 # =========================================================
 
-@app.route("/terms-of-service", methods=["GET"])
+@app.route(
+    "/terms-of-service",
+    methods=["GET"]
+)
 def terms_of_service():
-    return render_template("terms_of_service.html")
+
+    return render_template(
+        "terms_of_service.html"
+    )
+
 
 # =========================================================
 # HELP & SUPPORT
 # =========================================================
 
-@app.route("/help-support", methods=["GET"])
+@app.route(
+    "/help-support",
+    methods=["GET"]
+)
 def help_support():
-    return render_template("help_support.html")
+
+    return render_template(
+        "help_support.html"
+    )
 
 
 # =========================================================
@@ -6267,7 +6312,6 @@ def help_support():
 # =========================================================
 
 if __name__ == "__main__":
-    app.run()
 
     app.run(
         host="0.0.0.0",

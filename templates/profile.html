@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -17,7 +16,6 @@
             {{ person["name"] }} - PrivateConnect
         {% endif %}
     </title>
-
 
     <style>
 
@@ -39,12 +37,16 @@
             padding: 15px;
         }
 
-        .profile-card {
+        .profile-card,
+        .section {
             background: white;
             border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .profile-card {
             padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
         .profile-header {
@@ -69,7 +71,6 @@
             width: 140px;
             height: 140px;
             border-radius: 50%;
-            margin: 0;
         }
 
         .profile-picture {
@@ -95,8 +96,7 @@
             color: #666;
             font-size: 15px;
             line-height: 1.5;
-            max-width: 500px;
-            margin: 0 0 15px 0;
+            margin-bottom: 15px;
         }
 
         .stats {
@@ -119,14 +119,6 @@
             font-size: 13px;
             color: #777;
             margin-top: 4px;
-        }
-
-        .profile-actions-title {
-            font-size: 16px;
-            font-weight: bold;
-            text-align: left;
-            margin: 20px 0 10px;
-            color: #333;
         }
 
         .buttons {
@@ -152,17 +144,10 @@
             background: #555;
         }
 
-        /* SETTINGS BUTTON */
-
         .settings-button {
             background: #eef2ff;
             color: #3730a3;
             border: 1px solid #c7d2fe;
-        }
-
-        .settings-button:hover {
-            background: #e0e7ff;
-            color: #312e81;
         }
 
         .user-actions {
@@ -188,10 +173,6 @@
             color: white;
         }
 
-        .message-button:hover {
-            background: #1769e8;
-        }
-
         .friends-button {
             background: #dff5e1;
             color: #237a2c;
@@ -202,27 +183,15 @@
             color: #222;
         }
 
-        .request-button:hover {
-            background: #ddd;
-        }
-
         .pending-button {
             background: #ddd;
             color: #777;
             cursor: default;
         }
 
-        .pending-button:hover {
-            background: #ddd;
-        }
-
         .request-link {
             background: #eee;
             color: #222;
-        }
-
-        .request-link:hover {
-            background: #ddd;
         }
 
         .unfriend-button {
@@ -231,23 +200,11 @@
             border: 1px solid #f5c2c0;
         }
 
-        .unfriend-button:hover {
-            background: #ffe1e1;
-            color: #b42318;
-        }
-
         .unsend-button {
             background: #fff7ed;
             color: #c2410c;
             border: 1px solid #fed7aa;
         }
-
-        .unsend-button:hover {
-            background: #ffedd5;
-            color: #9a3412;
-        }
-
-        /* BLOCK BUTTON */
 
         .block-section {
             margin-top: 15px;
@@ -265,17 +222,9 @@
             font-weight: bold;
         }
 
-        .block-button:hover {
-            background: #ffe4e6;
-            color: #9f1239;
-        }
-
         .section {
-            background: white;
             margin-top: 20px;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
         }
 
         .section h2 {
@@ -328,10 +277,6 @@
             background: #d32f2f;
         }
 
-        .delete-button:hover {
-            background: #b71c1c;
-        }
-
         .friends-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -345,24 +290,24 @@
             text-align: center;
         }
 
-        .friend-picture {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 8px;
-        }
-
+        .friend-picture,
         .friend-default {
             width: 65px;
             height: 65px;
             border-radius: 50%;
+            margin-bottom: 8px;
+        }
+
+        .friend-picture {
+            object-fit: cover;
+        }
+
+        .friend-default {
             background: #ddd;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 30px;
-            margin-bottom: 8px;
         }
 
         .friend-name {
@@ -375,14 +320,19 @@
             padding: 20px;
         }
 
+        .profile-actions-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            margin: 20px 0 10px;
+            color: #333;
+        }
+
         .crop-modal {
             display: none;
             position: fixed;
             z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.75);
             align-items: center;
             justify-content: center;
@@ -396,10 +346,6 @@
             padding: 20px;
             border-radius: 15px;
             text-align: center;
-        }
-
-        .crop-box h2 {
-            margin-bottom: 15px;
         }
 
         #cropCanvas {
@@ -427,7 +373,6 @@
 
             .profile-header {
                 gap: 15px;
-                text-align: left;
             }
 
             .profile-picture,
@@ -436,37 +381,25 @@
                 height: 90px;
             }
 
-            .profile-info .name {
+            .name {
                 font-size: 20px;
-                margin-bottom: 5px;
             }
 
-            .profile-info .bio {
+            .bio {
                 font-size: 14px;
-                margin: 0 0 8px 0;
             }
 
-            .profile-info .stats {
-                justify-content: flex-start;
+            .stats {
                 gap: 15px;
-                margin: 8px 0 0 0;
+                margin: 8px 0 0;
             }
 
-            .profile-info .stat-number {
+            .stat-number {
                 font-size: 18px;
             }
 
-            .profile-info .stat-label {
+            .stat-label {
                 font-size: 12px;
-            }
-
-            .friends-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .button {
-                width: 100%;
-                margin: 4px 0;
             }
 
             .user-actions {
@@ -476,13 +409,11 @@
             .action-button {
                 width: 100%;
             }
-
         }
 
     </style>
 
 </head>
-
 
 <body>
 
@@ -512,7 +443,6 @@
 
             </div>
 
-
             <div class="profile-info">
 
                 <div class="name">
@@ -530,41 +460,30 @@
                 <div class="stats">
 
                     <div class="stat">
-
                         <div class="stat-number">
                             {{ posts|length }}
                         </div>
-
                         <div class="stat-label">
                             Posts
                         </div>
-
                     </div>
 
-
                     <div class="stat">
-
                         <div class="stat-number">
                             {{ friends|length }}
                         </div>
-
                         <div class="stat-label">
                             Friends
                         </div>
-
                     </div>
 
-
                     <div class="stat">
-
                         <div class="stat-number">
                             ❤️
                         </div>
-
                         <div class="stat-label">
                             Likes
                         </div>
-
                     </div>
 
                 </div>
@@ -575,8 +494,6 @@
 
 
         {% if is_own_profile %}
-
-            <!-- PROFILE PHOTO -->
 
             <form
                 id="profileForm"
@@ -608,13 +525,9 @@
 
             </form>
 
-
-            <!-- ACCOUNT & SOCIAL -->
-
             <div class="profile-actions-title">
                 Account & Social
             </div>
-
 
             <div class="buttons">
 
@@ -625,14 +538,12 @@
                     ✏️ Edit Profile
                 </a>
 
-
                 <a
                     href="{{ url_for('find_people') }}"
                     class="button"
                 >
                     👥 Find People
                 </a>
-
 
                 <a
                     href="{{ url_for('dashboard') }}"
@@ -641,7 +552,6 @@
                     🏠 Dashboard
                 </a>
 
-
                 <a
                     href="{{ url_for('requests') }}"
                     class="button"
@@ -649,16 +559,12 @@
                     👥 Requests
                 </a>
 
-
-                <!-- SETTINGS -->
-
                 <a
                     href="{{ url_for('settings') }}"
                     class="button settings-button"
                 >
                     ⚙️ Settings
                 </a>
-
 
                 <a
                     href="{{ url_for('logout') }}"
@@ -670,39 +576,37 @@
 
             </div>
 
-
         {% else %}
-
-            <!-- OTHER USER ACTIONS -->
 
             <div class="user-actions">
 
                 {% if relationship_status == "friends" %}
 
+                    <!-- MESSAGE USER -->
                     <a
                         href="{{ url_for('conversation', user_id=person['id']) }}"
                         class="action-button message-button"
                     >
-                        💬 Message
+                        💬 Message {{ person["name"] }}
                     </a>
 
+                    <!-- UNFRIEND -->
                     <form
                         action="{{ url_for('unfriend', user_id=person['id']) }}"
                         method="POST"
                         style="flex:1;"
-                        onsubmit="return confirm('Are you sure you want to unfriend {{ person['name'] }}?');"
+                        onsubmit="return confirm('Are you sure you want to unfriend this person?');"
                     >
 
                         <button
                             type="submit"
                             class="action-button unfriend-button"
-                            style="width:100%; margin:0;"
+                            style="width:100%;margin:0;"
                         >
                             ❌ Unfriend
                         </button>
 
                     </form>
-
 
                 {% elif relationship_status == "sent" %}
 
@@ -718,19 +622,17 @@
                         action="{{ url_for('cancel_request', user_id=person['id']) }}"
                         method="POST"
                         style="flex:1;"
-                        onsubmit="return confirm('Unsend your connection request to {{ person['name'] }}?');"
                     >
 
                         <button
                             type="submit"
                             class="action-button unsend-button"
-                            style="width:100%; margin:0;"
+                            style="width:100%;margin:0;"
                         >
                             ↩️ Unsend
                         </button>
 
                     </form>
-
 
                 {% elif relationship_status == "received" %}
 
@@ -740,7 +642,6 @@
                     >
                         ↩️ View Request
                     </a>
-
 
                 {% else %}
 
@@ -753,7 +654,7 @@
                         <button
                             type="submit"
                             class="action-button request-button"
-                            style="width:100%; margin:0;"
+                            style="width:100%;margin:0;"
                         >
                             🤝 Add Friend
                         </button>
@@ -764,15 +665,12 @@
 
             </div>
 
-
-            <!-- BLOCK USER -->
-
             <div class="block-section">
 
                 <form
                     action="{{ url_for('block_user', user_id=person['id']) }}"
                     method="POST"
-                    onsubmit="return confirm('Are you sure you want to block {{ person['name'] }}?');"
+                    onsubmit="return confirm('Are you sure you want to block this person?');"
                 >
 
                     <button
@@ -805,7 +703,6 @@
 
         </h2>
 
-
         {% if posts %}
 
             {% for post in posts %}
@@ -821,13 +718,9 @@
                                 controls
                                 preload="metadata"
                             >
-
                                 <source
                                     src="{{ url_for('static', filename='uploads/' + post['media']) }}"
                                 >
-
-                                Your browser does not support video.
-
                             </video>
 
                         {% else %}
@@ -842,7 +735,6 @@
 
                     {% endif %}
 
-
                     <div class="post-content">
 
                         {% if post["caption"] %}
@@ -853,11 +745,9 @@
 
                         {% endif %}
 
-
                         <div class="post-date">
                             {{ post["created_at"] }}
                         </div>
-
 
                         <div class="post-actions">
 
@@ -873,13 +763,12 @@
 
                             </div>
 
-
                             {% if is_own_profile %}
 
                                 <form
                                     action="{{ url_for('delete_post', post_id=post['id']) }}"
                                     method="POST"
-                                    onsubmit="return confirm('Are you sure you want to delete this post?');"
+                                    onsubmit="return confirm('Delete this post?');"
                                 >
 
                                     <button
@@ -932,7 +821,6 @@
 
         </h2>
 
-
         {% if friends %}
 
             <div class="friends-grid">
@@ -956,7 +844,6 @@
                             </div>
 
                         {% endif %}
-
 
                         <div class="friend-name">
                             {{ friend["name"] }}
@@ -985,14 +872,9 @@
     </div>
 
 
-    <!-- BACK TO DASHBOARD -->
+    <!-- BACK -->
 
-    <div
-        style="
-            text-align:center;
-            margin:25px 0;
-        "
-    >
+    <div style="text-align:center;margin:25px 0;">
 
         <a
             href="{{ url_for('dashboard') }}"
@@ -1006,7 +888,7 @@
 </div>
 
 
-<!-- CROP MODAL -->
+<!-- PROFILE PHOTO CROP -->
 
 {% if is_own_profile %}
 
@@ -1046,141 +928,134 @@
 
 </div>
 
-
 <script>
 
-    const profileInput =
-        document.getElementById("profileInput");
+const profileInput =
+    document.getElementById("profileInput");
 
-    const cropModal =
-        document.getElementById("cropModal");
+const cropModal =
+    document.getElementById("cropModal");
 
-    const cropCanvas =
-        document.getElementById("cropCanvas");
+const cropCanvas =
+    document.getElementById("cropCanvas");
 
-    const croppedImage =
-        document.getElementById("croppedImage");
+const croppedImage =
+    document.getElementById("croppedImage");
 
-    const profileForm =
-        document.getElementById("profileForm");
+const profileForm =
+    document.getElementById("profileForm");
 
-    let selectedImage = new Image();
+let selectedImage = new Image();
 
 
-    profileInput.addEventListener(
-        "change",
-        function () {
+profileInput.addEventListener(
+    "change",
+    function () {
 
-            const file = this.files[0];
+        const file = this.files[0];
 
-            if (!file) {
-                return;
-            }
-
-            if (!file.type.startsWith("image/")) {
-
-                alert("Please select an image file.");
-
-                this.value = "";
-
-                return;
-            }
-
-            const reader =
-                new FileReader();
-
-            reader.onload =
-                function(event) {
-
-                    selectedImage.onload =
-                        function() {
-
-                            const size =
-                                Math.min(
-                                    selectedImage.width,
-                                    selectedImage.height
-                                );
-
-                            cropCanvas.width = 400;
-                            cropCanvas.height = 400;
-
-                            const ctx =
-                                cropCanvas.getContext("2d");
-
-                            const sx =
-                                (selectedImage.width - size) / 2;
-
-                            const sy =
-                                (selectedImage.height - size) / 2;
-
-                            ctx.clearRect(
-                                0,
-                                0,
-                                400,
-                                400
-                            );
-
-                            ctx.drawImage(
-                                selectedImage,
-                                sx,
-                                sy,
-                                size,
-                                size,
-                                0,
-                                0,
-                                400,
-                                400
-                            );
-
-                            cropModal.style.display =
-                                "flex";
-
-                        };
-
-                    selectedImage.src =
-                        event.target.result;
-
-                };
-
-            reader.readAsDataURL(file);
-
+        if (!file) {
+            return;
         }
-    );
 
+        if (!file.type.startsWith("image/")) {
 
-    function cropImage() {
+            alert("Please select an image file.");
 
-        const imageData =
-            cropCanvas.toDataURL(
-                "image/jpeg",
-                0.9
-            );
+            this.value = "";
 
-        croppedImage.value =
-            imageData;
+            return;
+        }
 
-        profileForm.submit();
+        const reader =
+            new FileReader();
 
+        reader.onload =
+            function (event) {
+
+                selectedImage.onload =
+                    function () {
+
+                        const size =
+                            Math.min(
+                                selectedImage.width,
+                                selectedImage.height
+                            );
+
+                        cropCanvas.width = 400;
+                        cropCanvas.height = 400;
+
+                        const ctx =
+                            cropCanvas.getContext("2d");
+
+                        const sx =
+                            (selectedImage.width - size) / 2;
+
+                        const sy =
+                            (selectedImage.height - size) / 2;
+
+                        ctx.clearRect(
+                            0,
+                            0,
+                            400,
+                            400
+                        );
+
+                        ctx.drawImage(
+                            selectedImage,
+                            sx,
+                            sy,
+                            size,
+                            size,
+                            0,
+                            0,
+                            400,
+                            400
+                        );
+
+                        cropModal.style.display =
+                            "flex";
+                    };
+
+                selectedImage.src =
+                    event.target.result;
+            };
+
+        reader.readAsDataURL(file);
     }
+);
 
 
-    function closeCrop() {
+function cropImage() {
 
-        cropModal.style.display =
-            "none";
+    const imageData =
+        cropCanvas.toDataURL(
+            "image/jpeg",
+            0.9
+        );
 
-        profileInput.value =
-            "";
+    croppedImage.value =
+        imageData;
 
-        croppedImage.value =
-            "";
+    profileForm.submit();
+}
 
-    }
+
+function closeCrop() {
+
+    cropModal.style.display =
+        "none";
+
+    profileInput.value =
+        "";
+
+    croppedImage.value =
+        "";
+}
 
 </script>
 
 {% endif %}
 
 </body>
-
 </html>

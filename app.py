@@ -3110,7 +3110,12 @@ def unblock_user(user_id):
 # =========================================================
 
 @app.route("/profile")
-def profile():
+@app.route("/profile/<int:user_id>")
+def profile(user_id=None):
+
+    # =====================================================
+    # LOGIN CHECK
+    # =====================================================
 
     if "user_id" not in session:
         return redirect(url_for("login"))
@@ -3124,10 +3129,22 @@ def profile():
     # GET PROFILE USER ID
     # =====================================================
 
-    profile_id = request.args.get(
-        "user_id",
-        type=int
-    )
+    # Supports:
+    # /profile
+    # /profile?user_id=5
+    # /profile/5
+
+    profile_id = user_id
+
+    if profile_id is None:
+
+        profile_id = request.args.get(
+            "user_id",
+            type=int
+        )
+
+    # If no user ID was provided,
+    # show the logged-in user's profile.
 
     if profile_id is None:
         profile_id = current_user
@@ -3153,15 +3170,207 @@ def profile():
 
     person = cursor.fetchone()
 
+    # =====================================================
+    # USER NOT FOUND
+    # =====================================================
+
     if person is None:
+
         conn.close()
-        return "User not found.", 404
+
+        return """
+        <!DOCTYPE html>
+        <html lang="en">
+
+        <head>
+
+            <meta charset="UTF-8">
+
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            >
+
+            <title>User Not Found - PrivateConnect</title>
+
+            <style>
+
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    margin: 0;
+                    min-height: 100vh;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    font-family: Arial, sans-serif;
+
+                    background:
+                        radial-gradient(
+                            circle at top,
+                            #172554,
+                            #020617 55%
+                        );
+
+                    color: white;
+
+                    padding: 20px;
+                }
+
+                .box {
+                    width: 100%;
+                    max-width: 420px;
+
+                    text-align: center;
+
+                    padding: 40px 25px;
+
+                    border-radius: 24px;
+
+                    background:
+                        rgba(15, 23, 42, 0.95);
+
+                    border:
+                        1px solid
+                        rgba(255,255,255,0.10);
+
+                    box-shadow:
+                        0 20px 50px
+                        rgba(0,0,0,0.35);
+                }
+
+                .icon {
+                    width: 80px;
+                    height: 80px;
+
+                    margin: 0 auto 20px;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    border-radius: 50%;
+
+                    font-size: 36px;
+
+                    background:
+                        linear-gradient(
+                            135deg,
+                            #1d4ed8,
+                            #334155
+                        );
+                }
+
+                h2 {
+                    margin: 0 0 10px;
+
+                    font-size: 25px;
+                }
+
+                p {
+                    margin: 0;
+
+                    color: #94a3b8;
+
+                    line-height: 1.6;
+                }
+
+                .buttons {
+                    display: flex;
+
+                    gap: 10px;
+
+                    margin-top: 25px;
+                }
+
+                a {
+                    flex: 1;
+
+                    padding: 13px 16px;
+
+                    border-radius: 12px;
+
+                    text-decoration: none;
+
+                    color: white;
+
+                    font-weight: 700;
+
+                    background:
+                        linear-gradient(
+                            135deg,
+                            #2563eb,
+                            #1d4ed8
+                        );
+                }
+
+                a.secondary {
+                    background:
+                        #334155;
+                }
+
+                @media (max-width: 480px) {
+
+                    .buttons {
+                        flex-direction: column;
+                    }
+
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="box">
+
+                <div class="icon">
+                    👤
+                </div>
+
+                <h2>
+                    User Not Found
+                </h2>
+
+                <p>
+                    This profile may no longer exist
+                    or the profile link is invalid.
+                </p>
+
+                <div class="buttons">
+
+                    <a href="/find-people">
+                        Find People
+                    </a>
+
+                    <a
+                        href="/dashboard"
+                        class="secondary"
+                    >
+                        Dashboard
+                    </a>
+
+                </div>
+
+            </div>
+
+        </body>
+
+        </html>
+        """, 404
 
     # =====================================================
     # CHECK OWN PROFILE
     # =====================================================
 
-    is_own_profile = profile_id == current_user
+    is_own_profile = (
+        profile_id == current_user
+    )
 
     # =====================================================
     # CHECK FRIENDSHIP
@@ -3176,9 +3385,16 @@ def profile():
             SELECT id
             FROM connections
             WHERE
-                (user1_id = ? AND user2_id = ?)
+                (
+                    user1_id = ?
+                    AND user2_id = ?
+                )
                 OR
-                (user1_id = ? AND user2_id = ?)
+                (
+                    user1_id = ?
+                    AND user2_id = ?
+                )
+            LIMIT 1
         """, (
             current_user,
             profile_id,
@@ -3188,7 +3404,9 @@ def profile():
 
         connection = cursor.fetchone()
 
-        is_friend = connection is not None
+        is_friend = (
+            connection is not None
+        )
 
     # =====================================================
     # PROFILE PRIVACY
@@ -3209,14 +3427,14 @@ def profile():
             SELECT id
             FROM blocked_users
             WHERE
-               (
-                   blocker_id = ?
-                   AND blocked_id = ?
+                (
+                    blocker_id = ?
+                    AND blocked_id = ?
                 )
                 OR
                 (
-                   blocker_id = ?
-                   AND blocked_id = ?
+                    blocker_id = ?
+                    AND blocked_id = ?
                 )
             LIMIT 1
         """, (
@@ -3230,100 +3448,139 @@ def profile():
 
         if blocked_record:
 
-           conn.close()
+            conn.close()
 
-           return """
-           <!DOCTYPE html>
-           <html>
-           <head>
+            return """
+            <!DOCTYPE html>
 
-            <title>Profile Unavailable - PrivateConnect</title>
+            <html lang="en">
 
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-            >
+            <head>
 
-            <style>
+                <meta charset="UTF-8">
 
-                body {
-                    margin: 0;
-                    font-family: Arial, sans-serif;
-                    background: #f5f7fb;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    min-height: 100vh;
-                    color: #111827;
-                }
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1.0"
+                >
 
-                .box {
-                    background: white;
-                    width: 90%;
-                    max-width: 420px;
-                    padding: 35px;
-                    border-radius: 18px;
-                    text-align: center;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-                }
+                <title>
+                    Profile Unavailable - PrivateConnect
+                </title>
 
-                .icon {
-                    font-size: 55px;
-                    margin-bottom: 15px;
-                }
+                <style>
 
-                h2 {
-                    margin-bottom: 10px;
-                }
+                    * {
+                        box-sizing: border-box;
+                    }
 
-                p {
-                    color: #6b7280;
-                    line-height: 1.5;
-                }
+                    body {
+                        margin: 0;
 
-                a {
-                    display: inline-block;
-                    margin-top: 20px;
-                    padding: 12px 20px;
-                    background: #2563eb;
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 10px;
-                }
+                        min-height: 100vh;
 
-            </style>
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
 
-        </head>
+                        padding: 20px;
 
-        <body>
+                        font-family: Arial, sans-serif;
 
-            <div class="box">
+                        background: #020617;
 
-                <div class="icon">
-                    🚫
+                        color: white;
+                    }
+
+                    .box {
+                        width: 100%;
+                        max-width: 420px;
+
+                        text-align: center;
+
+                        padding: 40px 25px;
+
+                        border-radius: 24px;
+
+                        background: #0f172a;
+
+                        border:
+                            1px solid
+                            rgba(255,255,255,0.10);
+
+                        box-shadow:
+                            0 20px 50px
+                            rgba(0,0,0,0.35);
+                    }
+
+                    .icon {
+                        font-size: 55px;
+
+                        margin-bottom: 15px;
+                    }
+
+                    h2 {
+                        margin: 0 0 10px;
+                    }
+
+                    p {
+                        color: #94a3b8;
+
+                        line-height: 1.6;
+                    }
+
+                    a {
+                        display: inline-block;
+
+                        margin-top: 20px;
+
+                        padding: 13px 22px;
+
+                        background: #2563eb;
+
+                        color: white;
+
+                        text-decoration: none;
+
+                        border-radius: 12px;
+
+                        font-weight: 700;
+                    }
+
+                </style>
+
+            </head>
+
+            <body>
+
+                <div class="box">
+
+                    <div class="icon">
+                        🚫
+                    </div>
+
+                    <h2>
+                        Profile Unavailable
+                    </h2>
+
+                    <p>
+                        You cannot view this profile because
+                        one of you has blocked the other.
+                    </p>
+
+                    <a href="/find-people">
+                        Find People
+                    </a>
+
                 </div>
 
-                <h2>
-                    Profile Unavailable
-                </h2>
+            </body>
 
-                <p>
-                    You cannot view this profile because
-                    one of you has blocked the other.
-                </p>
-
-                <a href="/find-people">
-                    Find People
-                </a>
-
-            </div>
-
-        </body>
-        </html>
-        """, 403
+            </html>
+            """, 403
 
     # =====================================================
-    # FRIENDS ONLY
+    # FRIENDS ONLY PROFILE
     # =====================================================
 
     if (
@@ -3336,61 +3593,99 @@ def profile():
 
         return """
         <!DOCTYPE html>
-        <html>
+
+        <html lang="en">
+
         <head>
 
-            <title>Private Profile - PrivateConnect</title>
+            <meta charset="UTF-8">
 
             <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"
             >
 
+            <title>
+                Private Profile - PrivateConnect
+            </title>
+
             <style>
+
+                * {
+                    box-sizing: border-box;
+                }
 
                 body {
                     margin: 0;
-                    font-family: Arial, sans-serif;
-                    background: #f5f7fb;
+
+                    min-height: 100vh;
+
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    min-height: 100vh;
-                    color: #111827;
+
+                    padding: 20px;
+
+                    font-family: Arial, sans-serif;
+
+                    background: #020617;
+
+                    color: white;
                 }
 
                 .box {
-                    background: white;
-                    width: 90%;
+                    width: 100%;
                     max-width: 420px;
-                    padding: 35px;
-                    border-radius: 18px;
+
                     text-align: center;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+                    padding: 40px 25px;
+
+                    border-radius: 24px;
+
+                    background: #0f172a;
+
+                    border:
+                        1px solid
+                        rgba(255,255,255,0.10);
+
+                    box-shadow:
+                        0 20px 50px
+                        rgba(0,0,0,0.35);
                 }
 
                 .icon {
                     font-size: 55px;
+
                     margin-bottom: 15px;
                 }
 
                 h2 {
-                    margin-bottom: 10px;
+                    margin: 0 0 10px;
                 }
 
                 p {
-                    color: #6b7280;
-                    line-height: 1.5;
+                    color: #94a3b8;
+
+                    line-height: 1.6;
                 }
 
                 a {
                     display: inline-block;
+
                     margin-top: 20px;
-                    padding: 12px 20px;
+
+                    padding: 13px 22px;
+
                     background: #2563eb;
+
                     color: white;
+
                     text-decoration: none;
-                    border-radius: 10px;
+
+                    border-radius: 12px;
+
+                    font-weight: 700;
                 }
 
             </style>
@@ -3401,9 +3696,13 @@ def profile():
 
             <div class="box">
 
-                <div class="icon">🔒</div>
+                <div class="icon">
+                    🔒
+                </div>
 
-                <h2>Private Profile</h2>
+                <h2>
+                    Private Profile
+                </h2>
 
                 <p>
                     This profile is visible to friends only.
@@ -3416,6 +3715,7 @@ def profile():
             </div>
 
         </body>
+
         </html>
         """, 403
 
@@ -3432,61 +3732,99 @@ def profile():
 
         return """
         <!DOCTYPE html>
-        <html>
+
+        <html lang="en">
+
         <head>
 
-            <title>Private Profile - PrivateConnect</title>
+            <meta charset="UTF-8">
 
             <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"
             >
 
+            <title>
+                Private Profile - PrivateConnect
+            </title>
+
             <style>
+
+                * {
+                    box-sizing: border-box;
+                }
 
                 body {
                     margin: 0;
-                    font-family: Arial, sans-serif;
-                    background: #f5f7fb;
+
+                    min-height: 100vh;
+
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    min-height: 100vh;
-                    color: #111827;
+
+                    padding: 20px;
+
+                    font-family: Arial, sans-serif;
+
+                    background: #020617;
+
+                    color: white;
                 }
 
                 .box {
-                    background: white;
-                    width: 90%;
+                    width: 100%;
                     max-width: 420px;
-                    padding: 35px;
-                    border-radius: 18px;
+
                     text-align: center;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+                    padding: 40px 25px;
+
+                    border-radius: 24px;
+
+                    background: #0f172a;
+
+                    border:
+                        1px solid
+                        rgba(255,255,255,0.10);
+
+                    box-shadow:
+                        0 20px 50px
+                        rgba(0,0,0,0.35);
                 }
 
                 .icon {
                     font-size: 55px;
+
                     margin-bottom: 15px;
                 }
 
                 h2 {
-                    margin-bottom: 10px;
+                    margin: 0 0 10px;
                 }
 
                 p {
-                    color: #6b7280;
-                    line-height: 1.5;
+                    color: #94a3b8;
+
+                    line-height: 1.6;
                 }
 
                 a {
                     display: inline-block;
+
                     margin-top: 20px;
-                    padding: 12px 20px;
+
+                    padding: 13px 22px;
+
                     background: #2563eb;
+
                     color: white;
+
                     text-decoration: none;
-                    border-radius: 10px;
+
+                    border-radius: 12px;
+
+                    font-weight: 700;
                 }
 
             </style>
@@ -3497,12 +3835,17 @@ def profile():
 
             <div class="box">
 
-                <div class="icon">🔐</div>
+                <div class="icon">
+                    🔐
+                </div>
 
-                <h2>Private Profile</h2>
+                <h2>
+                    Private Profile
+                </h2>
 
                 <p>
-                    This user has chosen to keep their profile private.
+                    This user has chosen to keep
+                    their profile private.
                 </p>
 
                 <a href="/find-people">
@@ -3512,6 +3855,7 @@ def profile():
             </div>
 
         </body>
+
         </html>
         """, 403
 
@@ -3548,7 +3892,10 @@ def profile():
     if posts_visibility is None:
         posts_visibility = "everyone"
 
-    # Everyone OR friends
+    # =====================================================
+    # LOAD POSTS
+    # =====================================================
+
     if (
         is_own_profile
         or posts_visibility == "everyone"
@@ -3584,10 +3931,11 @@ def profile():
         posts = cursor.fetchall()
 
     # =====================================================
-    # DEFAULT RELATIONSHIP STATUS
+    # RELATIONSHIP STATUS
     # =====================================================
 
     relationship_status = "none"
+
     pending_request_id = None
 
     # =====================================================
@@ -3621,6 +3969,7 @@ def profile():
                     sender_id = ?
                     AND receiver_id = ?
                     AND status = 'pending'
+                LIMIT 1
             """, (
                 current_user,
                 profile_id
@@ -3631,7 +3980,10 @@ def profile():
             if outgoing_request:
 
                 relationship_status = "sent"
-                pending_request_id = outgoing_request["id"]
+
+                pending_request_id = (
+                    outgoing_request["id"]
+                )
 
             else:
 
@@ -3646,6 +3998,7 @@ def profile():
                         sender_id = ?
                         AND receiver_id = ?
                         AND status = 'pending'
+                    LIMIT 1
                 """, (
                     profile_id,
                     current_user
@@ -3656,7 +4009,10 @@ def profile():
                 if incoming_request:
 
                     relationship_status = "received"
-                    pending_request_id = incoming_request["id"]
+
+                    pending_request_id = (
+                        incoming_request["id"]
+                    )
 
     # =====================================================
     # GET FRIENDS
@@ -3692,19 +4048,29 @@ def profile():
 
     friends = cursor.fetchall()
 
+    # =====================================================
+    # CLOSE DATABASE
+    # =====================================================
+
     conn.close()
 
     # =====================================================
-    # SEND DATA TO PROFILE PAGE
+    # RENDER PROFILE
     # =====================================================
 
     return render_template(
         "profile.html",
+
         person=person,
+
         posts=posts,
+
         friends=friends,
+
         is_own_profile=is_own_profile,
+
         relationship_status=relationship_status,
+
         pending_request_id=pending_request_id
     )
 

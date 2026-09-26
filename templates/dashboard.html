@@ -1,1589 +1,1065 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<meta name="theme-color" content="#071426">
+
+<title>PrivateConnect</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: #071426;
+}
+
+body {
+    min-height: 100vh;
+    background: #071426;
+    color: #fff;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+    overflow-x: hidden;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* =====================================================
+   SVG ICON
+===================================================== */
+
+.icon {
+    width: 21px;
+    height: 21px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-fill {
+    fill: currentColor;
+    stroke: none;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 3000;
+
+    width: 100%;
+    min-height: calc(62px + env(safe-area-inset-top));
+
+    padding:
+        env(safe-area-inset-top)
+        15px
+        0;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(7,20,38,.97);
+    border-bottom: 1px solid #1c334c;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.logo {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.7px;
+    white-space: nowrap;
+}
 
-    <meta charset="UTF-8">
+.logo span {
+    color: #4da3ff;
+}
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    >
+.header-spacer {
+    flex: 1;
+}
 
-    <meta
-        name="theme-color"
-        content="#071426"
-    >
+.header-button,
+.notification-button {
+    width: 42px;
+    height: 42px;
 
-    <title>PrivateConnect</title>
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    <style>
+    border: 0;
+    background: transparent;
+    color: #e8f2fc;
 
-        /* =====================================================
-           RESET
-        ===================================================== */
+    cursor: pointer;
+    text-decoration: none;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+.header-button:active,
+.notification-button:active {
+    transform: scale(.9);
+}
 
-        html {
-            width: 100%;
-            min-height: 100%;
-            background: #071426;
-        }
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
 
-        body {
-            width: 100%;
-            min-height: 100vh;
+.notification-wrapper {
+    position: relative;
+}
 
-            background: #071426;
-            color: #ffffff;
+.notification-badge {
+    position: absolute;
+    top: 1px;
+    right: 0;
 
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
+    min-width: 18px;
+    height: 18px;
 
-            overflow-x: hidden;
+    padding: 0 4px;
 
-            /*
-             * Space for bottom navigation
-             */
-            padding-bottom:
-                calc(72px + env(safe-area-inset-bottom));
-        }
+    display: none;
+    align-items: center;
+    justify-content: center;
 
-        button,
-        input,
-        textarea {
-            font: inherit;
-        }
+    border-radius: 20px;
 
-        button {
-            -webkit-tap-highlight-color: transparent;
-        }
+    background: #ff3d67;
+    color: #fff;
 
-        a {
-            -webkit-tap-highlight-color: transparent;
-        }
+    border: 2px solid #071426;
 
+    font-size: 9px;
+    font-weight: 800;
+}
 
-        /* =====================================================
-           HEADER
-           FIXED SAFE AREA FOR ANDROID STATUS BAR
-        ===================================================== */
+.notification-panel {
+    position: absolute;
 
-        .header {
+    top: 48px;
+    right: -5px;
 
-            position: sticky;
+    width: 340px;
+    max-width: calc(100vw - 20px);
 
-            top: 0;
-            left: 0;
+    background: #0d1e34;
+    border: 1px solid #294766;
+    border-radius: 16px;
 
-            width: 100%;
+    overflow: hidden;
 
-            /*
-             * Bigger header + Android safe area
-             */
-            min-height:
-                calc(64px + env(safe-area-inset-top));
+    box-shadow: 0 18px 45px rgba(0,0,0,.55);
 
-            padding-top:
-                env(safe-area-inset-top);
+    display: none;
+    z-index: 5000;
+}
 
-            padding-left: 14px;
-            padding-right: 14px;
+.notification-panel.show {
+    display: block;
+}
 
-            display: flex;
-            align-items: center;
+.notification-header {
+    height: 50px;
 
-            background:
-                rgba(7, 20, 38, 0.98);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-            border-bottom:
-                1px solid #1c334c;
+    padding: 0 14px;
 
-            backdrop-filter:
-                blur(14px);
+    border-bottom: 1px solid #203954;
+}
 
-            -webkit-backdrop-filter:
-                blur(14px);
+.notification-title {
+    font-size: 15px;
+    font-weight: 700;
+}
 
-            z-index: 3000;
-        }
+.notification-read-button {
+    border: 0;
+    background: transparent;
+    color: #4da3ff;
+    font-size: 11px;
+    cursor: pointer;
+}
 
+.notification-list {
+    max-height: 430px;
+    overflow-y: auto;
+}
 
-        .logo {
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-            color: #ffffff;
+    padding: 11px 13px;
 
-            font-size: 22px;
+    color: #fff;
+    text-decoration: none;
 
-            font-weight: 800;
+    border-bottom: 1px solid #172f49;
+}
 
-            letter-spacing: -0.7px;
+.notification-item.unread {
+    background: #102b47;
+}
 
-            white-space: nowrap;
+.notification-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
 
-            line-height: 1;
+    border-radius: 50%;
+    object-fit: cover;
 
-            flex-shrink: 0;
-        }
+    border: 1px solid #3974a9;
+}
 
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
 
-        .logo span {
-            color: #4da3ff;
-        }
+.notification-message {
+    font-size: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+}
 
+.notification-time {
+    margin-top: 3px;
+    color: #7890a7;
+    font-size: 9px;
+}
 
-        .header-spacer {
-            flex: 1;
-        }
+.notification-unread-dot {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
 
+    border-radius: 50%;
+    background: #238cff;
+}
 
-        .header-button {
+.notification-empty,
+.notification-loading {
+    padding: 30px 15px;
+    text-align: center;
 
-            width: 42px;
-            height: 42px;
+    color: #8298ad;
+    font-size: 12px;
+}
 
-            display: flex;
+/* =====================================================
+   MAIN
+===================================================== */
 
-            align-items: center;
-            justify-content: center;
+.container {
+    width: 100%;
+    max-width: 680px;
 
-            border: none;
+    margin: 0 auto;
 
-            background: transparent;
+    padding-bottom: 20px;
+}
 
-            color: #ffffff;
+/* =====================================================
+   WELCOME
+===================================================== */
 
-            text-decoration: none;
+.welcome {
+    margin: 15px 12px 13px;
+    padding: 16px 18px;
 
-            font-size: 22px;
+    min-height: 64px;
 
-            cursor: pointer;
+    display: flex;
+    align-items: center;
 
-            position: relative;
+    border: 1px solid #173b5c;
+    border-radius: 18px;
 
-            flex-shrink: 0;
-        }
+    background:
+        linear-gradient(
+            135deg,
+            #0d2b49,
+            #0b2440
+        );
 
+    font-size: 21px;
+    font-weight: 700;
+}
 
-        .header-button:active {
-            transform: scale(.90);
-        }
+/* =====================================================
+   QUICK MENU
+===================================================== */
 
+.quick-menu {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
 
-        /* =====================================================
-           NOTIFICATION
-        ===================================================== */
+    gap: 8px;
 
-        .notification-wrapper {
-            position: relative;
-        }
+    padding: 0 12px 18px;
+}
 
+.quick-menu a {
+    min-width: 0;
+    height: 82px;
 
-        .notification-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-            width: 42px;
-            height: 42px;
+    gap: 7px;
 
-            display: flex;
+    border: 1px solid #214866;
+    border-radius: 15px;
 
-            align-items: center;
-            justify-content: center;
+    background:
+        linear-gradient(
+            145deg,
+            #0d2944,
+            #0b223a
+        );
 
-            border: none;
+    color: #e9f2fa;
 
-            background: transparent;
+    text-decoration: none;
 
-            color: white;
+    font-size: 11px;
+    font-weight: 600;
 
-            font-size: 21px;
+    text-align: center;
+}
 
-            cursor: pointer;
+.quick-menu a:active {
+    transform: scale(.96);
+    background: #123451;
+}
 
-            position: relative;
+.quick-icon {
+    width: 25px;
+    height: 25px;
+    color: #63adff;
+}
 
-            flex-shrink: 0;
-        }
+.quick-menu strong {
+    font-weight: 600;
+}
 
+/* =====================================================
+   SECTION TITLE
+===================================================== */
 
-        .notification-badge {
+.section-title,
+.feed-title {
+    padding: 4px 14px 9px;
 
-            position: absolute;
+    font-size: 19px;
+    font-weight: 700;
+}
 
-            top: 2px;
-            right: 0;
+/* =====================================================
+   PEOPLE
+===================================================== */
 
-            min-width: 18px;
-            height: 18px;
+.people {
+    display: flex;
+    gap: 13px;
 
-            padding: 0 4px;
+    overflow-x: auto;
 
-            display: none;
+    padding: 2px 14px 17px;
 
-            align-items: center;
-            justify-content: center;
+    scrollbar-width: none;
+}
 
-            border-radius: 50px;
+.people::-webkit-scrollbar {
+    display: none;
+}
 
-            background: #ff375f;
+.person {
+    width: 64px;
+    min-width: 64px;
 
-            color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-            border:
-                2px solid #071426;
+    color: #fff;
+    text-decoration: none;
+}
 
-            font-size: 9px;
+.person-image-wrapper {
+    width: 60px;
+    height: 60px;
 
-            font-weight: 800;
-        }
+    padding: 2px;
 
+    border-radius: 50%;
 
-        /* =====================================================
-           NOTIFICATION PANEL
-        ===================================================== */
+    background:
+        linear-gradient(
+            135deg,
+            #238cff,
+            #7b61ff,
+            #ff4d8d
+        );
 
-        .notification-panel {
+    margin-bottom: 5px;
+}
 
-            position: absolute;
+.person img {
+    width: 100%;
+    height: 100%;
 
-            top: 48px;
-            right: -5px;
+    border-radius: 50%;
+    object-fit: cover;
 
-            width: 340px;
+    border: 2px solid #071426;
+}
 
-            max-width:
-                calc(100vw - 20px);
+.person-name {
+    width: 64px;
 
-            background: #0d1e34;
+    text-align: center;
 
-            border:
-                1px solid #294766;
+    font-size: 10px;
+    color: #e5edf6;
 
-            border-radius: 14px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
-            overflow: hidden;
+/* =====================================================
+   CREATE POST
+===================================================== */
 
-            box-shadow:
-                0 18px 45px rgba(0,0,0,.55);
+.create-post {
+    margin: 3px 12px 17px;
+    padding: 14px;
 
-            display: none;
+    background: #0d1e34;
 
-            z-index: 5000;
-        }
+    border: 1px solid #1d3855;
+    border-radius: 17px;
+}
 
+.create-post textarea {
+    width: 100%;
 
-        .notification-panel.show {
-            display: block;
-        }
+    min-height: 92px;
+    max-height: 180px;
 
+    resize: vertical;
 
-        .notification-header {
+    padding: 13px;
 
-            height: 50px;
+    border: 1px solid #294766;
+    border-radius: 13px;
 
-            display: flex;
+    outline: none;
 
-            align-items: center;
-            justify-content: space-between;
+    background: #08172a;
+    color: #fff;
 
-            padding: 0 14px;
+    font-size: 14px;
+    line-height: 1.4;
+}
 
-            border-bottom:
-                1px solid #203954;
-        }
+.create-post textarea::placeholder {
+    color: #71859b;
+}
 
+.create-bottom {
+    display: flex;
+    align-items: center;
 
-        .notification-title {
+    gap: 9px;
 
-            font-size: 15px;
+    margin-top: 10px;
+}
 
-            font-weight: 700;
-        }
+.file-label {
+    flex: 1;
+    min-width: 0;
 
+    height: 43px;
 
-        .notification-read-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-            border: none;
+    gap: 7px;
 
-            background: transparent;
+    border: 1px solid #294766;
+    border-radius: 11px;
 
-            color: #4da3ff;
+    background: #102641;
+    color: #c8d7e6;
 
-            font-size: 11px;
+    font-size: 12px;
+    font-weight: 600;
 
-            cursor: pointer;
-        }
+    cursor: pointer;
+}
 
+.file-label:active {
+    transform: scale(.97);
+}
 
-        .notification-list {
+.file-label input {
+    display: none;
+}
 
-            max-height: 430px;
+.post-button {
+    width: 82px;
+    height: 43px;
 
-            overflow-y: auto;
-        }
+    border: 0;
+    border-radius: 11px;
 
+    background: #238cff;
+    color: #fff;
 
-        .notification-item {
+    font-size: 13px;
+    font-weight: 700;
 
-            display: flex;
+    cursor: pointer;
+}
 
-            align-items: center;
+.post-button:active {
+    transform: scale(.96);
+}
 
-            gap: 10px;
+/* =====================================================
+   POST
+===================================================== */
 
-            padding: 11px 13px;
+.post {
+    width: 100%;
 
-            text-decoration: none;
+    margin-bottom: 12px;
 
-            color: white;
+    background: #0d1e34;
 
-            border-bottom:
-                1px solid #172f49;
-        }
+    border-top: 1px solid #1c334c;
+    border-bottom: 1px solid #1c334c;
 
+    overflow: hidden;
+}
 
-        .notification-item.unread {
-            background: #102b47;
-        }
+/* =====================================================
+   POST HEADER
+===================================================== */
 
+.post-header {
+    min-height: 63px;
 
-        .notification-avatar {
+    display: flex;
+    align-items: center;
 
-            width: 40px;
-            height: 40px;
+    padding: 10px 13px;
+}
 
-            min-width: 40px;
+.post-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
 
-            border-radius: 50%;
+    margin-right: 10px;
 
-            object-fit: cover;
+    border-radius: 50%;
+    object-fit: cover;
 
-            border:
-                1px solid #3974a9;
-        }
+    border: 1px solid #3974a9;
+}
 
+.post-user-info {
+    flex: 1;
+    min-width: 0;
+}
 
-        .notification-content {
+.post-user {
+    color: #fff;
 
-            flex: 1;
+    font-size: 14px;
+    font-weight: 700;
 
-            min-width: 0;
-        }
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
+.post-time {
+    margin-top: 3px;
 
-        .notification-message {
+    color: #8298ad;
 
-            font-size: 12px;
+    font-size: 10px;
+}
 
-            line-height: 1.4;
+.post-more {
+    width: 38px;
+    height: 38px;
 
-            word-break: break-word;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
+    color: #9cafc2;
 
-        .notification-time {
+    border-radius: 50%;
+}
 
-            margin-top: 3px;
+/* =====================================================
+   CAPTION
+===================================================== */
 
-            color: #7890a7;
+.post-caption {
+    padding: 0 13px 12px;
 
-            font-size: 9px;
-        }
+    color: #edf4fa;
 
+    font-size: 14px;
+    line-height: 1.5;
 
-        .notification-unread-dot {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
 
-            width: 7px;
-            height: 7px;
+/* =====================================================
+   MEDIA
+===================================================== */
 
-            min-width: 7px;
+.post-media {
+    display: block;
 
-            border-radius: 50%;
+    width: 100%;
+    height: auto;
 
-            background: #238cff;
-        }
+    max-height: 760px;
 
+    object-fit: cover;
 
-        .notification-empty,
-        .notification-loading {
+    background: #000;
+}
 
-            padding: 30px 15px;
+img.post-media,
+video.post-media {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+}
 
-            text-align: center;
+/* =====================================================
+   ACTION BAR
+===================================================== */
 
-            color: #8298ad;
+.post-actions {
+    display: flex;
+    align-items: center;
 
-            font-size: 12px;
-        }
+    gap: 2px;
 
+    padding: 7px 9px 6px;
 
-        /* =====================================================
-           MAIN
-        ===================================================== */
+    border-top: 1px solid rgba(255,255,255,.035);
+}
 
-        .container {
+.action-form {
+    margin: 0;
+}
 
-            width: 100%;
+.action-button {
+    min-width: 45px;
+    height: 39px;
 
-            max-width: 630px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-            margin: 0 auto;
+    gap: 6px;
 
-            padding:
-                0 0 20px;
-        }
+    padding: 0 7px;
 
+    border: 0;
+    border-radius: 10px;
 
-        /* =====================================================
-           WELCOME
-        ===================================================== */
+    background: transparent;
+    color: #dce8f5;
 
-        .welcome {
+    cursor: pointer;
+}
 
-            margin:
-                14px 12px 12px;
+.action-button:hover {
+    background: rgba(255,255,255,.045);
+}
 
-            padding:
-                15px 18px;
+.action-button:active {
+    transform: scale(.91);
+}
 
-            min-height: 62px;
+.action-icon {
+    width: 21px;
+    height: 21px;
+}
 
-            display: flex;
+.like-icon {
+    color: #dce8f5;
+}
 
-            align-items: center;
+.liked {
+    color: #ff3b68;
+}
 
-            border:
-                1px solid #173b5c;
+.liked .like-icon {
+    color: #ff3b68;
+}
 
-            border-radius: 18px;
+.like-count,
+.comment-count {
+    color: #aebed0;
+    font-size: 11px;
+}
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #0d2b49,
-                    #0b2440
-                );
+.share-text {
+    font-size: 11px;
+}
 
-            font-size: 22px;
+.delete-button {
+    margin-left: auto;
+    color: #ff6578;
+}
 
-            font-weight: 700;
+/* =====================================================
+   COMMENTS
+===================================================== */
 
-            color: #ffffff;
-        }
+.comments {
+    padding: 0 13px 13px;
+}
 
+.comment {
+    margin-bottom: 8px;
 
-        /* =====================================================
-           QUICK ACTIONS
-           LARGE MOBILE FEATURE CARDS
-        ===================================================== */
+    color: #dce8f5;
 
-        .quick-menu {
+    font-size: 12px;
+    line-height: 1.45;
 
-            width: 100%;
+    word-break: break-word;
+}
 
-            display: grid;
+.comment strong {
+    margin-right: 4px;
+    color: #63adff;
+}
 
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
+.comment-form {
+    display: flex;
+    gap: 7px;
 
-            gap: 9px;
+    margin-top: 9px;
+}
 
-            padding:
-                0 12px 17px;
+.comment-form input {
+    flex: 1;
+    min-width: 0;
 
-            overflow: visible;
-        }
+    height: 39px;
 
+    padding: 0 12px;
 
-        .quick-menu a {
+    border: 1px solid #294766;
+    border-radius: 20px;
 
-            min-width: 0;
+    outline: none;
 
-            height: 92px;
+    background: #08172a;
+    color: #fff;
 
-            display: flex;
+    font-size: 12px;
+}
 
-            flex-direction: column;
+.comment-form input::placeholder {
+    color: #71859b;
+}
 
-            align-items: center;
+.comment-form button {
+    width: 58px;
+    height: 39px;
 
-            justify-content: center;
+    border: 0;
+    border-radius: 20px;
 
-            gap: 7px;
+    background: #238cff;
+    color: #fff;
 
-            padding:
-                8px 4px;
+    font-size: 11px;
+    font-weight: 700;
 
-            border:
-                1px solid #214866;
+    cursor: pointer;
+}
 
-            border-radius: 15px;
+.comment-form button:disabled {
+    opacity: .5;
+}
 
-            background:
-                linear-gradient(
-                    145deg,
-                    #0d2944,
-                    #0b223a
-                );
+/* =====================================================
+   EMPTY
+===================================================== */
 
-            color: #e9f2fa;
+.empty-posts {
+    margin: 10px 12px;
 
-            text-decoration: none;
+    padding: 38px 15px;
 
-            font-size: 12px;
+    text-align: center;
 
-            font-weight: 600;
+    background: #0d1e34;
 
-            white-space: normal;
+    border: 1px solid #1d3855;
+    border-radius: 17px;
 
-            text-align: center;
+    color: #9cafc2;
 
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,.025);
-        }
+    font-size: 14px;
+    line-height: 1.7;
+}
 
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
 
-        .quick-menu a:active {
+.bottom-nav {
+    position: fixed;
 
-            transform: scale(.96);
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-            background: #123451;
-        }
+    width: 100%;
 
+    height: calc(66px + env(safe-area-inset-bottom));
 
-        .quick-menu span {
+    padding-bottom: env(safe-area-inset-bottom);
 
-            display: flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
 
-            align-items: center;
-            justify-content: center;
+    background: rgba(7,20,38,.98);
 
-            width: 42px;
-            height: 42px;
+    border-top: 1px solid #203954;
 
-            font-size: 28px;
+    z-index: 4000;
 
-            line-height: 1;
-        }
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
 
+.bottom-nav a {
+    flex: 1;
 
-        /* =====================================================
-           SECTION TITLE
-        ===================================================== */
+    height: 66px;
 
-        .section-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-            padding:
-                5px 14px 8px;
+    gap: 4px;
 
-            font-size: 21px;
+    color: #8398ad;
 
-            font-weight: 600;
-        }
+    text-decoration: none;
 
+    font-size: 9px;
+    font-weight: 600;
+}
 
-        /* =====================================================
-           PEOPLE
-        ===================================================== */
+.bottom-nav .nav-icon {
+    width: 21px;
+    height: 21px;
+}
 
-        .people {
+.bottom-nav .active {
+    color: #4da3ff;
+}
 
-            display: flex;
+.bottom-nav a:active {
+    transform: scale(.91);
+}
 
-            gap: 13px;
+/* =====================================================
+   DESKTOP
+===================================================== */
 
-            overflow-x: auto;
+@media (min-width: 700px) {
 
-            padding:
-                2px 14px 15px;
+    body {
+        padding-bottom: 20px;
+    }
 
-            scrollbar-width: none;
-        }
+    .header {
+        min-height: 64px;
+        padding-top: 0;
+    }
 
+    .container {
+        max-width: 680px;
+        padding-top: 5px;
+    }
 
-        .people::-webkit-scrollbar {
-            display: none;
-        }
+    .quick-menu a {
+        height: 88px;
+    }
 
+    .post {
+        border: 1px solid #1c334c;
+        border-radius: 13px;
+    }
 
-        .person {
+    .bottom-nav {
+        width: 510px;
+        height: 58px;
 
-            width: 64px;
+        left: 50%;
+        right: auto;
+        bottom: 15px;
 
-            min-width: 64px;
+        transform: translateX(-50%);
 
-            display: flex;
+        border: 1px solid #294766;
+        border-radius: 20px;
 
-            flex-direction: column;
+        padding: 0;
 
-            align-items: center;
+        box-shadow:
+            0 10px 40px rgba(0,0,0,.4);
+    }
 
-            text-decoration: none;
+    .bottom-nav a {
+        height: 57px;
+    }
+}
 
-            color: white;
-        }
+/* =====================================================
+   SMALL PHONES
+===================================================== */
 
+@media (max-width: 360px) {
 
-        .person-image-wrapper {
+    .logo {
+        font-size: 19px;
+    }
 
-            width: 60px;
-            height: 60px;
+    .header {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
 
-            padding: 2px;
+    .header-button,
+    .notification-button {
+        width: 37px;
+        height: 37px;
+    }
 
-            border-radius: 50%;
+    .welcome {
+        margin-left: 9px;
+        margin-right: 9px;
+        font-size: 19px;
+    }
 
-            background:
-                linear-gradient(
-                    135deg,
-                    #238cff,
-                    #7b61ff,
-                    #ff4d8d
-                );
+    .quick-menu {
+        gap: 5px;
+        padding-left: 9px;
+        padding-right: 9px;
+    }
 
-            margin-bottom: 5px;
-        }
+    .quick-menu a {
+        height: 78px;
+        font-size: 9px;
+    }
 
+    .quick-icon {
+        width: 22px;
+        height: 22px;
+    }
 
-        .person img {
+    .section-title,
+    .feed-title {
+        padding-left: 12px;
+    }
 
-            width: 100%;
-            height: 100%;
+    .create-post {
+        margin-left: 9px;
+        margin-right: 9px;
+    }
 
-            border-radius: 50%;
+    .action-button {
+        min-width: 40px;
+    }
 
-            object-fit: cover;
+    .share-text {
+        display: none;
+    }
+}
 
-            border:
-                2px solid #071426;
-        }
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
 
-
-        .person-name {
-
-            width: 64px;
-
-            text-align: center;
-
-            font-size: 10px;
-
-            color: #e5edf6;
-
-            overflow: hidden;
-
-            white-space: nowrap;
-
-            text-overflow: ellipsis;
-        }
-
-
-        /* =====================================================
-           CREATE POST
-        ===================================================== */
-
-        .create-post {
-
-            margin:
-                3px 12px 17px;
-
-            padding: 14px;
-
-            background:
-                #0d1e34;
-
-            border:
-                1px solid #1d3855;
-
-            border-radius: 16px;
-        }
-
-
-        .create-post textarea {
-
-            width: 100%;
-
-            min-height: 105px;
-
-            max-height: 180px;
-
-            resize: vertical;
-
-            padding:
-                14px;
-
-            border:
-                1px solid #294766;
-
-            border-radius: 13px;
-
-            outline: none;
-
-            background:
-                #08172a;
-
-            color: white;
-
-            font-size: 15px;
-
-            line-height: 1.4;
-        }
-
-
-        .create-post textarea::placeholder {
-            color: #71859b;
-        }
-
-
-        .create-bottom {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 9px;
-
-            margin-top: 10px;
-        }
-
-
-        .file-label {
-
-            flex: 1;
-
-            min-width: 0;
-
-            height: 44px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            border:
-                1px solid #294766;
-
-            border-radius: 10px;
-
-            background: #102641;
-
-            color: #c8d7e6;
-
-            font-size: 12px;
-
-            cursor: pointer;
-        }
-
-
-        .file-label:active {
-            transform: scale(.97);
-        }
-
-
-        .file-label input {
-            display: none;
-        }
-
-
-        .post-button {
-
-            width: 90px;
-
-            height: 44px;
-
-            border: none;
-
-            border-radius: 10px;
-
-            background: #238cff;
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-
-        .post-button:active {
-            transform: scale(.96);
-        }
-
-
-        /* =====================================================
-           FEED
-        ===================================================== */
-
-        .feed-title {
-
-            padding:
-                2px 14px 9px;
-
-            font-size: 21px;
-
-            font-weight: 600;
-        }
-
-
-        /* =====================================================
-           POST
-        ===================================================== */
-
-        .post {
-
-            width: 100%;
-
-            background: #0d1e34;
-
-            border-top:
-                1px solid #1c334c;
-
-            border-bottom:
-                1px solid #1c334c;
-
-            margin-bottom: 11px;
-
-            overflow: hidden;
-        }
-
-
-        /* =====================================================
-           POST HEADER
-        ===================================================== */
-
-        .post-header {
-
-            min-height: 62px;
-
-            display: flex;
-
-            align-items: center;
-
-            padding:
-                10px 13px;
-        }
-
-
-        .post-avatar {
-
-            width: 42px;
-            height: 42px;
-
-            min-width: 42px;
-
-            border-radius: 50%;
-
-            object-fit: cover;
-
-            margin-right: 10px;
-
-            border:
-                1px solid #3974a9;
-        }
-
-
-        .post-user-info {
-
-            min-width: 0;
-
-            flex: 1;
-        }
-
-
-        .post-user {
-
-            color: white;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-
-            white-space: nowrap;
-        }
-
-
-        .post-time {
-
-            margin-top: 2px;
-
-            color: #8298ad;
-
-            font-size: 10px;
-        }
-
-
-        .post-more {
-
-            width: 36px;
-            height: 36px;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            color: #9cafc2;
-
-            font-size: 20px;
-        }
-
-
-        /* =====================================================
-           CAPTION
-        ===================================================== */
-
-        .post-caption {
-
-            padding:
-                0 13px 11px;
-
-            color: #edf4fa;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            white-space: pre-wrap;
-
-            word-break: break-word;
-        }
-
-
-        /* =====================================================
-           MEDIA
-        ===================================================== */
-
-        .post-media {
-
-            display: block;
-
-            width: 100%;
-
-            height: auto;
-
-            max-height: 750px;
-
-            object-fit: cover;
-
-            background: #000;
-        }
-
-
-        img.post-media {
-
-            aspect-ratio: 4 / 5;
-
-            object-fit: cover;
-        }
-
-
-        video.post-media {
-
-            aspect-ratio: 4 / 5;
-
-            object-fit: cover;
-        }
-
-
-        /* =====================================================
-           POST ACTIONS
-        ===================================================== */
-
-        .post-actions {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 4px;
-
-            padding:
-                8px 10px 5px;
-        }
-
-
-        .action-form {
-            margin: 0;
-        }
-
-
-        .action-button {
-
-            min-width: 44px;
-
-            height: 38px;
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 5px;
-
-            padding:
-                0 6px;
-
-            border: none;
-
-            background: transparent;
-
-            color: #dce8f5;
-
-            font-size: 12px;
-
-            cursor: pointer;
-
-            border-radius: 8px;
-        }
-
-
-        .action-button:active {
-            transform: scale(.91);
-        }
-
-
-        .action-icon {
-
-            font-size: 22px;
-
-            line-height: 1;
-        }
-
-
-        .liked {
-            color: #ff3b68;
-        }
-
-
-        .like-count,
-        .comment-count {
-
-            font-size: 11px;
-
-            color: #aebed0;
-        }
-
-
-        .delete-button {
-
-            margin-left: auto;
-
-            color: #ff6578;
-        }
-
-
-        /* =====================================================
-           COMMENTS
-        ===================================================== */
-
-        .comments {
-
-            padding:
-                0 13px 12px;
-        }
-
-
-        .comment {
-
-            margin-bottom: 7px;
-
-            color: #dce8f5;
-
-            font-size: 12px;
-
-            line-height: 1.4;
-
-            word-break: break-word;
-        }
-
-
-        .comment strong {
-
-            margin-right: 4px;
-
-            color: #63adff;
-        }
-
-
-        .comment-form {
-
-            display: flex;
-
-            gap: 6px;
-
-            margin-top: 8px;
-        }
-
-
-        .comment-form input {
-
-            flex: 1;
-
-            min-width: 0;
-
-            height: 38px;
-
-            padding:
-                0 11px;
-
-            border:
-                1px solid #294766;
-
-            border-radius: 19px;
-
-            outline: none;
-
-            background: #08172a;
-
-            color: white;
-
-            font-size: 12px;
-        }
-
-
-        .comment-form button {
-
-            width: 58px;
-
-            height: 38px;
-
-            border: none;
-
-            border-radius: 19px;
-
-            background: #238cff;
-
-            color: white;
-
-            font-size: 11px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-
-        .comment-form button:disabled {
-            opacity: .5;
-        }
-
-
-        /* =====================================================
-           EMPTY POSTS
-        ===================================================== */
-
-        .empty-posts {
-
-            margin:
-                10px 12px;
-
-            padding:
-                35px 15px;
-
-            text-align: center;
-
-            background: #0d1e34;
-
-            border:
-                1px solid #1d3855;
-
-            border-radius: 16px;
-
-            color: #9cafc2;
-
-            font-size: 14px;
-
-            line-height: 1.7;
-        }
-
-
-        /* =====================================================
-           BOTTOM NAVIGATION
-        ===================================================== */
-
-        .bottom-nav {
-
-            position: fixed;
-
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            width: 100%;
-
-            height:
-                calc(64px + env(safe-area-inset-bottom));
-
-            padding-bottom:
-                env(safe-area-inset-bottom);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-around;
-
-            background:
-                rgba(7,20,38,.98);
-
-            border-top:
-                1px solid #203954;
-
-            z-index: 4000;
-
-            backdrop-filter:
-                blur(15px);
-
-            -webkit-backdrop-filter:
-                blur(15px);
-        }
-
-
-        .bottom-nav a {
-
-            flex: 1;
-
-            height: 64px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 3px;
-
-            color: #8398ad;
-
-            text-decoration: none;
-
-            font-size: 10px;
-
-            font-weight: 500;
-        }
-
-
-        .bottom-nav span {
-
-            display: block;
-
-            font-size: 24px;
-
-            line-height: 24px;
-        }
-
-
-        .bottom-nav .active {
-
-            color: #4da3ff;
-
-            font-weight: 700;
-        }
-
-
-        .bottom-nav a:active {
-            transform: scale(.91);
-        }
-
-
-        /* =====================================================
-           DESKTOP
-        ===================================================== */
-
-        @media (min-width: 700px) {
-
-            body {
-                padding-bottom: 20px;
-            }
-
-
-            .header {
-
-                min-height: 64px;
-
-                padding-top: 0;
-
-                padding-left: 20px;
-
-                padding-right: 20px;
-            }
-
-
-            .logo {
-                font-size: 23px;
-            }
-
-
-            .container {
-
-                max-width: 630px;
-
-                padding-top: 5px;
-            }
-
-
-            .quick-menu {
-
-                grid-template-columns:
-                    repeat(4, 1fr);
-
-                gap: 10px;
-            }
-
-
-            .quick-menu a {
-
-                height: 105px;
-
-                font-size: 14px;
-            }
-
-
-            .quick-menu span {
-
-                font-size: 32px;
-
-                width: 48px;
-
-                height: 48px;
-            }
-
-
-            .bottom-nav {
-
-                position: fixed;
-
-                width: 500px;
-
-                height: 56px;
-
-                left: 50%;
-
-                right: auto;
-
-                bottom: 15px;
-
-                transform:
-                    translateX(-50%);
-
-                border:
-                    1px solid #294766;
-
-                border-radius: 20px;
-
-                padding: 0;
-
-                box-shadow:
-                    0 10px 40px rgba(0,0,0,.4);
-            }
-
-
-            .bottom-nav a {
-                height: 55px;
-            }
-
-
-            .post {
-
-                border:
-                    1px solid #1c334c;
-
-                border-radius: 12px;
-
-                margin-bottom: 15px;
-            }
-
-
-            .post-media {
-
-                max-height: 780px;
-            }
-
-        }
-
-
-        /* =====================================================
-           SMALL PHONES
-        ===================================================== */
-
-        @media (max-width: 360px) {
-
-            .header {
-
-                padding-left: 9px;
-
-                padding-right: 9px;
-            }
-
-
-            .logo {
-                font-size: 19px;
-            }
-
-
-            .header-button,
-            .notification-button {
-
-                width: 36px;
-
-                height: 36px;
-            }
-
-
-            .welcome {
-
-                font-size: 19px;
-
-                min-height: 58px;
-            }
-
-
-            .quick-menu {
-
-                gap: 6px;
-
-                padding-left: 9px;
-
-                padding-right: 9px;
-            }
-
-
-            .quick-menu a {
-
-                height: 82px;
-
-                border-radius: 13px;
-
-                font-size: 10px;
-            }
-
-
-            .quick-menu span {
-
-                width: 34px;
-
-                height: 34px;
-
-                font-size: 23px;
-            }
-
-
-            .section-title,
-            .feed-title {
-
-                font-size: 19px;
-
-                padding-left: 12px;
-            }
-
-
-            .people {
-
-                padding-left: 12px;
-
-                padding-right: 12px;
-            }
-
-
-            .create-post {
-
-                margin-left: 9px;
-
-                margin-right: 9px;
-            }
-
-
-            .post-caption {
-
-                font-size: 13px;
-            }
-
-
-            .action-button {
-
-                min-width: 38px;
-            }
-
-
-            .action-icon {
-
-                font-size: 20px;
-            }
-
-        }
-
-
-        /* =====================================================
-           VERY NARROW PHONES
-        ===================================================== */
-
-        @media (max-width: 330px) {
-
-            .quick-menu {
-
-                gap: 5px;
-            }
-
-
-            .quick-menu a {
-
-                height: 76px;
-
-                font-size: 9px;
-            }
-
-
-            .quick-menu span {
-
-                font-size: 21px;
-            }
-
-
-            .logo {
-
-                font-size: 18px;
-            }
-
-        }
-
-
-        /* =====================================================
-           REDUCED MOTION
-        ===================================================== */
-
-        @media (prefers-reduced-motion: reduce) {
-
-            * {
-                scroll-behavior: auto !important;
-            }
-
-        }
-
-    </style>
-
+@media (prefers-reduced-motion: reduce) {
+    * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
+}
+</style>
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      HEADER
@@ -1595,18 +1071,18 @@
         Private<span>Connect</span>
     </div>
 
-
     <div class="header-spacer"></div>
-
 
     <a
         href="{{ url_for('find_people') }}"
         class="header-button"
         aria-label="Search"
     >
-        🔍
+        <svg class="icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="M16 16l5 5"></path>
+        </svg>
     </a>
-
 
     <div class="notification-wrapper">
 
@@ -1616,8 +1092,10 @@
             onclick="toggleNotifications()"
             aria-label="Notifications"
         >
-
-            🔔
+            <svg class="icon" viewBox="0 0 24 24">
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                <path d="M10 21h4"></path>
+            </svg>
 
             <span
                 id="notificationBadge"
@@ -1625,9 +1103,7 @@
             >
                 0
             </span>
-
         </button>
-
 
         <div
             id="notificationPanel"
@@ -1650,16 +1126,13 @@
 
             </div>
 
-
             <div
                 id="notificationList"
                 class="notification-list"
             >
-
                 <div class="notification-loading">
                     Loading...
                 </div>
-
             </div>
 
         </div>
@@ -1675,13 +1148,10 @@
 
 <main class="container">
 
-
     <!-- WELCOME -->
 
     <div class="welcome">
-
-        Welcome 👋
-
+        Welcome
     </div>
 
 
@@ -1693,7 +1163,10 @@
 
         <a href="{{ url_for('find_people') }}">
 
-            <span>🔎</span>
+            <svg class="icon quick-icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="M16 16l5 5"></path>
+            </svg>
 
             <strong>Search</strong>
 
@@ -1702,7 +1175,9 @@
 
         <a href="{{ url_for('messages') }}">
 
-            <span>💬</span>
+            <svg class="icon quick-icon" viewBox="0 0 24 24">
+                <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"></path>
+            </svg>
 
             <strong>Chats</strong>
 
@@ -1711,7 +1186,9 @@
 
         <a href="{{ url_for('match') }}">
 
-            <span>💙</span>
+            <svg class="icon quick-icon" viewBox="0 0 24 24">
+                <path d="M20.8 8.7c0 5.5-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5z"></path>
+            </svg>
 
             <strong>Match</strong>
 
@@ -1720,7 +1197,12 @@
 
         <a href="{{ url_for('connections') }}">
 
-            <span>👥</span>
+            <svg class="icon quick-icon" viewBox="0 0 24 24">
+                <circle cx="9" cy="8" r="3"></circle>
+                <circle cx="17" cy="9" r="2.5"></circle>
+                <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"></path>
+                <path d="M15 14c3 0 5 1.8 5 4"></path>
+            </svg>
 
             <strong>Connections</strong>
 
@@ -1734,9 +1216,7 @@
     ================================================= -->
 
     <div class="section-title">
-
         People Near You
-
     </div>
 
 
@@ -1747,10 +1227,7 @@
             {% for user in users %}
 
                 <a
-                    href="{{ url_for(
-                        'profile',
-                        user_id=user.id
-                    ) }}"
+                    href="{{ url_for('profile', user_id=user.id) }}"
                     class="person"
                 >
 
@@ -1761,8 +1238,7 @@
                             <img
                                 src="{{ url_for(
                                     'static',
-                                    filename='uploads/' +
-                                    user.profile_picture
+                                    filename='uploads/' + user.profile_picture
                                 ) }}"
                                 alt="{{ user.name }}"
                             >
@@ -1778,11 +1254,8 @@
 
                     </div>
 
-
                     <div class="person-name">
-
                         {{ user.name }}
-
                     </div>
 
                 </a>
@@ -1829,7 +1302,13 @@
 
                 <label class="file-label">
 
-                    📷 Add photo/video
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        <circle cx="8.5" cy="10" r="1.5"></circle>
+                        <path d="M21 15l-4-4-7 7"></path>
+                    </svg>
+
+                    Add photo/video
 
                     <input
                         type="file"
@@ -1867,9 +1346,7 @@
     ================================================= -->
 
     <div class="feed-title">
-
         Posts
-
     </div>
 
 
@@ -1882,7 +1359,6 @@
                 id="post-{{ post.id }}"
             >
 
-
                 <!-- POST HEADER -->
 
                 <div class="post-header">
@@ -1893,8 +1369,7 @@
                             class="post-avatar"
                             src="{{ url_for(
                                 'static',
-                                filename='uploads/' +
-                                post.profile_picture
+                                filename='uploads/' + post.profile_picture
                             ) }}"
                             alt="{{ post.name }}"
                         >
@@ -1913,25 +1388,27 @@
                     <div class="post-user-info">
 
                         <div class="post-user">
-
                             {{ post.name }}
-
                         </div>
 
                         <div class="post-time">
-
                             {{ post.created_at }}
-
                         </div>
 
                     </div>
 
 
-                    <div class="post-more">
-
-                        ⋯
-
-                    </div>
+                    <button
+                        type="button"
+                        class="post-more"
+                        aria-label="Post options"
+                    >
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <circle cx="5" cy="12" r="1"></circle>
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="19" cy="12" r="1"></circle>
+                        </svg>
+                    </button>
 
                 </div>
 
@@ -1941,9 +1418,7 @@
                 {% if post.caption %}
 
                     <div class="post-caption">
-
                         {{ post.caption }}
-
                     </div>
 
                 {% endif %}
@@ -1971,8 +1446,7 @@
                             <source
                                 src="{{ url_for(
                                     'static',
-                                    filename='uploads/' +
-                                    post.media
+                                    filename='uploads/' + post.media
                                 ) }}"
                             >
 
@@ -1984,8 +1458,7 @@
                             class="post-media"
                             src="{{ url_for(
                                 'static',
-                                filename='uploads/' +
-                                post.media
+                                filename='uploads/' + post.media
                             ) }}"
                             alt="Post"
                             loading="lazy"
@@ -2002,7 +1475,6 @@
 
                 <div class="post-actions">
 
-
                     <!-- LIKE -->
 
                     <button
@@ -2010,36 +1482,31 @@
                         class="
                             action-button
                             like-button
-                            {% if post.user_liked %}
-                                liked
-                            {% endif %}
+                            {% if post.user_liked %}liked{% endif %}
                         "
                         data-post-id="{{ post.id }}"
                         onclick="
                             event.preventDefault();
-                            likePost(
-                                {{ post.id }},
-                                this
-                            );
+                            likePost({{ post.id }}, this);
                             return false;
                         "
+                        aria-label="Like post"
                     >
 
-                        <span class="action-icon like-icon">
-
-                            {% if post.user_liked %}
-                                ❤️
-                            {% else %}
-                                🤍
-                            {% endif %}
-
-                        </span>
-
+                        <svg
+                            class="icon like-icon"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                d="M20.8 8.7c0 5.5-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5z"
+                                {% if post.user_liked %}
+                                    fill="currentColor"
+                                {% endif %}
+                            ></path>
+                        </svg>
 
                         <span class="like-count">
-
                             {{ post.like_count }}
-
                         </span>
 
                     </button>
@@ -2051,21 +1518,21 @@
                         type="button"
                         class="action-button comment-button"
                         onclick="
-                            focusComment(
-                                {{ post.id }}
-                            );
+                            focusComment({{ post.id }});
                             return false;
                         "
+                        aria-label="Comment"
                     >
 
-                        <span class="action-icon">
-                            💬
-                        </span>
+                        <svg
+                            class="icon"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"></path>
+                        </svg>
 
                         <span class="comment-count">
-
                             {{ post.comment_count }}
-
                         </span>
 
                     </button>
@@ -2077,18 +1544,22 @@
                         type="button"
                         class="action-button"
                         onclick="
-                            sharePost(
-                                {{ post.id }}
-                            );
+                            sharePost({{ post.id }});
                             return false;
                         "
+                        aria-label="Share post"
                     >
 
-                        <span class="action-icon">
-                            ↗
-                        </span>
+                        <svg
+                            class="icon"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M12 16V4"></path>
+                            <path d="M7 9l5-5 5 5"></path>
+                            <path d="M5 13v6h14v-6"></path>
+                        </svg>
 
-                        <span>
+                        <span class="share-text">
                             Share
                         </span>
 
@@ -2105,18 +1576,26 @@
                         ) }}"
                         class="action-form delete-button"
                         onsubmit="
-                            return confirm(
-                                'Delete this post?'
-                            );
+                            return confirm('Delete this post?');
                         "
                     >
 
                         <button
                             type="submit"
                             class="action-button delete-button"
+                            aria-label="Delete post"
                         >
 
-                            🗑️
+                            <svg
+                                class="icon"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M4 7h16"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                                <path d="M6 7l1 13h10l1-13"></path>
+                                <path d="M9 7V4h6v3"></path>
+                            </svg>
 
                         </button>
 
@@ -2169,28 +1648,23 @@
                             required
                         >
 
-
                         <button type="submit">
-
                             Send
-
                         </button>
 
                     </form>
 
                 </div>
 
-
             </article>
 
         {% endfor %}
-
 
     {% else %}
 
         <div class="empty-posts">
 
-            No posts yet. 🎉
+            No posts yet.
 
             <br>
 
@@ -2209,57 +1683,83 @@
 
 <nav class="bottom-nav">
 
-
     <a
         href="{{ url_for('dashboard') }}"
         class="active"
     >
 
-        <span>⌂</span>
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+            <path d="M3 10.5L12 3l9 7.5"></path>
+            <path d="M5 9v11h14V9"></path>
+            <path d="M9 20v-6h6v6"></path>
+        </svg>
 
         Home
 
     </a>
 
 
-    <a
-        href="{{ url_for('find_people') }}"
-    >
+    <a href="{{ url_for('find_people') }}">
 
-        <span>⌕</span>
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+            <circle cx="11" cy="11" r="6.5"></circle>
+            <path d="M16 16l5 5"></path>
+        </svg>
 
-        Explore
+        People
 
     </a>
 
 
-    <a
-        href="{{ url_for('reels') }}"
-    >
+    <a href="{{ url_for('reels') }}">
 
-        <span>▣</span>
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+            <path d="M8 4l3 4"></path>
+            <path d="M14 4l3 4"></path>
+            <path d="M10 11l5 3-5 3z"></path>
+        </svg>
 
         Reels
 
     </a>
 
 
-    <a
-        href="{{ url_for('connections') }}"
-    >
+    <a href="{{ url_for('connections') }}">
 
-        <span>♥</span>
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+            <circle cx="9" cy="8" r="3"></circle>
+            <circle cx="17" cy="9" r="2.5"></circle>
+            <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"></path>
+            <path d="M15 14c3 0 5 1.8 5 4"></path>
+        </svg>
 
         Match
 
     </a>
 
 
-    <a
-        href="{{ url_for('profile') }}"
-    >
+    <a href="{{ url_for('profile') }}">
 
-        <span>●</span>
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21c.7-4.1 3.5-6 8-6s7.3 1.9 8 6"></path>
+        </svg>
 
         Profile
 
@@ -2274,7 +1774,6 @@
 
 <script>
 
-
 /* =====================================================
    FOCUS COMMENT
 ===================================================== */
@@ -2288,7 +1787,6 @@ function focusComment(postId) {
             " input"
         );
 
-
     if (box) {
 
         box.focus();
@@ -2299,7 +1797,6 @@ function focusComment(postId) {
         });
 
     }
-
 }
 
 
@@ -2348,37 +1845,34 @@ function likePost(postId, button) {
             return;
         }
 
-
         const icon =
             button.querySelector(
                 ".like-icon"
             );
-
 
         const count =
             button.querySelector(
                 ".like-count"
             );
 
-
         if (data.liked) {
 
             button.classList.add("liked");
 
-            icon.textContent = "❤️";
+            icon.style.fill =
+                "currentColor";
 
         } else {
 
             button.classList.remove("liked");
 
-            icon.textContent = "🤍";
+            icon.style.fill =
+                "none";
 
         }
 
-
         count.textContent =
             data.like_count;
-
 
         updateNotificationBadge();
 
@@ -2409,54 +1903,43 @@ function submitComment(
 
     event.preventDefault();
 
-
     const input =
         form.querySelector(
             "input[name='comment']"
         );
-
 
     const button =
         form.querySelector(
             "button"
         );
 
-
     const text =
         input.value.trim();
-
 
     if (!text) {
         return false;
     }
 
-
     button.disabled = true;
-
     button.textContent = "…";
-
 
     fetch(
         "/comment/" + postId,
         {
-
             method: "POST",
 
             headers: {
-
                 "Content-Type":
                     "application/x-www-form-urlencoded",
 
                 "X-Requested-With":
                     "XMLHttpRequest"
-
             },
 
             body:
                 new URLSearchParams({
                     comment: text
                 })
-
         }
     )
 
@@ -2487,39 +1970,32 @@ function submitComment(
             return;
         }
 
-
         const commentsBox =
             document.querySelector(
                 "#comments-" +
                 postId
             );
 
-
         const commentForm =
             commentsBox.querySelector(
                 ".comment-form"
             );
-
 
         const newComment =
             document.createElement(
                 "div"
             );
 
-
         newComment.className =
             "comment";
-
 
         const name =
             document.createElement(
                 "strong"
             );
 
-
         name.textContent =
             data.name;
-
 
         const commentText =
             document.createTextNode(
@@ -2527,22 +2003,18 @@ function submitComment(
                 data.comment
             );
 
-
         newComment.appendChild(name);
 
         newComment.appendChild(
             commentText
         );
 
-
         commentsBox.insertBefore(
             newComment,
             commentForm
         );
 
-
         input.value = "";
-
 
         const post =
             document.querySelector(
@@ -2550,18 +2022,15 @@ function submitComment(
                 postId
             );
 
-
         const commentButton =
             post.querySelector(
                 ".comment-button"
             );
 
-
         const commentCount =
             commentButton.querySelector(
                 ".comment-count"
             );
-
 
         if (
             commentCount &&
@@ -2572,7 +2041,6 @@ function submitComment(
                 data.comment_count;
 
         }
-
 
         updateNotificationBadge();
 
@@ -2595,7 +2063,6 @@ function submitComment(
         button.textContent = "Send";
 
     });
-
 
     return false;
 }
@@ -2639,7 +2106,6 @@ function sharePost(postId) {
 
             return;
         }
-
 
         if (
             navigator.clipboard &&
@@ -2709,17 +2175,14 @@ function updateNotificationBadge() {
                 "notificationBadge"
             );
 
-
         if (!badge) {
             return;
         }
-
 
         const count =
             Number(
                 data.count || 0
             );
-
 
         if (count > 0) {
 
@@ -2763,14 +2226,11 @@ function toggleNotifications() {
             "notificationPanel"
         );
 
-
     if (!panel) {
         return;
     }
 
-
     panel.classList.toggle("show");
-
 
     if (
         panel.classList.contains("show")
@@ -2794,18 +2254,15 @@ function loadNotifications() {
             "notificationList"
         );
 
-
     if (!list) {
         return;
     }
-
 
     list.innerHTML = `
         <div class="notification-loading">
             Loading notifications...
         </div>
     `;
-
 
     fetch(
         "/notifications"
@@ -2834,22 +2291,14 @@ function loadNotifications() {
 
             list.innerHTML = `
                 <div class="notification-empty">
-
-                    🔔
-
-                    <br><br>
-
                     No notifications yet.
-
                 </div>
             `;
 
             return;
         }
 
-
         list.innerHTML = "";
-
 
         data.notifications.forEach(
             notification => {
@@ -2859,10 +2308,8 @@ function loadNotifications() {
                         "a"
                     );
 
-
                 item.className =
                     "notification-item";
-
 
                 if (
                     !notification.is_read
@@ -2874,11 +2321,9 @@ function loadNotifications() {
 
                 }
 
-
                 item.href =
                     notification.url ||
                     "#";
-
 
                 const avatar =
                     notification.sender_picture
@@ -2886,22 +2331,18 @@ function loadNotifications() {
                       notification.sender_picture
                     : "https://via.placeholder.com/100";
 
-
                 const message =
                     notification.message ||
                     "New notification";
-
 
                 const time =
                     notification.created_at ||
                     "";
 
-
                 const avatarElement =
                     document.createElement(
                         "img"
                     );
-
 
                 avatarElement.className =
                     "notification-avatar";
@@ -2912,22 +2353,18 @@ function loadNotifications() {
                 avatarElement.alt =
                     "Profile";
 
-
                 const content =
                     document.createElement(
                         "div"
                     );
 
-
                 content.className =
                     "notification-content";
-
 
                 const messageElement =
                     document.createElement(
                         "div"
                     );
-
 
                 messageElement.className =
                     "notification-message";
@@ -2935,19 +2372,16 @@ function loadNotifications() {
                 messageElement.textContent =
                     message;
 
-
                 const timeElement =
                     document.createElement(
                         "div"
                     );
-
 
                 timeElement.className =
                     "notification-time";
 
                 timeElement.textContent =
                     time;
-
 
                 content.appendChild(
                     messageElement
@@ -2957,7 +2391,6 @@ function loadNotifications() {
                     timeElement
                 );
 
-
                 item.appendChild(
                     avatarElement
                 );
@@ -2965,7 +2398,6 @@ function loadNotifications() {
                 item.appendChild(
                     content
                 );
-
 
                 if (
                     !notification.is_read
@@ -2976,15 +2408,12 @@ function loadNotifications() {
                             "span"
                         );
 
-
                     dot.className =
                         "notification-unread-dot";
-
 
                     item.appendChild(dot);
 
                 }
-
 
                 list.appendChild(item);
 
@@ -3063,12 +2492,10 @@ document.addEventListener(
                 ".notification-wrapper"
             );
 
-
         const panel =
             document.getElementById(
                 "notificationPanel"
             );
-
 
         if (
             wrapper &&
@@ -3106,7 +2533,5 @@ setInterval(
 
 </script>
 
-
 </body>
-
 </html>

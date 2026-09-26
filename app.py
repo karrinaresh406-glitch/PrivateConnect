@@ -3170,6 +3170,11 @@ def profile(user_id=None):
 
     person = cursor.fetchone()
 
+    print("PROFILE DEBUG")
+    print("SESSION USER ID:", current_user)
+    print("PROFILE ID:", profile_id)
+    print("USER FOUND:", person)
+
     # =====================================================
     # USER NOT FOUND
     # =====================================================

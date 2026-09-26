@@ -6672,6 +6672,43 @@ def help_support():
         "help_support.html"
     )
 
+@app.route("/debug-users")
+def debug_users():
+
+    if "user_id" not in session:
+        return "Please login first."
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, name, email
+        FROM users
+        ORDER BY id
+    """)
+
+    users = cursor.fetchall()
+
+    current_user = session["user_id"]
+
+    conn.close()
+
+    result = f"Current session user_id: {current_user}<br><br>"
+
+    if not users:
+        result += "NO USERS FOUND IN RENDER DATABASE."
+    else:
+        result += "<b>Users in Render database:</b><br><br>"
+
+        for user in users:
+            result += (
+                f"ID: {user['id']} | "
+                f"Name: {user['name']} | "
+                f"Email: {user['email']}<br>"
+            )
+
+    return result
+
 
 # =========================================================
 # RUN APPLICATION

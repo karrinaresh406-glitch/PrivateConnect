@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Find People - PrivateConnect</title>
 
@@ -16,424 +16,704 @@
             padding: 0;
         }
 
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --green: #16a34a;
+            --red: #dc2626;
+        }
+
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg, #eef3f8, #dfe8f2);
-            color: #172033;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
             min-height: 100vh;
+
+            padding-bottom: 90px;
+
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 760px;
+        /* =========================
+           MAIN APP
+        ========================= */
+
+        .app {
+            width: 100%;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 35px 20px 50px;
         }
 
-        /* HEADER */
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 25px;
+        .content {
+            padding: 22px 16px 25px;
         }
 
-        .page-header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
+        /* =========================
+           HEADER
+        ========================= */
 
-        .page-header p {
-            color: #667085;
-            font-size: 15px;
-        }
-
-        /* SEARCH */
-
-        .search-box {
-            background: rgba(255,255,255,0.95);
-            padding: 15px;
-            border-radius: 18px;
-            box-shadow: 0 8px 25px rgba(20,40,70,0.10);
-            margin-bottom: 22px;
-        }
-
-        .search-form {
+        .header {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 20px;
         }
 
-        .search-input-wrapper {
-            flex: 1;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 13px;
+
+            background: #111827;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            margin-top: 2px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .header-button {
+            width: 42px;
+            height: 42px;
+
+            border: 1px solid var(--border);
+            border-radius: 50%;
+
+            background: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #475569;
+        }
+
+        .header-button svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-wrapper {
             position: relative;
+            margin-bottom: 24px;
         }
 
-        .search-icon {
+        .search-wrapper svg {
             position: absolute;
+
             left: 15px;
             top: 50%;
+
             transform: translateY(-50%);
-            font-size: 18px;
-            color: #7b8794;
+
+            width: 19px;
+            height: 19px;
+
+            color: #94a3b8;
         }
 
         .search-input {
             width: 100%;
-            height: 48px;
-            border: 1px solid #d7dee8;
-            border-radius: 12px;
-            padding: 0 15px 0 45px;
-            font-size: 15px;
+            height: 50px;
+
+            padding: 0 45px;
+
+            border: 1px solid var(--border);
+            border-radius: 15px;
+
             outline: none;
-            background: #f8fafc;
-            transition: 0.2s;
+
+            background: white;
+
+            color: var(--text);
+
+            font-size: 14px;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.04);
         }
 
         .search-input:focus {
-            border-color: #1877f2;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(24,119,242,0.10);
+            border-color: var(--blue);
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.10);
         }
 
         .search-button {
-            height: 48px;
-            padding: 0 22px;
-            border: none;
-            border-radius: 12px;
-            background: #1877f2;
-            color: white;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .search-button:hover {
-            background: #0d65d9;
-            transform: translateY(-1px);
-        }
-
-        /* PERSON CARD */
-
-        .person {
-            background: rgba(255,255,255,0.97);
-            border: 1px solid #e1e7ef;
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 14px;
-
-            display: flex;
-            align-items: center;
-            gap: 16px;
-
-            box-shadow: 0 7px 22px rgba(20,40,70,0.08);
-
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .person:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(20,40,70,0.13);
-        }
-
-        /* PROFILE IMAGE */
-
-        .picture-wrapper {
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .profile-picture,
-        .default-picture {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-        }
-
-        .profile-picture {
-            object-fit: cover;
-            border: 3px solid #edf2f7;
-        }
-
-        .default-picture {
-            background: linear-gradient(135deg, #dce6f2, #b9c8da);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            border: 3px solid white;
-        }
-
-        /* STATUS DOT */
-
-        .status-dot {
             position: absolute;
-            right: 2px;
-            bottom: 3px;
 
-            width: 17px;
-            height: 17px;
+            right: 6px;
+            top: 6px;
 
-            background: #98a2b3;
-            border: 3px solid white;
-            border-radius: 50%;
+            height: 38px;
+
+            padding: 0 14px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: var(--blue);
+            color: white;
+
+            font-size: 12px;
+            font-weight: 650;
+
+            cursor: pointer;
         }
 
-        /* USER INFO */
+        /* =========================
+           SECTION
+        ========================= */
 
-        .info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .name {
-            font-size: 19px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: #101828;
-        }
-
-        .member-status {
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: #667085;
-            font-size: 13px;
-            margin-bottom: 13px;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
         }
 
-        .member-icon {
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .section-count {
+            color: var(--muted);
             font-size: 12px;
         }
 
-        /* ACTIONS */
+        /* =========================
+           PEOPLE LIST
+        ========================= */
+
+        .people-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .person-card {
+            position: relative;
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+            border-radius: 17px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 4px 15px rgba(15, 23, 42, 0.045);
+        }
+
+        .person-top {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 12px;
+        }
+
+        /* =========================
+           PROFILE IMAGE
+        ========================= */
+
+        .profile-wrapper {
+            position: relative;
+
+            flex-shrink: 0;
+        }
+
+        .profile-image,
+        .default-profile {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+        }
+
+        .profile-image {
+            object-fit: cover;
+
+            display: block;
+
+            border: 1px solid #e2e8f0;
+        }
+
+        .default-profile {
+            background: #e9eef5;
+
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .default-profile svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .online-dot {
+            position: absolute;
+
+            width: 14px;
+            height: 14px;
+
+            right: 0;
+            bottom: 1px;
+
+            background: #22c55e;
+
+            border: 3px solid white;
+
+            border-radius: 50%;
+        }
+
+        /* =========================
+           USER INFO
+        ========================= */
+
+        .person-info {
+            flex: 1;
+            min-width: 0;
+
+            padding-right: 30px;
+        }
+
+        .person-name {
+            font-size: 16px;
+            font-weight: 700;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .username {
+            margin-top: 2px;
+
+            color: #64748b;
+
+            font-size: 12.5px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+
+            margin-top: 6px;
+
+            color: #94a3b8;
+
+            font-size: 11.5px;
+        }
+
+        .member svg {
+            width: 13px;
+            height: 13px;
+        }
+
+        /* =========================
+           THREE DOT MENU
+        ========================= */
+
+        .menu-button {
+            position: absolute;
+
+            top: 14px;
+            right: 12px;
+
+            width: 34px;
+            height: 34px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: transparent;
+
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+        }
+
+        .menu-button:hover {
+            background: #f1f5f9;
+        }
+
+        .menu-button svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        /* =========================
+           ACTIONS
+        ========================= */
 
         .actions {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
+
+            margin-top: 14px;
         }
 
-        .view-button,
-        .connect-button {
-            min-height: 39px;
-            padding: 0 14px;
+        .action-button {
+            flex: 1;
+
+            min-height: 38px;
 
             border-radius: 10px;
 
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 6px;
 
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
+
+            font-size: 12px;
+            font-weight: 650;
 
             cursor: pointer;
-            transition: 0.2s;
+
+            transition: 0.15s;
+        }
+
+        .action-button svg {
+            width: 15px;
+            height: 15px;
         }
 
         .view-button {
-            background: #f2f4f7;
-            border: 1px solid #d8dee8;
-            color: #344054;
+            background: #f8fafc;
+            border: 1px solid #dfe5ec;
+            color: #334155;
         }
 
         .view-button:hover {
-            background: #e7ebf0;
+            background: #f1f5f9;
         }
 
         .connect-button {
-            background: #1877f2;
-            border: 1px solid #1877f2;
+            background: var(--blue);
+            border: 1px solid var(--blue);
             color: white;
         }
 
         .connect-button:hover {
-            background: #0d65d9;
-            transform: translateY(-1px);
+            background: var(--blue-dark);
         }
 
-        /* CONNECTED / REQUEST SENT */
-
-        .connect-button.sent {
-            background: #e8f7ee;
-            border-color: #b7e4c7;
-            color: #16803c;
-            cursor: default;
+        .requested-button {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #475569;
         }
 
-        .connect-button.sent:hover {
-            transform: none;
+        .connected-button {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: var(--green);
         }
 
-        /* UNSEND REQUEST */
-
-        .connect-button.unsend {
-            background: #fff1f2;
-            border-color: #fecdd3;
-            color: #dc2626;
-            cursor: pointer;
-        }
-
-        .connect-button.unsend:hover {
-            background: #fee2e2;
-            border-color: #fca5a5;
-            transform: translateY(-1px);
-        }
-
-        /* EMPTY */
-
-        .empty {
+        .cancel-button {
             background: white;
-            padding: 45px 20px;
-            text-align: center;
-            border-radius: 18px;
-            box-shadow: 0 7px 22px rgba(20,40,70,0.08);
+            border: 1px solid #fecaca;
+            color: var(--red);
         }
 
-        .empty-icon {
-            font-size: 42px;
-            margin-bottom: 12px;
+        /* =========================
+           POPUP MENU
+        ========================= */
+
+        .profile-menu {
+            display: none;
+
+            position: absolute;
+
+            top: 49px;
+            right: 12px;
+
+            width: 175px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            padding: 6px;
+
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, 0.15);
+
+            z-index: 20;
         }
 
-        .empty h2 {
-            font-size: 19px;
-            margin-bottom: 7px;
+        .profile-menu.show {
+            display: block;
         }
 
-        .empty p {
-            color: #667085;
-            font-size: 14px;
-        }
-
-        /* NOTIFICATION */
-
-        .notification {
-            background: #ecfdf3;
-            color: #137333;
-            border: 1px solid #b7ebc6;
-
-            padding: 13px 16px;
-            border-radius: 12px;
-
-            margin-bottom: 18px;
+        .profile-menu a,
+        .profile-menu button {
+            width: 100%;
 
             display: flex;
             align-items: center;
             gap: 9px;
 
-            font-size: 14px;
-            font-weight: 600;
+            padding: 10px;
 
-            animation: notificationIn 0.3s ease;
-        }
+            border: none;
+            border-radius: 8px;
 
-        @keyframes notificationIn {
+            background: transparent;
 
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-        }
-
-        /* NAVIGATION */
-
-        .navigation {
-            margin-top: 28px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .navigation a {
-            background: white;
-            color: #344054;
+            color: #334155;
 
             text-decoration: none;
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            text-align: left;
+        }
+
+        .profile-menu a:hover,
+        .profile-menu button:hover {
+            background: #f1f5f9;
+        }
+
+        .profile-menu svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        .empty {
+            background: white;
+
+            border: 1px solid var(--border);
+            border-radius: 17px;
+
+            padding: 50px 20px;
+
             text-align: center;
+        }
 
-            padding: 13px 8px;
-            border-radius: 12px;
+        .empty-icon {
+            width: 58px;
+            height: 58px;
 
-            border: 1px solid #e1e7ef;
+            margin: auto;
+            margin-bottom: 15px;
 
+            border-radius: 50%;
+
+            background: #f1f5f9;
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .empty h2 {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .empty p {
+            color: var(--muted);
             font-size: 13px;
+        }
+
+        /* =========================
+           BOTTOM NAVIGATION
+        ========================= */
+
+        .bottom-nav {
+            position: fixed;
+
+            left: 50%;
+            bottom: 0;
+
+            transform: translateX(-50%);
+
+            width: 100%;
+            max-width: 600px;
+
+            height: 70px;
+
+            background: rgba(255,255,255,0.97);
+
+            border-top: 1px solid #e5e7eb;
+
+            box-shadow:
+                0 -5px 20px rgba(15,23,42,0.06);
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 4px;
+
+            text-decoration: none;
+
+            color: #64748b;
+
+            font-size: 10.5px;
             font-weight: 600;
-
-            transition: 0.2s;
         }
 
-        .navigation a:hover {
-            background: #1877f2;
-            color: white;
-            border-color: #1877f2;
+        .nav-item svg {
+            width: 21px;
+            height: 21px;
         }
 
-        /* MOBILE */
+        .nav-item.active {
+            color: var(--blue);
+        }
 
-        @media (max-width: 650px) {
+        .nav-item.active svg {
+            stroke-width: 2.4;
+        }
 
-            .container {
-                padding: 22px 12px 35px;
+        /* =========================
+           DESKTOP
+        ========================= */
+
+        @media (min-width: 601px) {
+
+            .bottom-nav {
+                bottom: 15px;
+
+                width: calc(100% - 30px);
+
+                border: 1px solid var(--border);
+                border-radius: 17px;
+
+                overflow: hidden;
             }
 
-            .page-header h1 {
-                font-size: 27px;
+            .content {
+                padding-top: 35px;
+            }
+        }
+
+        /* =========================
+           SMALL MOBILE
+        ========================= */
+
+        @media (max-width: 380px) {
+
+            .content {
+                padding-left: 11px;
+                padding-right: 11px;
             }
 
-            .search-form {
-                flex-direction: column;
+            .header-title h1 {
+                font-size: 22px;
+            }
+
+            .header-button {
+                width: 38px;
+                height: 38px;
             }
 
             .search-button {
-                width: 100%;
-            }
-
-            .person {
-                align-items: flex-start;
-                padding: 15px;
-            }
-
-            .profile-picture,
-            .default-picture {
-                width: 60px;
-                height: 60px;
-            }
-
-            .default-picture {
-                font-size: 27px;
-            }
-
-            .status-dot {
-                width: 15px;
-                height: 15px;
-            }
-
-            .name {
-                font-size: 17px;
-            }
-
-            .actions {
-                margin-top: 3px;
-            }
-
-            .view-button,
-            .connect-button {
-                min-height: 36px;
                 padding: 0 11px;
-                font-size: 12px;
             }
 
-            .navigation {
-                grid-template-columns: 1fr;
+            .person-card {
+                padding: 13px;
             }
 
+            .profile-image,
+            .default-profile {
+                width: 53px;
+                height: 53px;
+            }
+
+            .person-name {
+                font-size: 15px;
+            }
+
+            .action-button {
+                font-size: 11px;
+            }
         }
 
     </style>
@@ -443,267 +723,591 @@
 
 <body>
 
-<div class="container">
+
+<div class="app">
+
+    <main class="content">
 
 
-    <!-- PAGE HEADER -->
+        <!-- HEADER -->
 
-    <div class="page-header">
+        <header class="header">
 
-        <h1>👥 Find People</h1>
+            <div class="header-left">
 
-        <p>
-            Discover people and build your connections
-        </p>
+                <div class="header-icon">
 
-    </div>
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+
+                        <circle cx="9" cy="7" r="4"/>
+
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+                    </svg>
+
+                </div>
+
+                <div class="header-title">
+
+                    <h1>Find People</h1>
+
+                    <p>Discover people and build connections</p>
+
+                </div>
+
+            </div>
 
 
-    <!-- SUCCESS MESSAGE -->
+            <button class="header-button"
+                    type="button"
+                    onclick="window.location.href='{{ url_for('requests') }}'">
 
-    {% if request.args.get('sent') %}
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
 
-        <div class="notification">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
 
-            <span>✅</span>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
 
-            <span>
-                Connection request sent successfully!
-            </span>
+                </svg>
 
-        </div>
+            </button>
 
-    {% endif %}
+        </header>
 
 
-    <!-- SEARCH -->
-
-    <div class="search-box">
+        <!-- SEARCH -->
 
         <form
             method="GET"
             action="{{ url_for('find_people') }}"
-            class="search-form"
+            class="search-wrapper"
         >
 
-            <div class="search-input-wrapper">
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
 
-                <span class="search-icon">🔍</span>
+                <circle cx="11" cy="11" r="7"/>
 
-                <input
-                    type="text"
-                    name="q"
-                    class="search-input"
-                    placeholder="Search people by name..."
-                    value="{{ search }}"
-                    autocomplete="off"
-                >
+                <path d="M20 20l-4-4"/>
 
-            </div>
+            </svg>
 
-            <button
-                type="submit"
-                class="search-button"
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Search people..."
+                value="{{ search }}"
+                autocomplete="off"
             >
+
+            <button class="search-button"
+                    type="submit">
+
                 Search
+
             </button>
 
         </form>
 
-    </div>
 
+        <!-- SUCCESS MESSAGE -->
 
-    <!-- PEOPLE -->
+        {% if request.args.get('sent') %}
 
-    {% if people %}
+            <div style="
+                background:#f0fdf4;
+                border:1px solid #bbf7d0;
+                color:#166534;
+                padding:12px 14px;
+                border-radius:12px;
+                margin-bottom:16px;
+                font-size:13px;
+                font-weight:600;
+            ">
 
-        {% for person in people %}
-
-            <div class="person">
-
-
-                <!-- PROFILE PICTURE -->
-
-                <div class="picture-wrapper">
-
-                    {% if person["profile_picture"] %}
-
-                        <img
-                            src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
-                            class="profile-picture"
-                            alt="Profile Picture"
-                        >
-
-                    {% else %}
-
-                        <div class="default-picture">
-                            👤
-                        </div>
-
-                    {% endif %}
-
-                    <span class="status-dot"></span>
-
-                </div>
-
-
-                <!-- USER INFORMATION -->
-
-                <div class="info">
-
-                    <div class="name">
-                        {{ person["name"] }}
-                    </div>
-
-
-                    <div class="member-status">
-
-                        <span class="member-icon">●</span>
-
-                        <span>PrivateConnect member</span>
-
-                    </div>
-
-
-                    <!-- ACTIONS -->
-
-                    <div class="actions">
-
-
-                        <!-- VIEW PROFILE -->
-
-                        <a
-                            href="{{ url_for('user_profile', user_id=person['id']) }}"
-                            class="view-button"
-                        >
-                            👁️ View Profile
-                        </a>
-
-
-                        <!-- CONNECTION STATUS -->
-
-                        {% if person["relationship_status"] == "friends" %}
-
-                            <button
-                                type="button"
-                                class="connect-button sent"
-                                disabled
-                            >
-                                ✓ Connected
-                            </button>
-
-
-                        {% elif person["relationship_status"] == "sent" %}
-
-                            <button
-                                type="button"
-                                class="connect-button sent"
-                                disabled
-                            >
-                                ✓ Request Sent
-                            </button>
-
-                            <form
-                                action="{{ url_for('cancel_request', user_id=person['id']) }}"
-                                method="POST"
-                                style="display:inline;"
-                                onsubmit="return confirm('Unsend this connection request?');"
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="connect-button unsend"
-                                >
-                                    ↩ Unsend
-                                </button>
-
-                            </form>
-
-
-                        {% elif person["relationship_status"] == "received" %}
-
-                            <a
-                                href="{{ url_for('requests') }}"
-                                class="connect-button"
-                            >
-                                📩 Respond
-                            </a>
-
-
-                        {% else %}
-
-                            <form
-                                action="{{ url_for('send_request', user_id=person['id']) }}"
-                                method="POST"
-                                style="display:inline;"
-                            >
-
-                                <button
-                                    type="submit"
-                                    class="connect-button"
-                                >
-                                    ＋ Connect
-                                </button>
-
-                            </form>
-
-                        {% endif %}
-
-
-                    </div>
-
-                </div>
+                Connection request sent successfully.
 
             </div>
 
-        {% endfor %}
+        {% endif %}
 
 
-    {% else %}
+        <!-- SECTION -->
 
+        <div class="section-header">
 
-        <!-- NO PEOPLE -->
-
-        <div class="empty">
-
-            <div class="empty-icon">
-                🔎
+            <div class="section-title">
+                People
             </div>
 
-            <h2>
-                No people found
-            </h2>
-
-            <p>
-                Try searching with another name.
-            </p>
+            {% if people %}
+                <div class="section-count">
+                    {{ people|length }} people
+                </div>
+            {% endif %}
 
         </div>
 
 
-    {% endif %}
+        <!-- PEOPLE -->
+
+        {% if people %}
+
+            <div class="people-list">
+
+                {% for person in people %}
+
+                    <article class="person-card">
 
 
-    <!-- NAVIGATION -->
+                        <!-- THREE DOT -->
 
-    <div class="navigation">
+                        <button
+                            type="button"
+                            class="menu-button"
+                            onclick="toggleMenu('menu-{{ person['id'] }}')"
+                        >
 
-        <a href="{{ url_for('requests') }}">
-            📩 Requests
+                            <svg viewBox="0 0 24 24"
+                                 fill="currentColor">
+
+                                <circle cx="12" cy="5" r="1.5"/>
+                                <circle cx="12" cy="12" r="1.5"/>
+                                <circle cx="12" cy="19" r="1.5"/>
+
+                            </svg>
+
+                        </button>
+
+
+                        <!-- MENU -->
+
+                        <div
+                            id="menu-{{ person['id'] }}"
+                            class="profile-menu"
+                        >
+
+                            <a href="{{ url_for('user_profile', user_id=person['id']) }}">
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8">
+
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+
+                                    <circle cx="12" cy="12" r="3"/>
+
+                                </svg>
+
+                                View profile
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- PROFILE -->
+
+                        <div class="person-top">
+
+
+                            <div class="profile-wrapper">
+
+                                {% if person["profile_picture"] %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                                        class="profile-image"
+                                        alt="{{ person['name'] }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="default-profile">
+
+                                        <svg viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="1.7">
+
+                                            <circle cx="12" cy="8" r="4"/>
+
+                                            <path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/>
+
+                                        </svg>
+
+                                    </div>
+
+                                {% endif %}
+
+                                <span class="online-dot"></span>
+
+                            </div>
+
+
+                            <div class="person-info">
+
+                                <div class="person-name">
+                                    {{ person["name"] }}
+                                </div>
+
+                                <div class="username">
+                                    PrivateConnect member
+                                </div>
+
+                                <div class="member">
+
+                                    <svg viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.8">
+
+                                        <circle cx="9" cy="7" r="4"/>
+
+                                        <path d="M3 21v-1a6 6 0 0 1 12 0v1"/>
+
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+                                    </svg>
+
+                                    Private connection
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTIONS -->
+
+                        <div class="actions">
+
+
+                            <!-- VIEW -->
+
+                            <a
+                                href="{{ url_for('user_profile', user_id=person['id']) }}"
+                                class="action-button view-button"
+                            >
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8">
+
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+
+                                    <circle cx="12" cy="12" r="3"/>
+
+                                </svg>
+
+                                View
+
+                            </a>
+
+
+                            <!-- FRIENDS -->
+
+                            {% if person["relationship_status"] == "friends" %}
+
+                                <button
+                                    type="button"
+                                    class="action-button connected-button"
+                                    disabled
+                                >
+
+                                    <svg viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="2">
+
+                                        <path d="M20 6L9 17l-5-5"/>
+
+                                    </svg>
+
+                                    Connected
+
+                                </button>
+
+
+                            <!-- REQUEST SENT -->
+
+                            {% elif person["relationship_status"] == "sent" %}
+
+                                <button
+                                    type="button"
+                                    class="action-button requested-button"
+                                    disabled
+                                >
+
+                                    Requested
+
+                                </button>
+
+
+                                <form
+                                    action="{{ url_for('cancel_request', user_id=person['id']) }}"
+                                    method="POST"
+                                    style="flex:1;"
+                                    onsubmit="return confirm('Cancel this connection request?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-button cancel-button"
+                                        style="width:100%;"
+                                    >
+
+                                        Cancel
+
+                                    </button>
+
+                                </form>
+
+
+                            <!-- RECEIVED -->
+
+                            {% elif person["relationship_status"] == "received" %}
+
+                                <a
+                                    href="{{ url_for('requests') }}"
+                                    class="action-button connect-button"
+                                >
+
+                                    Respond
+
+                                </a>
+
+
+                            <!-- NEW -->
+
+                            {% else %}
+
+                                <form
+                                    action="{{ url_for('send_request', user_id=person['id']) }}"
+                                    method="POST"
+                                    style="flex:1;"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-button connect-button"
+                                        style="width:100%;"
+                                    >
+
+                                        <svg viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2">
+
+                                            <path d="M12 5v14"/>
+
+                                            <path d="M5 12h14"/>
+
+                                        </svg>
+
+                                        Connect
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- EMPTY -->
+
+            <div class="empty">
+
+                <div class="empty-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8">
+
+                        <circle cx="11" cy="11" r="7"/>
+
+                        <path d="M20 20l-4-4"/>
+
+                    </svg>
+
+                </div>
+
+                <h2>No people found</h2>
+
+                <p>Try searching with another name.</p>
+
+            </div>
+
+        {% endif %}
+
+
+    </main>
+
+
+    <!-- =========================
+         MOBILE BOTTOM NAV
+    ========================= -->
+
+    <nav class="bottom-nav">
+
+
+        <!-- REQUESTS -->
+
+        <a
+            href="{{ url_for('requests') }}"
+            class="nav-item"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <rect x="3" y="4" width="18" height="16" rx="3"/>
+
+                <path d="M3 7l9 6 9-6"/>
+
+            </svg>
+
+            <span>Requests</span>
+
         </a>
 
-        <a href="{{ url_for('connections') }}">
-            👥 Connections
+
+        <!-- CONNECTIONS -->
+
+        <a
+            href="{{ url_for('connections') }}"
+            class="nav-item active"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <circle cx="9" cy="7" r="4"/>
+
+                <path d="M3 21v-1a6 6 0 0 1 12 0v1"/>
+
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+                <path d="M21 21v-1a6 6 0 0 0-3-5.2"/>
+
+            </svg>
+
+            <span>Connections</span>
+
         </a>
 
-        <a href="{{ url_for('dashboard') }}">
-            🏠 Home
+
+        <!-- HOME -->
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="nav-item"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <path d="M3 10.5L12 3l9 7.5"/>
+
+                <path d="M5 9.5V21h14V9.5"/>
+
+                <path d="M9 21v-6h6v6"/>
+
+            </svg>
+
+            <span>Home</span>
+
         </a>
 
-    </div>
-
+    </nav>
 
 </div>
+
+
+<script>
+
+    function toggleMenu(id) {
+
+        const menu = document.getElementById(id);
+
+        document.querySelectorAll(".profile-menu").forEach(function(item) {
+
+            if (item !== menu) {
+                item.classList.remove("show");
+            }
+
+        });
+
+        menu.classList.toggle("show");
+    }
+
+
+    document.addEventListener("click", function(event) {
+
+        if (
+            !event.target.closest(".menu-button") &&
+            !event.target.closest(".profile-menu")
+        ) {
+
+            document.querySelectorAll(".profile-menu").forEach(function(menu) {
+
+                menu.classList.remove("show");
+
+            });
+
+        }
+
+    });
+
+</script>
+
 
 </body>
 

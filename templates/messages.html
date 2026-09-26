@@ -10,16 +10,9 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <meta name="theme-color" content="#07111f">
-
-    <title>Messages - PrivateConnect</title>
-
+    <title>Reels - PrivateConnect</title>
 
     <style>
-
-        /* =====================================================
-           RESET
-        ===================================================== */
 
         * {
             box-sizing: border-box;
@@ -27,21 +20,15 @@
             padding: 0;
         }
 
-
         html {
-            min-height: 100%;
-            background: #07111f;
+            background: #050505;
         }
 
-
         body {
-
+            margin: 0;
             min-height: 100vh;
 
-            min-height: 100dvh;
-
             font-family:
-                Inter,
                 -apple-system,
                 BlinkMacSystemFont,
                 "Segoe UI",
@@ -49,40 +36,13 @@
                 Arial,
                 sans-serif;
 
-            background:
-                linear-gradient(
-                    180deg,
-                    #07111f 0%,
-                    #091525 45%,
-                    #06101d 100%
-                );
-
-            color: #f8fafc;
-
-            padding:
-                max(18px, env(safe-area-inset-top))
-                14px
-                max(24px, env(safe-area-inset-bottom));
+            background: #050505;
+            color: #ffffff;
 
             overflow-x: hidden;
-        }
 
-
-        /* =====================================================
-           APP
-        ===================================================== */
-
-        .app {
-
-            width: 100%;
-
-            max-width: 760px;
-
-            margin: 0 auto;
-
-            min-height: calc(100dvh - 42px);
-
-            position: relative;
+            padding-bottom:
+                calc(82px + env(safe-area-inset-bottom));
         }
 
 
@@ -90,7 +50,15 @@
            HEADER
         ===================================================== */
 
-        .header {
+        .top-header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            height: 68px;
 
             display: flex;
 
@@ -99,10 +67,22 @@
             justify-content: space-between;
 
             padding:
-                8px
-                2px
-                20px;
+                0 16px;
 
+            padding-top:
+                env(safe-area-inset-top);
+
+            background:
+                rgba(5, 5, 5, 0.94);
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.07);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
         }
 
 
@@ -113,61 +93,50 @@
             align-items: center;
 
             gap: 10px;
-        }
 
-
-        .brand-title {
-
-            font-size: clamp(28px, 7vw, 36px);
-
-            line-height: 1;
+            font-size: 24px;
 
             font-weight: 800;
 
-            letter-spacing: -1.2px;
+            letter-spacing: -0.6px;
+        }
+
+
+        .brand-icon {
+
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
 
             background:
                 linear-gradient(
-                    90deg,
-                    #60a5fa,
-                    #dbeafe
+                    135deg,
+                    #2563eb,
+                    #7c3aed
                 );
-
-            -webkit-background-clip: text;
-
-            background-clip: text;
-
-            color: transparent;
         }
 
 
-        .brand-dot {
+        .brand-icon svg {
 
-            width: 7px;
+            width: 21px;
+            height: 21px;
 
-            height: 7px;
+            stroke: white;
 
-            border-radius: 50%;
+            fill: none;
 
-            background: #3b82f6;
-
-            box-shadow:
-                0 0 12px
-                rgba(59,130,246,.8);
+            stroke-width: 2;
         }
 
 
-        /* =====================================================
-           HEADER ICON
-        ===================================================== */
-
-        .header-icon {
-
-            width: 46px;
-
-            height: 46px;
-
-            border-radius: 14px;
+        .upload-btn {
 
             display: flex;
 
@@ -175,29 +144,521 @@
 
             justify-content: center;
 
-            background:
-                linear-gradient(
-                    145deg,
-                    #173d73,
-                    #10253f
-                );
+            gap: 7px;
 
-            border:
-                1px solid
-                rgba(148,163,184,.18);
+            height: 40px;
+
+            padding:
+                0 15px;
+
+            border: 0;
+
+            border-radius: 12px;
+
+            background:
+                #1877f2;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            text-decoration: none;
 
             box-shadow:
-                0 8px 22px
-                rgba(0,0,0,.28);
-
-            color: #93c5fd;
+                0 5px 18px rgba(24,119,242,0.25);
         }
 
 
-        .header-icon svg {
+        .upload-btn svg {
+
+            width: 18px;
+            height: 18px;
+
+            stroke: white;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        /* =====================================================
+           REELS AREA
+        ===================================================== */
+
+        .reels-container {
+
+            width: 100%;
+
+            max-width: 620px;
+
+            margin:
+                0 auto;
+
+            padding:
+                14px 10px 25px;
+        }
+
+
+        .reel-card {
+
+            position: relative;
+
+            width: 100%;
+
+            min-height: 650px;
+
+            margin-bottom: 18px;
+
+            overflow: hidden;
+
+            border-radius: 18px;
+
+            background:
+                #111111;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            box-shadow:
+                0 15px 45px rgba(0,0,0,0.45);
+        }
+
+
+        .reel-media {
+
+            width: 100%;
+
+            height: 650px;
+
+            display: block;
+
+            object-fit: cover;
+
+            background: #111111;
+        }
+
+
+        video.reel-media {
+
+            object-fit: cover;
+        }
+
+
+        /* =====================================================
+           MEDIA GRADIENT
+        ===================================================== */
+
+        .reel-overlay {
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,0.18),
+                    transparent 38%,
+                    transparent 52%,
+                    rgba(0,0,0,0.82) 100%
+                );
+        }
+
+
+        /* =====================================================
+           PROFILE
+        ===================================================== */
+
+        .reel-user {
+
+            position: absolute;
+
+            left: 15px;
+
+            bottom: 112px;
+
+            z-index: 5;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            max-width: 70%;
+        }
+
+
+        .reel-avatar {
+
+            width: 44px;
+            height: 44px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            border:
+                2px solid rgba(255,255,255,0.9);
+
+            background:
+                #334155;
+        }
+
+
+        .reel-avatar-fallback {
+
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
+                );
+
+            color: white;
+
+            font-weight: 800;
+
+            border:
+                2px solid rgba(255,255,255,0.9);
+        }
+
+
+        .reel-name {
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        /* =====================================================
+           CAPTION
+        ===================================================== */
+
+        .reel-caption {
+
+            position: absolute;
+
+            left: 16px;
+
+            right: 75px;
+
+            bottom: 60px;
+
+            z-index: 5;
+
+            color: white;
+
+            font-size: 14px;
+
+            line-height: 1.45;
+
+            text-shadow:
+                0 2px 8px rgba(0,0,0,0.7);
+        }
+
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .reel-actions {
+
+            position: absolute;
+
+            right: 12px;
+
+            bottom: 55px;
+
+            z-index: 10;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 18px;
+        }
+
+
+        .action {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 4px;
+
+            background: none;
+
+            border: 0;
+
+            color: white;
+
+            cursor: pointer;
+
+            padding: 0;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .action-icon {
+
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background:
+                rgba(0,0,0,0.38);
+
+            backdrop-filter:
+                blur(8px);
+
+            -webkit-backdrop-filter:
+                blur(8px);
+
+            transition:
+                transform .18s ease,
+                background .18s ease;
+        }
+
+
+        .action:active .action-icon {
+
+            transform:
+                scale(0.88);
+        }
+
+
+        .action svg {
+
+            width: 24px;
+            height: 24px;
+
+            stroke: white;
+
+            fill: none;
+
+            stroke-width: 1.9;
+
+            stroke-linecap: round;
+
+            stroke-linejoin: round;
+        }
+
+
+        .action.like.active .action-icon {
+
+            background:
+                rgba(239,68,68,0.22);
+        }
+
+
+        .action.like.active svg {
+
+            stroke: #ff3040;
+
+            fill: #ff3040;
+        }
+
+
+        .action-count {
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            color: white;
+
+            text-shadow:
+                0 2px 5px rgba(0,0,0,0.7);
+        }
+
+
+        /* =====================================================
+           EMPTY REELS
+        ===================================================== */
+
+        .empty {
+
+            min-height: 500px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+
+        .empty-icon {
+
+            width: 72px;
+            height: 72px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 22px;
+
+            margin-bottom: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #1d4ed8,
+                    #4f46e5
+                );
+        }
+
+
+        .empty-icon svg {
+
+            width: 36px;
+            height: 36px;
+
+            stroke: white;
+
+            fill: none;
+
+            stroke-width: 1.8;
+        }
+
+
+        .empty h2 {
+
+            font-size: 22px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .empty p {
+
+            color: #8b8b8b;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           BOTTOM NAVIGATION
+        ===================================================== */
+
+        .bottom-nav {
+
+            position: fixed;
+
+            left: 0;
+            right: 0;
+
+            bottom: 0;
+
+            z-index: 999;
+
+            height:
+                calc(68px + env(safe-area-inset-bottom));
+
+            padding-bottom:
+                env(safe-area-inset-bottom);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-around;
+
+            background:
+                rgba(10,10,10,0.96);
+
+            border-top:
+                1px solid rgba(255,255,255,0.09);
+
+            box-shadow:
+                0 -8px 30px rgba(0,0,0,0.35);
+
+            backdrop-filter:
+                blur(20px);
+
+            -webkit-backdrop-filter:
+                blur(20px);
+        }
+
+
+        .nav-item {
+
+            flex: 1;
+
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+
+            color: #858585;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            transition:
+                color .18s ease;
+        }
+
+
+        .nav-item svg {
 
             width: 23px;
-
             height: 23px;
 
             stroke: currentColor;
@@ -212,753 +673,166 @@
         }
 
 
-        /* =====================================================
-           SEARCH
-        ===================================================== */
+        .nav-item.active {
 
-        .search-box {
-
-            position: relative;
-
-            margin-bottom: 18px;
+            color: #ffffff;
         }
 
 
-        .search-icon {
+        .nav-item.active svg {
 
-            position: absolute;
-
-            left: 17px;
-
-            top: 50%;
-
-            transform: translateY(-50%);
-
-            width: 20px;
-
-            height: 20px;
-
-            color: #64748b;
-
-            pointer-events: none;
-        }
-
-
-        .search-icon svg {
-
-            width: 100%;
-
-            height: 100%;
-
-            stroke: currentColor;
-
-            fill: none;
-
-            stroke-width: 2;
-
-            stroke-linecap: round;
-        }
-
-
-        .search {
-
-            width: 100%;
-
-            height: 54px;
-
-            padding:
-                0
-                18px
-                0
-                50px;
-
-            border-radius: 17px;
-
-            border:
-                1px solid
-                rgba(148,163,184,.14);
-
-            outline: none;
-
-            background:
-                rgba(2,8,23,.72);
-
-            color: #f8fafc;
-
-            font-size: 15px;
-
-            transition:
-                border-color .2s ease,
-                box-shadow .2s ease,
-                background .2s ease;
-        }
-
-
-        .search::placeholder {
-
-            color: #64748b;
-        }
-
-
-        .search:focus {
-
-            border-color:
-                rgba(96,165,250,.55);
-
-            background:
-                rgba(2,8,23,.92);
-
-            box-shadow:
-                0 0 0 3px
-                rgba(59,130,246,.08);
+            stroke-width: 2.3;
         }
 
 
         /* =====================================================
-           CHAT LIST
+           DESKTOP
         ===================================================== */
 
-        .chat-list {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 8px;
-
-            min-height: 0;
-        }
-
-
-        /* =====================================================
-           CHAT CARD
-        ===================================================== */
-
-        .chat-card {
-
-            position: relative;
-
-            display: flex;
-
-            align-items: center;
-
-            width: 100%;
-
-            min-height: 78px;
-
-            padding: 10px 12px;
-
-            border-radius: 17px;
-
-            text-decoration: none;
-
-            color: #f8fafc;
-
-            background:
-                rgba(15,23,42,.72);
-
-            border:
-                1px solid
-                rgba(148,163,184,.10);
-
-            transition:
-                background .18s ease,
-                border-color .18s ease,
-                transform .18s ease;
-        }
-
-
-        .chat-card:hover {
-
-            background:
-                rgba(30,41,59,.82);
-
-            border-color:
-                rgba(96,165,250,.24);
-        }
-
-
-        .chat-card:active {
-
-            transform: scale(.992);
-        }
-
-
-        /* =====================================================
-           AVATAR
-        ===================================================== */
-
-        .avatar,
-        .avatar-fallback {
-
-            width: 54px;
-
-            height: 54px;
-
-            min-width: 54px;
-
-            border-radius: 50%;
-        }
-
-
-        .avatar {
-
-            object-fit: cover;
-
-            border:
-                2px solid
-                rgba(96,165,250,.18);
-        }
-
-
-        .avatar-fallback {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 18px;
-
-            font-weight: 700;
-
-            color: #dbeafe;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #1e40af,
-                    #334155
-                );
-
-            border:
-                1px solid
-                rgba(147,197,253,.18);
-        }
-
-
-        /* =====================================================
-           CHAT INFO
-        ===================================================== */
-
-        .chat-info {
-
-            flex: 1;
-
-            min-width: 0;
-
-            margin-left: 13px;
-
-            padding-right: 8px;
-        }
-
-
-        .name-row {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 7px;
-
-            margin-bottom: 5px;
-
-            min-width: 0;
-        }
-
-
-        .name {
-
-            font-size: 16px;
-
-            font-weight: 700;
-
-            color: #f8fafc;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-        }
-
-
-        /* =====================================================
-           ONLINE INDICATOR
-        ===================================================== */
-
-        .online {
-
-            width: 7px;
-
-            height: 7px;
-
-            min-width: 7px;
-
-            border-radius: 50%;
-
-            background: #22c55e;
-
-            box-shadow:
-                0 0 0 2px #0f172a,
-                0 0 8px
-                rgba(34,197,94,.55);
-        }
-
-
-        .preview {
-
-            font-size: 13px;
-
-            color: #7f8ea3;
-
-            white-space: nowrap;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-
-            line-height: 1.4;
-        }
-
-
-        /* =====================================================
-           RIGHT SIDE
-        ===================================================== */
-
-        .chat-right {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 9px;
-
-            margin-left: 4px;
-        }
-
-
-        .time {
-
-            font-size: 11px;
-
-            color: #64748b;
-
-            white-space: nowrap;
-        }
-
-
-        .arrow {
-
-            width: 18px;
-
-            height: 18px;
-
-            color: #475569;
-        }
-
-
-        .arrow svg {
-
-            width: 100%;
-
-            height: 100%;
-
-            fill: none;
-
-            stroke: currentColor;
-
-            stroke-width: 2;
-
-            stroke-linecap: round;
-
-            stroke-linejoin: round;
-        }
-
-
-        /* =====================================================
-           EMPTY STATE
-        ===================================================== */
-
-        .empty {
-
-            min-height: 390px;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-
-            padding: 35px 20px;
-
-            border-radius: 22px;
-
-            background:
-                rgba(8,18,34,.66);
-
-            border:
-                1px solid
-                rgba(148,163,184,.09);
-        }
-
-
-        .empty-icon {
-
-            width: 72px;
-
-            height: 72px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin-bottom: 22px;
-
-            border-radius: 21px;
-
-            color: #93c5fd;
-
-            background:
-                linear-gradient(
-                    145deg,
-                    #173f78,
-                    #172b46
-                );
-
-            border:
-                1px solid
-                rgba(96,165,250,.20);
-
-            box-shadow:
-                0 12px 28px
-                rgba(0,0,0,.25);
-        }
-
-
-        .empty-icon svg {
-
-            width: 35px;
-
-            height: 35px;
-
-            fill: none;
-
-            stroke: currentColor;
-
-            stroke-width: 1.6;
-
-            stroke-linecap: round;
-
-            stroke-linejoin: round;
-        }
-
-
-        .empty h3 {
-
-            margin-bottom: 8px;
-
-            font-size: 21px;
-
-            font-weight: 750;
-
-            color: #e2e8f0;
-        }
-
-
-        .empty p {
-
-            font-size: 14px;
-
-            color: #64748b;
-
-            line-height: 1.5;
-        }
-
-
-        /* =====================================================
-           ACTION BUTTONS
-        ===================================================== */
-
-        .buttons {
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 10px;
-
-            margin-top: 14px;
-        }
-
-
-        .btn {
-
-            min-height: 52px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            gap: 9px;
-
-            padding: 0 16px;
-
-            border-radius: 15px;
-
-            text-decoration: none;
-
-            font-size: 14px;
-
-            font-weight: 700;
-
-            color: white;
-
-            border:
-                1px solid
-                rgba(255,255,255,.08);
-
-            transition:
-                transform .18s ease,
-                filter .18s ease;
-        }
-
-
-        .btn:hover {
-
-            filter: brightness(1.08);
-
-            transform: translateY(-1px);
-        }
-
-
-        .find {
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #2563eb,
-                    #1d4ed8
-                );
-
-            box-shadow:
-                0 8px 20px
-                rgba(37,99,235,.18);
-        }
-
-
-        .dashboard {
-
-            background:
-                rgba(51,65,85,.75);
-        }
-
-
-        .btn svg {
-
-            width: 20px;
-
-            height: 20px;
-
-            fill: none;
-
-            stroke: currentColor;
-
-            stroke-width: 1.8;
-
-            stroke-linecap: round;
-
-            stroke-linejoin: round;
-        }
-
-
-        /* =====================================================
-           MOBILE
-        ===================================================== */
-
-        @media (max-width: 600px) {
+        @media (min-width: 768px) {
 
             body {
 
-                padding:
-                    max(14px, env(safe-area-inset-top))
-                    10px
-                    max(20px, env(safe-area-inset-bottom));
+                padding-bottom: 30px;
             }
 
 
-            .app {
+            .bottom-nav {
 
-                min-height: calc(100dvh - 34px);
+                width: 620px;
+
+                left: 50%;
+
+                right: auto;
+
+                transform:
+                    translateX(-50%);
+
+                bottom: 18px;
+
+                height: 62px;
+
+                padding-bottom: 0;
+
+                border:
+                    1px solid rgba(255,255,255,0.08);
+
+                border-radius: 18px;
             }
 
 
-            .header {
+            .reels-container {
 
-                padding:
-                    7px
-                    3px
-                    17px;
+                padding-bottom: 100px;
             }
-
-
-            .brand-title {
-
-                font-size: 29px;
-            }
-
-
-            .header-icon {
-
-                width: 44px;
-
-                height: 44px;
-
-                border-radius: 13px;
-            }
-
-
-            .search {
-
-                height: 52px;
-
-                border-radius: 16px;
-            }
-
-
-            .chat-card {
-
-                min-height: 74px;
-
-                padding: 9px 10px;
-            }
-
-
-            .avatar,
-            .avatar-fallback {
-
-                width: 50px;
-
-                height: 50px;
-
-                min-width: 50px;
-            }
-
-
-            .chat-info {
-
-                margin-left: 11px;
-            }
-
-
-            .name {
-
-                font-size: 15px;
-            }
-
-
-            .preview {
-
-                font-size: 12.5px;
-            }
-
-
-            .time {
-
-                display: none;
-            }
-
-
-            .empty {
-
-                min-height: 360px;
-
-                border-radius: 20px;
-            }
-
-
-            .buttons {
-
-                grid-template-columns: 1fr;
-
-                margin-top: 12px;
-            }
-
-
-            .btn {
-
-                min-height: 50px;
-            }
-
         }
 
 
         /* =====================================================
-           VERY SMALL PHONES
+           SMALL PHONES
         ===================================================== */
 
-        @media (max-width: 370px) {
+        @media (max-width: 430px) {
 
-            .brand-title {
+            .top-header {
 
-                font-size: 26px;
+                height: 62px;
+
+                padding-left: 12px;
+
+                padding-right: 12px;
             }
 
 
-            .header-icon {
+            .brand {
 
-                width: 41px;
-
-                height: 41px;
+                font-size: 22px;
             }
 
 
-            .chat-right {
+            .brand-icon {
 
-                margin-left: 0;
+                width: 34px;
+                height: 34px;
             }
 
 
-            .arrow {
+            .upload-btn {
 
-                width: 16px;
+                height: 38px;
 
-                height: 16px;
+                padding:
+                    0 12px;
+
+                font-size: 13px;
             }
 
-        }
+
+            .reels-container {
+
+                padding:
+                    8px 6px 18px;
+            }
 
 
-        /* =====================================================
-           SCROLLBAR
-        ===================================================== */
+            .reel-card {
 
-        ::-webkit-scrollbar {
+                min-height:
+                    calc(100vh - 155px);
 
-            width: 5px;
-        }
-
-
-        ::-webkit-scrollbar-track {
-
-            background: #07111f;
-        }
+                border-radius: 14px;
+            }
 
 
-        ::-webkit-scrollbar-thumb {
+            .reel-media {
 
-            background: #26364d;
+                height:
+                    calc(100vh - 155px);
 
-            border-radius: 20px;
+                min-height: 560px;
+            }
+
+
+            .reel-actions {
+
+                right: 9px;
+
+                bottom: 48px;
+
+                gap: 15px;
+            }
+
+
+            .action-icon {
+
+                width: 42px;
+                height: 42px;
+            }
+
+
+            .action svg {
+
+                width: 22px;
+                height: 22px;
+            }
+
+
+            .reel-user {
+
+                left: 12px;
+
+                bottom: 105px;
+            }
+
+
+            .reel-caption {
+
+                left: 12px;
+
+                right: 68px;
+
+                bottom: 53px;
+            }
         }
 
     </style>
@@ -969,385 +843,682 @@
 <body>
 
 
-<div class="app">
+<!-- =========================================================
+     TOP HEADER
+========================================================= -->
 
+<header class="top-header">
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+    <div class="brand">
 
-    <header class="header">
-
-        <div class="brand">
-
-            <h1 class="brand-title">
-                Messages
-            </h1>
-
-            <span class="brand-dot"></span>
-
-        </div>
-
-
-        <div class="header-icon">
-
-            <!-- Chat icon -->
+        <div class="brand-icon">
 
             <svg viewBox="0 0 24 24">
 
                 <path
-                    d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-6.1A7.5 7.5 0 1 1 20 11.5Z"
-                />
-
-                <circle
-                    cx="8.5"
-                    cy="11.5"
-                    r=".8"
-                    fill="currentColor"
-                    stroke="none"
-                />
-
-                <circle
-                    cx="12"
-                    cy="11.5"
-                    r=".8"
-                    fill="currentColor"
-                    stroke="none"
-                />
-
-                <circle
-                    cx="15.5"
-                    cy="11.5"
-                    r=".8"
-                    fill="currentColor"
-                    stroke="none"
+                    d="M8 5.5v13l11-6.5z"
                 />
 
             </svg>
 
         </div>
 
-    </header>
-
-
-    <!-- =====================================================
-         SEARCH
-    ====================================================== -->
-
-    <div class="search-box">
-
-        <span class="search-icon">
-
-            <svg viewBox="0 0 24 24">
-
-                <circle
-                    cx="11"
-                    cy="11"
-                    r="6.5"
-                />
-
-                <path d="m16 16 5 5" />
-
-            </svg>
-
-        </span>
-
-
-        <input
-            type="text"
-            id="searchBox"
-            class="search"
-            placeholder="Search conversations..."
-            autocomplete="off"
-            oninput="searchChats()"
-        >
+        <span>Reels</span>
 
     </div>
 
 
-    <!-- =====================================================
-         CHAT LIST
-    ====================================================== -->
-
-    <div
-        class="chat-list"
-        id="chatList"
+    <a
+        href="{{ url_for('create_post') }}"
+        class="upload-btn"
     >
 
-        {% if people %}
+        <svg viewBox="0 0 24 24">
 
-            {% for person in people %}
+            <path d="M12 16V4"></path>
 
-                <a
-                    href="{{ url_for('conversation', user_id=person[0]) }}"
-                    class="chat-card"
-                    data-name="{{ person[1] | lower }}"
-                >
+            <path d="M7 9l5-5 5 5"></path>
 
-                    <!-- PROFILE IMAGE -->
+            <path d="M5 20h14"></path>
 
-                    {% if person[3] %}
+        </svg>
 
-                        <img
-                            class="avatar"
-                            src="{{ url_for(
-                                'static',
-                                filename='uploads/' + person[3]
-                            ) }}"
-                            alt="{{ person[1] }}"
-                        >
+        Upload Reel
 
-                    {% else %}
+    </a>
 
-                        <div class="avatar-fallback">
-
-                            {{ person[1][0] | upper }}
-
-                        </div>
-
-                    {% endif %}
+</header>
 
 
-                    <!-- INFORMATION -->
 
-                    <div class="chat-info">
+<!-- =========================================================
+     REELS
+========================================================= -->
 
-                        <div class="name-row">
-
-                            <span class="name">
-                                {{ person[1] }}
-                            </span>
-
-                            <span class="online"></span>
-
-                        </div>
+<main class="reels-container">
 
 
-                        <div class="preview">
+    {% if reels %}
 
-                            {% if person[4] %}
 
-                                {{ person[4] }}
+        {% for reel in reels %}
 
-                            {% else %}
 
-                                Start a conversation
+        <article class="reel-card">
 
-                            {% endif %}
 
-                        </div>
+            <!-- MEDIA -->
+
+            {% if reel.media %}
+
+                {% set media_path = reel.media %}
+
+                {% if media_path.endswith('.mp4') or
+                      media_path.endswith('.webm') or
+                      media_path.endswith('.mov') %}
+
+                    <video
+                        class="reel-media"
+                        src="{{ url_for('static', filename='uploads/' + reel.media) }}"
+                        controls
+                        playsinline
+                        preload="metadata"
+                    ></video>
+
+                {% else %}
+
+                    <img
+                        class="reel-media"
+                        src="{{ url_for('static', filename='uploads/' + reel.media) }}"
+                        alt="Reel"
+                    >
+
+                {% endif %}
+
+            {% endif %}
+
+
+            <div class="reel-overlay"></div>
+
+
+            <!-- USER -->
+
+            <div class="reel-user">
+
+                {% if reel.profile_picture %}
+
+                    <img
+                        class="reel-avatar"
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' + reel.profile_picture
+                        ) }}"
+                        alt="{{ reel.name }}"
+                    >
+
+                {% else %}
+
+                    <div class="reel-avatar-fallback">
+
+                        {{ reel.name[0] | upper }}
 
                     </div>
 
-
-                    <!-- RIGHT -->
-
-                    <div class="chat-right">
-
-                        {% if person[5] %}
-
-                            <span class="time">
-                                {{ person[5] }}
-                            </span>
-
-                        {% endif %}
+                {% endif %}
 
 
-                        <span class="arrow">
+                <span class="reel-name">
 
-                            <svg viewBox="0 0 24 24">
+                    {{ reel.name }}
 
-                                <path d="m9 18 6-6-6-6" />
-
-                            </svg>
-
-                        </span>
-
-                    </div>
-
-                </a>
-
-            {% endfor %}
-
-
-        {% else %}
-
-            <!-- =================================================
-                 EMPTY STATE
-            ================================================== -->
-
-            <div class="empty">
-
-                <div class="empty-icon">
-
-                    <svg viewBox="0 0 24 24">
-
-                        <path
-                            d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-6.1A7.5 7.5 0 1 1 20 11.5Z"
-                        />
-
-                        <circle
-                            cx="8.5"
-                            cy="11.5"
-                            r=".8"
-                            fill="currentColor"
-                            stroke="none"
-                        />
-
-                        <circle
-                            cx="12"
-                            cy="11.5"
-                            r=".8"
-                            fill="currentColor"
-                            stroke="none"
-                        />
-
-                        <circle
-                            cx="15.5"
-                            cy="11.5"
-                            r=".8"
-                            fill="currentColor"
-                            stroke="none"
-                        />
-
-                    </svg>
-
-                </div>
-
-
-                <h3>
-                    No conversations yet
-                </h3>
-
-
-                <p>
-                    Find people and start chatting.
-                </p>
+                </span>
 
             </div>
 
-        {% endif %}
 
-    </div>
+            <!-- CAPTION -->
 
+            {% if reel.caption %}
 
-    <!-- =====================================================
-         ACTION BUTTONS
-    ====================================================== -->
+                <div class="reel-caption">
 
-    <div class="buttons">
+                    {{ reel.caption }}
 
+                </div>
 
-        <!-- FIND PEOPLE -->
-
-        <a
-            href="{{ url_for('find_people') }}"
-            class="btn find"
-        >
-
-            <svg viewBox="0 0 24 24">
-
-                <path
-                    d="M16 20v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V20"
-                />
-
-                <circle
-                    cx="9"
-                    cy="7"
-                    r="3.2"
-                />
-
-                <path
-                    d="M16 11a3 3 0 1 0 0-6"
-                />
-
-                <path
-                    d="M18 14.5a4 4 0 0 1 4 4V20"
-                />
-
-            </svg>
+            {% endif %}
 
 
-            <span>
-                Find People
-            </span>
 
-        </a>
+            <!-- =================================================
+                 ACTION BUTTONS
+            ================================================= -->
 
-
-        <!-- DASHBOARD -->
-
-        <a
-            href="{{ url_for('dashboard') }}"
-            class="btn dashboard"
-        >
-
-            <svg viewBox="0 0 24 24">
-
-                <path
-                    d="m3 10 9-7 9 7"
-                />
-
-                <path
-                    d="M5 9.5V21h14V9.5"
-                />
-
-                <path
-                    d="M9 21v-6h6v6"
-                />
-
-            </svg>
+            <div class="reel-actions">
 
 
-            <span>
-                Dashboard
-            </span>
+                <!-- LIKE -->
 
-        </a>
+                <button
+                    type="button"
+                    class="action like {% if reel.user_liked %}active{% endif %}"
+                    data-id="{{ reel.id }}"
+                    onclick="toggleLike(this)"
+                >
 
-    </div>
+                    <span class="action-icon">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M20.8 8.6c0 5.4-8.8 10.1-8.8 10.1S3.2 14 3.2 8.6A4.6 4.6 0 0 1 12 6.2a4.6 4.6 0 0 1 8.8 2.4Z"
+                            />
+
+                        </svg>
+
+                    </span>
 
 
-</div>
+                    <span class="action-count">
+
+                        {{ reel.like_count or 0 }}
+
+                    </span>
+
+                </button>
+
+
+
+                <!-- COMMENT -->
+
+                <button
+                    type="button"
+                    class="action"
+                    onclick="openComments('{{ reel.id }}')"
+                >
+
+                    <span class="action-icon">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"
+                            />
+
+                            <path
+                                d="M8.5 11.5h.01"
+                            />
+
+                            <path
+                                d="M12 11.5h.01"
+                            />
+
+                            <path
+                                d="M15.5 11.5h.01"
+                            />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="action-count">
+
+                        {{ reel.comment_count or 0 }}
+
+                    </span>
+
+                </button>
+
+
+
+                <!-- SHARE -->
+
+                <button
+                    type="button"
+                    class="action"
+                    onclick="shareReel('{{ reel.id }}')"
+                >
+
+                    <span class="action-icon">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M21 3 10 14"
+                            />
+
+                            <path
+                                d="m21 3-7 18-4-7-7-4Z"
+                            />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="action-count">
+                        Share
+                    </span>
+
+                </button>
+
+
+
+                <!-- DELETE -->
+
+                {% if reel.user_id == session.get('user_id') %}
+
+                <button
+                    type="button"
+                    class="action"
+                    onclick="deleteReel('{{ reel.id }}')"
+                >
+
+                    <span class="action-icon">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <path
+                                d="M4 7h16"
+                            />
+
+                            <path
+                                d="M10 11v6"
+                            />
+
+                            <path
+                                d="M14 11v6"
+                            />
+
+                            <path
+                                d="M6 7l1 13h10l1-13"
+                            />
+
+                            <path
+                                d="M9 7V4h6v3"
+                            />
+
+                        </svg>
+
+                    </span>
+
+
+                    <span class="action-count">
+                        Delete
+                    </span>
+
+                </button>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </article>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <section class="empty">
+
+            <div class="empty-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path
+                        d="M8 5.5v13l11-6.5z"
+                    />
+
+                </svg>
+
+            </div>
+
+
+            <h2>
+                No reels yet
+            </h2>
+
+
+            <p>
+                Upload your first reel and share it with people.
+            </p>
+
+        </section>
+
+
+    {% endif %}
+
+
+</main>
+
+
+
+<!-- =========================================================
+     BOTTOM NAVIGATION
+========================================================= -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="m3 10 9-7 9 7"
+            />
+
+            <path
+                d="M5 9v11h14V9"
+            />
+
+            <path
+                d="M9 20v-6h6v6"
+            />
+
+        </svg>
+
+        <span>Home</span>
+
+    </a>
+
+
+
+    <!-- PEOPLE -->
+
+    <a
+        href="{{ url_for('find_people') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="9"
+                cy="8"
+                r="3"
+            />
+
+            <path
+                d="M3 20a6 6 0 0 1 12 0"
+            />
+
+            <circle
+                cx="17"
+                cy="9"
+                r="2.5"
+            />
+
+            <path
+                d="M17 14a5 5 0 0 1 4 4"
+            />
+
+        </svg>
+
+        <span>People</span>
+
+    </a>
+
+
+
+    <!-- REELS -->
+
+    <a
+        href="{{ url_for('reels') }}"
+        class="nav-item active"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+            />
+
+            <path
+                d="m8 4 3 5"
+            />
+
+            <path
+                d="m14 4 3 5"
+            />
+
+            <path
+                d="M10 12.5v3l4-1.5-4-1.5Z"
+            />
+
+        </svg>
+
+        <span>Reels</span>
+
+    </a>
+
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="{{ url_for('profile') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="12"
+                cy="8"
+                r="3.5"
+            />
+
+            <path
+                d="M5 21a7 7 0 0 1 14 0"
+            />
+
+        </svg>
+
+        <span>Profile</span>
+
+    </a>
+
+
+</nav>
+
 
 
 <script>
 
 /* =========================================================
-   SEARCH CONVERSATIONS
+   LIKE
 ========================================================= */
 
-function searchChats() {
+async function toggleLike(button) {
 
-    const input =
-        document
-        .getElementById("searchBox")
-        .value
-        .toLowerCase()
-        .trim();
+    const postId =
+        button.dataset.id;
+
+    try {
+
+        const response =
+            await fetch(
+                "/like/" + postId,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    }
+                }
+            );
 
 
-    const chats =
-        document.querySelectorAll(".chat-card");
+        const data =
+            await response.json();
 
 
-    chats.forEach(function(chat) {
+        if (!data.success) {
+            return;
+        }
 
-        const name =
-            chat.getAttribute("data-name") || "";
+
+        const count =
+            button.querySelector(
+                ".action-count"
+            );
 
 
-        if (name.includes(input)) {
+        count.textContent =
+            data.like_count;
 
-            chat.style.display = "flex";
+
+        if (data.liked) {
+
+            button.classList.add("active");
 
         } else {
 
-            chat.style.display = "none";
+            button.classList.remove("active");
 
         }
 
-    });
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SHARE
+========================================================= */
+
+async function shareReel(id) {
+
+    const url =
+        window.location.origin +
+        "/reels#" +
+        id;
+
+
+    try {
+
+        if (
+            navigator.share
+        ) {
+
+            await navigator.share({
+                title:
+                    "PrivateConnect Reel",
+                url: url
+            });
+
+        } else {
+
+            await navigator.clipboard.writeText(url);
+
+            alert(
+                "Reel link copied."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+function openComments(id) {
+
+    /*
+       Keep your existing comment system here.
+
+       This prevents the button from
+       changing page unexpectedly.
+    */
+
+    window.location.href =
+        "/dashboard#post-" + id;
+
+}
+
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+async function deleteReel(id) {
+
+    const confirmed =
+        confirm(
+            "Delete this reel?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/delete_post/" + id,
+                {
+                    method: "POST"
+                }
+            );
+
+
+        if (
+            response.ok
+        ) {
+
+            location.reload();
+
+        } else {
+
+            alert(
+                "Unable to delete this reel."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Something went wrong."
+        );
+
+    }
 
 }
 

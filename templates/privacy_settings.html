@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Privacy Settings - PrivateConnect</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .setting {
+            margin-bottom: 20px;
+        }
+
+        .setting:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .setting-description {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-text {
+            flex: 1;
+            padding-right: 15px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .toggle input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #ccc;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            left: 4px;
+            top: 4px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .slider {
+            background: #1877f2;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        .save-button {
+            width: 100%;
+            border: none;
+            background: #1877f2;
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            opacity: 0.9;
+        }
+
+        .info {
+            background: #eef5ff;
+            border-radius: 12px;
+            padding: 15px;
+            color: #456;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <a
+            href="{{ url_for('settings') }}"
+            class="back-button"
+        >
+            ← Settings
+        </a>
+    </div>
+
+    <div class="container">
+
+        <div class="title">
+            🔒 Privacy
+        </div>
+
+        <div class="subtitle">
+            Control who can see your information and activity.
+        </div>
+
+        <form
+            method="POST"
+            action="{{ url_for('privacy_settings') }}"
+        >
+
+            <!-- PROFILE VISIBILITY -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    👤 Profile Privacy
+                </div>
+
+                <div class="setting">
+
+                    <label for="profile_visibility">
+                        Who can see your profile?
+                    </label>
+
+                    <div class="setting-description">
+                        Choose who can view your profile information.
+                    </div>
+
+                    <select
+                        name="profile_visibility"
+                        id="profile_visibility"
+                    >
+
+                        <option
+                            value="everyone"
+                            {% if user["profile_visibility"] == "everyone" %}
+                            selected
+                            {% endif %}
+                        >
+                            Everyone
+                        </option>
+
+                        <option
+                            value="friends"
+                            {% if user["profile_visibility"] == "friends" %}
+                            selected
+                            {% endif %}
+                        >
+                            Friends only
+                        </option>
+
+                        <option
+                            value="only_me"
+                            {% if user["profile_visibility"] == "only_me" %}
+                            selected
+                            {% endif %}
+                        >
+                            Only me
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- POST VISIBILITY -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    📝 Post Privacy
+                </div>
+
+                <div class="setting">
+
+                    <label for="posts_visibility">
+                        Who can see your posts?
+                    </label>
+
+                    <div class="setting-description">
+                        Choose who can view posts you create.
+                    </div>
+
+                    <select
+                        name="posts_visibility"
+                        id="posts_visibility"
+                    >
+
+                        <option
+                            value="everyone"
+                            {% if user["posts_visibility"] == "everyone" %}
+                            selected
+                            {% endif %}
+                        >
+                            Everyone
+                        </option>
+
+                        <option
+                            value="friends"
+                            {% if user["posts_visibility"] == "friends" %}
+                            selected
+                            {% endif %}
+                        >
+                            Friends only
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROFILE VIEWS -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    👀 Profile Views
+                </div>
+
+                <div class="toggle-row">
+
+                    <div class="toggle-text">
+
+                        <label>
+                            Allow profile view tracking
+                        </label>
+
+                        <div class="setting-description">
+                            Allow PrivateConnect to record profile visits.
+                        </div>
+
+                    </div>
+
+                    <label class="toggle">
+
+                        <input
+                            type="checkbox"
+                            name="profile_views_enabled"
+                            value="1"
+                            {% if user["profile_views_enabled"] == 1 %}
+                            checked
+                            {% endif %}
+                        >
+
+                        <span class="slider"></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- INFORMATION -->
+
+            <div class="info">
+                🔐 Your privacy settings control how your profile
+                and posts will be shared. You can change these settings
+                whenever you want.
+            </div>
+
+            <br>
+
+
+            <!-- SAVE -->
+
+            <button
+                type="submit"
+                class="save-button"
+            >
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+</html>

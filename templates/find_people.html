@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1.0,
+                   maximum-scale=1.0,
+                   user-scalable=no,
+                   viewport-fit=cover">
+
+    <title>Find People - PrivateConnect</title>
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+
+            --green: #16a34a;
+            --red: #dc2626;
+
+            --nav-height: 76px;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        html {
+            width: 100%;
+            min-height: 100%;
+            background: var(--bg);
+
+            overflow-x: hidden;
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+
+            /*
+             * Safe area for modern phones
+             */
+            padding-top: env(safe-area-inset-top);
+
+            /*
+             * Space for fixed bottom navigation
+             */
+            padding-bottom:
+                calc(
+                    var(--nav-height)
+                    + 28px
+                    + env(safe-area-inset-bottom)
+                );
+
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-size-adjust: 100%;
+
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           APP
+        ===================================================== */
+
+        .app {
+            width: 100%;
+            max-width: 600px;
+
+            min-height: 100vh;
+            min-height: 100dvh;
+
+            margin: 0 auto;
+
+            position: relative;
+        }
+
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .content {
+            width: 100%;
+
+            padding:
+                18px
+                16px
+                30px;
+
+            /*
+             * Extra top safe-area spacing
+             */
+            padding-top:
+                calc(
+                    18px
+                    + env(safe-area-inset-top)
+                );
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .header-left {
+            min-width: 0;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .header-icon {
+            width: 46px;
+            height: 46px;
+
+            flex-shrink: 0;
+
+            border-radius: 14px;
+
+            background: #111827;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow:
+                0 5px 14px rgba(15, 23, 42, 0.12);
+        }
+
+
+        .header-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+
+        .header-title {
+            min-width: 0;
+        }
+
+
+        .header-title h1 {
+            font-size: 25px;
+            line-height: 29px;
+
+            font-weight: 750;
+
+            letter-spacing: -0.6px;
+
+            white-space: nowrap;
+        }
+
+
+        .header-title p {
+            margin-top: 3px;
+
+            color: var(--muted);
+
+            font-size: 12.5px;
+            line-height: 17px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .header-button {
+            width: 44px;
+            height: 44px;
+
+            flex-shrink: 0;
+
+            border: 1px solid var(--border);
+            border-radius: 50%;
+
+            background: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #475569;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 4px 12px rgba(15, 23, 42, 0.05);
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .header-button:active {
+            transform: scale(0.95);
+            background: #f8fafc;
+        }
+
+
+        .header-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* =====================================================
+           SEARCH
+        ===================================================== */
+
+        .search-wrapper {
+            position: relative;
+
+            width: 100%;
+
+            margin-bottom: 25px;
+        }
+
+
+        .search-wrapper > svg {
+            position: absolute;
+
+            left: 16px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 20px;
+            height: 20px;
+
+            color: #94a3b8;
+
+            pointer-events: none;
+
+            z-index: 2;
+        }
+
+
+        .search-input {
+            width: 100%;
+            height: 54px;
+
+            padding:
+                0 105px
+                0 48px;
+
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            outline: none;
+
+            background: white;
+
+            color: var(--text);
+
+            font-size: 15px;
+
+            box-shadow:
+                0 4px 15px rgba(15, 23, 42, 0.045);
+
+            appearance: none;
+        }
+
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+
+        .search-input:focus {
+            border-color: var(--blue);
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+
+        .search-button {
+            position: absolute;
+
+            right: 6px;
+            top: 6px;
+
+            height: 42px;
+
+            min-width: 88px;
+
+            padding: 0 15px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: var(--blue);
+            color: white;
+
+            font-size: 13px;
+            font-weight: 650;
+
+            cursor: pointer;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .search-button:active {
+            background: var(--blue-dark);
+            transform: scale(0.97);
+        }
+
+
+        /* =====================================================
+           SUCCESS MESSAGE
+        ===================================================== */
+
+        .success-message {
+            background: #f0fdf4;
+
+            border: 1px solid #bbf7d0;
+
+            color: #166534;
+
+            padding: 12px 14px;
+
+            border-radius: 12px;
+
+            margin-bottom: 17px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            line-height: 18px;
+        }
+
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 12px;
+        }
+
+
+        .section-title {
+            font-size: 18px;
+            line-height: 24px;
+
+            font-weight: 700;
+
+            letter-spacing: -0.2px;
+        }
+
+
+        .section-count {
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           PEOPLE LIST
+        ===================================================== */
+
+        .people-list {
+            display: flex;
+            flex-direction: column;
+
+            gap: 11px;
+        }
+
+
+        .person-card {
+            position: relative;
+
+            width: 100%;
+
+            background: var(--card);
+
+            border: 1px solid var(--border);
+
+            border-radius: 17px;
+
+            padding: 15px;
+
+            box-shadow:
+                0 4px 15px rgba(15, 23, 42, 0.045);
+        }
+
+
+        .person-top {
+            width: 100%;
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: 12px;
+        }
+
+
+        /* =====================================================
+           PROFILE
+        ===================================================== */
+
+        .profile-wrapper {
+            position: relative;
+
+            flex-shrink: 0;
+        }
+
+
+        .profile-image,
+        .default-profile {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+        }
+
+
+        .profile-image {
+            display: block;
+
+            object-fit: cover;
+
+            border: 1px solid #e2e8f0;
+        }
+
+
+        .default-profile {
+            background: #e9eef5;
+
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .default-profile svg {
+            width: 29px;
+            height: 29px;
+        }
+
+
+        .online-dot {
+            position: absolute;
+
+            width: 14px;
+            height: 14px;
+
+            right: 0;
+            bottom: 1px;
+
+            background: #22c55e;
+
+            border: 3px solid white;
+
+            border-radius: 50%;
+        }
+
+
+        /* =====================================================
+           USER INFO
+        ===================================================== */
+
+        .person-info {
+            flex: 1;
+
+            min-width: 0;
+
+            padding-right: 30px;
+        }
+
+
+        .person-name {
+            font-size: 16px;
+            line-height: 21px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .username {
+            margin-top: 2px;
+
+            color: #64748b;
+
+            font-size: 12.5px;
+            line-height: 17px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .member {
+            display: flex;
+            align-items: center;
+
+            gap: 5px;
+
+            margin-top: 6px;
+
+            color: #94a3b8;
+
+            font-size: 11.5px;
+            line-height: 15px;
+        }
+
+
+        .member svg {
+            width: 13px;
+            height: 13px;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           THREE DOT MENU
+        ===================================================== */
+
+        .menu-button {
+            position: absolute;
+
+            top: 11px;
+            right: 10px;
+
+            width: 36px;
+            height: 36px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: transparent;
+
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            z-index: 5;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .menu-button:active {
+            background: #f1f5f9;
+        }
+
+
+        .menu-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* =====================================================
+           ACTIONS
+        ===================================================== */
+
+        .actions {
+            display: flex;
+
+            gap: 8px;
+
+            margin-top: 14px;
+        }
+
+
+        .action-button {
+            flex: 1;
+
+            min-width: 0;
+
+            min-height: 40px;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 6px;
+
+            text-decoration: none;
+
+            font-size: 12px;
+            font-weight: 650;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.12s ease,
+                background 0.12s ease;
+        }
+
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+
+        .action-button svg {
+            width: 15px;
+            height: 15px;
+
+            flex-shrink: 0;
+        }
+
+
+        .view-button {
+            background: #f8fafc;
+
+            border: 1px solid #dfe5ec;
+
+            color: #334155;
+        }
+
+
+        .view-button:active {
+            background: #f1f5f9;
+        }
+
+
+        .connect-button {
+            background: var(--blue);
+
+            border: 1px solid var(--blue);
+
+            color: white;
+        }
+
+
+        .connect-button:active {
+            background: var(--blue-dark);
+        }
+
+
+        .requested-button {
+            background: #f1f5f9;
+
+            border: 1px solid #e2e8f0;
+
+            color: #475569;
+        }
+
+
+        .connected-button {
+            background: #f0fdf4;
+
+            border: 1px solid #bbf7d0;
+
+            color: var(--green);
+        }
+
+
+        .cancel-button {
+            background: white;
+
+            border: 1px solid #fecaca;
+
+            color: var(--red);
+        }
+
+
+        /* =====================================================
+           POPUP MENU
+        ===================================================== */
+
+        .profile-menu {
+            display: none;
+
+            position: absolute;
+
+            top: 51px;
+            right: 10px;
+
+            width: 175px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            padding: 6px;
+
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, 0.15);
+
+            z-index: 50;
+        }
+
+
+        .profile-menu.show {
+            display: block;
+        }
+
+
+        .profile-menu a,
+        .profile-menu button {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            padding: 11px 10px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: transparent;
+
+            color: #334155;
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            cursor: pointer;
+
+            text-align: left;
+        }
+
+
+        .profile-menu a:active,
+        .profile-menu button:active {
+            background: #f1f5f9;
+        }
+
+
+        .profile-menu svg {
+            width: 16px;
+            height: 16px;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty {
+            width: 100%;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 18px;
+
+            padding: 56px 20px;
+
+            text-align: center;
+
+            box-shadow:
+                0 3px 12px rgba(15, 23, 42, 0.025);
+        }
+
+
+        .empty-icon {
+            width: 62px;
+            height: 62px;
+
+            margin: 0 auto 17px;
+
+            border-radius: 50%;
+
+            background: #f1f5f9;
+
+            color: #64748b;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .empty-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+
+        .empty h2 {
+            font-size: 18px;
+            line-height: 23px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .empty p {
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 19px;
+        }
+
+
+        /* =====================================================
+           BOTTOM NAVIGATION
+        ===================================================== */
+
+        .bottom-nav {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            width: 100%;
+            max-width: 600px;
+
+            height: var(--nav-height);
+
+            margin: 0 auto;
+
+            background: rgba(255, 255, 255, 0.98);
+
+            border-top: 1px solid #e5e7eb;
+
+            box-shadow:
+                0 -5px 20px rgba(15, 23, 42, 0.07);
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            /*
+             * Safe area at bottom of Android/iPhone
+             */
+            padding:
+                4px
+                8px
+                max(4px, env(safe-area-inset-bottom));
+
+            box-sizing: border-box;
+
+            z-index: 9999;
+
+            isolation: isolate;
+        }
+
+
+        .nav-item {
+            min-width: 0;
+
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 4px;
+
+            text-decoration: none;
+
+            color: #64748b;
+
+            font-size: 11px;
+            line-height: 14px;
+
+            font-weight: 600;
+
+            border-radius: 12px;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+
+            flex-shrink: 0;
+
+            stroke-width: 1.9;
+        }
+
+
+        .nav-item span {
+            display: block;
+
+            white-space: nowrap;
+
+            line-height: 14px;
+        }
+
+
+        .nav-item.active {
+            color: var(--blue);
+        }
+
+
+        .nav-item.active svg {
+            stroke-width: 2.3;
+        }
+
+
+        .nav-item:active {
+            background: #f1f5f9;
+
+            transform: scale(0.97);
+        }
+
+
+        /* =====================================================
+           TABLET / DESKTOP
+        ===================================================== */
+
+        @media (min-width: 601px) {
+
+            body {
+                padding-bottom: 100px;
+            }
+
+
+            .content {
+                padding-top: 35px;
+            }
+
+
+            .bottom-nav {
+                bottom: 15px;
+
+                width: calc(100% - 30px);
+
+                height: 70px;
+
+                border: 1px solid var(--border);
+
+                border-radius: 17px;
+
+                overflow: hidden;
+
+                padding: 4px 8px;
+            }
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+        ===================================================== */
+
+        @media (max-width: 380px) {
+
+            .content {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+
+            .header {
+                gap: 8px;
+            }
+
+
+            .header-left {
+                gap: 9px;
+            }
+
+
+            .header-icon {
+                width: 43px;
+                height: 43px;
+
+                border-radius: 13px;
+            }
+
+
+            .header-icon svg {
+                width: 22px;
+                height: 22px;
+            }
+
+
+            .header-title h1 {
+                font-size: 22px;
+                line-height: 26px;
+            }
+
+
+            .header-title p {
+                font-size: 11px;
+            }
+
+
+            .header-button {
+                width: 40px;
+                height: 40px;
+            }
+
+
+            .search-input {
+                height: 52px;
+
+                padding-left: 45px;
+                padding-right: 98px;
+            }
+
+
+            .search-button {
+                min-width: 82px;
+
+                padding: 0 10px;
+            }
+
+
+            .person-card {
+                padding: 13px;
+            }
+
+
+            .profile-image,
+            .default-profile {
+                width: 54px;
+                height: 54px;
+            }
+
+
+            .person-name {
+                font-size: 15px;
+            }
+
+
+            .action-button {
+                min-height: 39px;
+
+                font-size: 11px;
+            }
+
+
+            .nav-item {
+                font-size: 10px;
+            }
+
+
+            .nav-item svg {
+                width: 23px;
+                height: 23px;
+            }
+        }
+
+
+        /* =====================================================
+           VERY SMALL PHONES
+        ===================================================== */
+
+        @media (max-width: 340px) {
+
+            .header-title h1 {
+                font-size: 20px;
+            }
+
+
+            .header-title p {
+                display: none;
+            }
+
+
+            .search-button {
+                min-width: 76px;
+
+                font-size: 12px;
+            }
+
+
+            .search-input {
+                padding-right: 91px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <main class="content">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+            <div class="header-left">
+
+                <div class="header-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+
+                        <circle cx="9" cy="7" r="4"/>
+
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+                    </svg>
+
+                </div>
+
+
+                <div class="header-title">
+
+                    <h1>Find People</h1>
+
+                    <p>Discover people and build connections</p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="header-button"
+                type="button"
+                onclick="window.location.href='{{ url_for('requests') }}'"
+                aria-label="Requests"
+            >
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="1.8"
+                     stroke-linecap="round"
+                     stroke-linejoin="round">
+
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+
+                </svg>
+
+            </button>
+
+        </header>
+
+
+        <!-- =================================================
+             SEARCH
+        ================================================== -->
+
+        <form
+            method="GET"
+            action="{{ url_for('find_people') }}"
+            class="search-wrapper"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <circle cx="11" cy="11" r="7"/>
+
+                <path d="M20 20l-4-4"/>
+
+            </svg>
+
+
+            <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Search people..."
+                value="{{ search }}"
+                autocomplete="off"
+                enterkeyhint="search"
+            >
+
+
+            <button
+                class="search-button"
+                type="submit"
+            >
+                Search
+            </button>
+
+        </form>
+
+
+        <!-- =================================================
+             SUCCESS MESSAGE
+        ================================================== -->
+
+        {% if request.args.get('sent') %}
+
+            <div class="success-message">
+
+                Connection request sent successfully.
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             SECTION HEADER
+        ================================================== -->
+
+        <div class="section-header">
+
+            <div class="section-title">
+                People
+            </div>
+
+
+            {% if people %}
+
+                <div class="section-count">
+                    {{ people|length }} people
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- =================================================
+             PEOPLE
+        ================================================== -->
+
+        {% if people %}
+
+            <div class="people-list">
+
+                {% for person in people %}
+
+                    <article class="person-card">
+
+
+                        <!-- THREE DOT BUTTON -->
+
+                        <button
+                            type="button"
+                            class="menu-button"
+                            onclick="toggleMenu('menu-{{ person['id'] }}')"
+                            aria-label="More options"
+                        >
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="currentColor">
+
+                                <circle cx="12" cy="5" r="1.5"/>
+                                <circle cx="12" cy="12" r="1.5"/>
+                                <circle cx="12" cy="19" r="1.5"/>
+
+                            </svg>
+
+                        </button>
+
+
+                        <!-- PROFILE MENU -->
+
+                        <div
+                            id="menu-{{ person['id'] }}"
+                            class="profile-menu"
+                        >
+
+                            <a
+                                href="{{ url_for('user_profile', user_id=person['id']) }}"
+                            >
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round">
+
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+
+                                    <circle cx="12" cy="12" r="3"/>
+
+                                </svg>
+
+                                View profile
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- PROFILE -->
+
+                        <div class="person-top">
+
+
+                            <div class="profile-wrapper">
+
+                                {% if person["profile_picture"] %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' + person['profile_picture']) }}"
+                                        class="profile-image"
+                                        alt="{{ person['name'] }}"
+                                    >
+
+                                {% else %}
+
+                                    <div class="default-profile">
+
+                                        <svg viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="1.7"
+                                             stroke-linecap="round"
+                                             stroke-linejoin="round">
+
+                                            <circle cx="12" cy="8" r="4"/>
+
+                                            <path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/>
+
+                                        </svg>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <span class="online-dot"></span>
+
+                            </div>
+
+
+                            <div class="person-info">
+
+                                <div class="person-name">
+                                    {{ person["name"] }}
+                                </div>
+
+
+                                <div class="username">
+                                    PrivateConnect member
+                                </div>
+
+
+                                <div class="member">
+
+                                    <svg viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.8"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round">
+
+                                        <circle cx="9" cy="7" r="4"/>
+
+                                        <path d="M3 21v-1a6 6 0 0 1 12 0v1"/>
+
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+
+                                    </svg>
+
+                                    Private connection
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- =================================================
+                             ACTIONS
+                        ================================================== -->
+
+                        <div class="actions">
+
+
+                            <!-- VIEW -->
+
+                            <a
+                                href="{{ url_for('user_profile', user_id=person['id']) }}"
+                                class="action-button view-button"
+                            >
+
+                                <svg viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round">
+
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+
+                                    <circle cx="12" cy="12" r="3"/>
+
+                                </svg>
+
+                                View
+
+                            </a>
+
+
+                            <!-- FRIENDS -->
+
+                            {% if person["relationship_status"] == "friends" %}
+
+                                <button
+                                    type="button"
+                                    class="action-button connected-button"
+                                    disabled
+                                >
+
+                                    <svg viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="2"
+                                         stroke-linecap="round"
+                                         stroke-linejoin="round">
+
+                                        <path d="M20 6L9 17l-5-5"/>
+
+                                    </svg>
+
+                                    Connected
+
+                                </button>
+
+
+                            <!-- REQUEST SENT -->
+
+                            {% elif person["relationship_status"] == "sent" %}
+
+                                <button
+                                    type="button"
+                                    class="action-button requested-button"
+                                    disabled
+                                >
+                                    Requested
+                                </button>
+
+
+                                <form
+                                    action="{{ url_for('cancel_request', user_id=person['id']) }}"
+                                    method="POST"
+                                    style="flex:1; min-width:0;"
+                                    onsubmit="return confirm('Cancel this connection request?');"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-button cancel-button"
+                                        style="width:100%;"
+                                    >
+
+                                        Cancel
+
+                                    </button>
+
+                                </form>
+
+
+                            <!-- RECEIVED -->
+
+                            {% elif person["relationship_status"] == "received" %}
+
+                                <a
+                                    href="{{ url_for('requests') }}"
+                                    class="action-button connect-button"
+                                >
+
+                                    Respond
+
+                                </a>
+
+
+                            <!-- NEW -->
+
+                            {% else %}
+
+                                <form
+                                    action="{{ url_for('send_request', user_id=person['id']) }}"
+                                    method="POST"
+                                    style="flex:1; min-width:0;"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="action-button connect-button"
+                                        style="width:100%;"
+                                    >
+
+                                        <svg viewBox="0 0 24 24"
+                                             fill="none"
+                                             stroke="currentColor"
+                                             stroke-width="2"
+                                             stroke-linecap="round"
+                                             stroke-linejoin="round">
+
+                                            <path d="M12 5v14"/>
+
+                                            <path d="M5 12h14"/>
+
+                                        </svg>
+
+                                        Connect
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 EMPTY STATE
+            ================================================== -->
+
+            <div class="empty">
+
+                <div class="empty-icon">
+
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.8"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <circle cx="11" cy="11" r="7"/>
+
+                        <path d="M20 20l-4-4"/>
+
+                    </svg>
+
+                </div>
+
+
+                <h2>
+                    No people found
+                </h2>
+
+
+                <p>
+                    Try searching with another name.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+    </main>
+
+
+    <!-- =====================================================
+         MOBILE BOTTOM NAVIGATION
+    ====================================================== -->
+
+    <nav class="bottom-nav">
+
+
+        <!-- REQUESTS -->
+
+        <a
+            href="{{ url_for('requests') }}"
+            class="nav-item"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <rect
+                    x="3"
+                    y="4"
+                    width="18"
+                    height="16"
+                    rx="3"
+                />
+
+                <path d="M3 7l9 6 9-6"/>
+
+            </svg>
+
+            <span>
+                Requests
+            </span>
+
+        </a>
+
+
+        <!-- CONNECTIONS -->
+
+        <a
+            href="{{ url_for('connections') }}"
+            class="nav-item"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                />
+
+                <path
+                    d="M3 21v-1a6 6 0 0 1 12 0v1"
+                />
+
+                <path
+                    d="M16 3.13a4 4 0 0 1 0 7.75"
+                />
+
+                <path
+                    d="M21 21v-1a6 6 0 0 0-3-5.2"
+                />
+
+            </svg>
+
+            <span>
+                Connections
+            </span>
+
+        </a>
+
+
+        <!-- HOME -->
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="nav-item"
+        >
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.8"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <path d="M3 10.5L12 3l9 7.5"/>
+
+                <path d="M5 9.5V21h14V9.5"/>
+
+                <path d="M9 21v-6h6v6"/>
+
+            </svg>
+
+            <span>
+                Home
+            </span>
+
+        </a>
+
+    </nav>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+    function toggleMenu(id) {
+
+        const menu = document.getElementById(id);
+
+        if (!menu) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll(".profile-menu")
+            .forEach(function(item) {
+
+                if (item !== menu) {
+
+                    item.classList.remove("show");
+
+                }
+
+            });
+
+
+        menu.classList.toggle("show");
+    }
+
+
+    /*
+     * Close profile menus when tapping outside
+     */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                !event.target.closest(".menu-button") &&
+                !event.target.closest(".profile-menu")
+            ) {
+
+                document
+                    .querySelectorAll(".profile-menu")
+                    .forEach(function(menu) {
+
+                        menu.classList.remove("show");
+
+                    });
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Prevent accidental double taps on buttons
+     */
+
+    document.addEventListener(
+        "touchstart",
+        function() {},
+        { passive: true }
+    );
+
+</script>
+
+
+</body>
+
+</html>

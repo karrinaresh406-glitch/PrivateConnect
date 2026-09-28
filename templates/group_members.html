@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Group Members - PrivateConnect</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .header {
+            background: #1877f2;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+        }
+
+        .header h2 {
+            font-size: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+        }
+
+        .title {
+            margin-bottom: 15px;
+        }
+
+        .member {
+            background: white;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #1877f2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .role {
+            color: #1877f2;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <a href="{{ url_for('group_chat', group_id=group['id']) }}"
+           class="back">
+            ←
+        </a>
+
+        <h2>{{ group["name"] }}</h2>
+
+    </div>
+
+
+    <div class="container">
+
+        <h3 class="title">
+            👥 Members ({{ members|length }})
+        </h3>
+
+
+        {% for member in members %}
+
+        <div class="member">
+
+            <div class="avatar">
+                {{ member["name"][0]|upper }}
+            </div>
+
+            <div class="info">
+
+                <div class="name">
+                    {{ member["name"] }}
+                </div>
+
+                <div class="role">
+                    {% if member["role"] == "admin" %}
+                        👑 Admin
+                    {% else %}
+                        Member
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</body>
+
+</html>

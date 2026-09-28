@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Messages - PrivateConnect</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background: #071426;
+
+            color: #ffffff;
+
+            overflow-x: hidden;
+
+            padding-bottom: 75px;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .top-header {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+
+            height: 64px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 16px;
+
+            background: #0b1b30;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+
+        }
+
+
+        .header-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .back-button {
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,0.07);
+
+            color: white;
+
+            text-decoration: none;
+
+            cursor: pointer;
+        }
+
+
+        .back-button svg {
+
+            width: 21px;
+
+            height: 21px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        .page-title {
+
+            font-size: 21px;
+
+            font-weight: 800;
+        }
+
+
+        .new-chat {
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background: #1877f2;
+
+            color: white;
+
+            text-decoration: none;
+        }
+
+
+        .new-chat svg {
+
+            width: 21px;
+
+            height: 21px;
+
+            stroke: white;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        /* =====================================================
+           SEARCH
+        ===================================================== */
+
+        .search-area {
+
+            padding: 14px 15px 10px;
+
+            background: #071426;
+        }
+
+
+        .search-box {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            height: 44px;
+
+            padding: 0 14px;
+
+            border-radius: 13px;
+
+            background:
+                #10233c;
+
+            border:
+                1px solid rgba(255,255,255,0.06);
+        }
+
+
+        .search-box svg {
+
+            width: 19px;
+
+            height: 19px;
+
+            stroke: #8fa3ba;
+
+            fill: none;
+
+            stroke-width: 2;
+        }
+
+
+        .search-box input {
+
+            width: 100%;
+
+            border: 0;
+
+            outline: none;
+
+            background: transparent;
+
+            color: white;
+
+            font-size: 14px;
+        }
+
+
+        .search-box input::placeholder {
+
+            color: #7890a8;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .messages-container {
+
+            width: 100%;
+
+            max-width: 700px;
+
+            margin: 0 auto;
+
+            padding: 4px 10px 20px;
+        }
+
+
+        /* =====================================================
+           MESSAGE PERSON
+        ===================================================== */
+
+        .person-card {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            width: 100%;
+
+            padding: 13px 9px;
+
+            border: 0;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.06);
+
+            background: transparent;
+
+            color: white;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            text-align: left;
+
+            transition:
+                background .15s ease;
+        }
+
+
+        .person-card:hover {
+
+            background:
+                rgba(255,255,255,0.04);
+        }
+
+
+        .person-card:active {
+
+            background:
+                rgba(255,255,255,0.07);
+        }
+
+
+        /* =====================================================
+           AVATAR
+        ===================================================== */
+
+        .avatar-wrapper {
+
+            position: relative;
+
+            flex-shrink: 0;
+        }
+
+
+        .avatar {
+
+            width: 54px;
+
+            height: 54px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            display: block;
+
+            background: #263b55;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+        }
+
+
+        .avatar-fallback {
+
+            width: 54px;
+
+            height: 54px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
+                );
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: 800;
+        }
+
+
+        .online-dot {
+
+            position: absolute;
+
+            right: 1px;
+
+            bottom: 2px;
+
+            width: 13px;
+
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+
+            border: 2px solid #071426;
+        }
+
+
+        /* =====================================================
+           PERSON INFO
+        ===================================================== */
+
+        .person-info {
+
+            min-width: 0;
+
+            flex: 1;
+        }
+
+
+        .person-name {
+
+            display: block;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            margin-bottom: 5px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        .last-message {
+
+            display: block;
+
+            color: #8296ad;
+
+            font-size: 13px;
+
+            line-height: 1.35;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            max-width: 90%;
+        }
+
+
+        .message-time {
+
+            flex-shrink: 0;
+
+            align-self: flex-start;
+
+            padding-top: 5px;
+
+            color: #71869e;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+
+            min-height: 55vh;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 35px;
+        }
+
+
+        .empty-icon {
+
+            width: 76px;
+
+            height: 76px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin-bottom: 18px;
+
+            border-radius: 24px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #7c3aed
+                );
+        }
+
+
+        .empty-icon svg {
+
+            width: 37px;
+
+            height: 37px;
+
+            stroke: white;
+
+            fill: none;
+
+            stroke-width: 1.8;
+        }
+
+
+        .empty h2 {
+
+            font-size: 21px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .empty p {
+
+            color: #7e93aa;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            max-width: 300px;
+        }
+
+
+        .find-button {
+
+            margin-top: 20px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 18px;
+
+            border-radius: 12px;
+
+            background: #1877f2;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           BOTTOM NAVIGATION
+        ===================================================== */
+
+        .bottom-nav {
+
+            position: fixed;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            z-index: 999;
+
+            height:
+                calc(68px + env(safe-area-inset-bottom));
+
+            padding-bottom:
+                env(safe-area-inset-bottom);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-around;
+
+            background:
+                rgba(10,25,43,0.97);
+
+            border-top:
+                1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+        }
+
+
+        .nav-item {
+
+            flex: 1;
+
+            height: 100%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+
+            color: #71869e;
+
+            text-decoration: none;
+
+            font-size: 11px;
+
+            font-weight: 600;
+        }
+
+
+        .nav-item svg {
+
+            width: 23px;
+
+            height: 23px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 1.8;
+
+            stroke-linecap: round;
+
+            stroke-linejoin: round;
+        }
+
+
+        .nav-item.active {
+
+            color: #ffffff;
+        }
+
+
+        .nav-item.active svg {
+
+            stroke-width: 2.3;
+        }
+
+
+        /* =====================================================
+           DESKTOP
+        ===================================================== */
+
+        @media (min-width: 768px) {
+
+            body {
+
+                padding-bottom: 95px;
+            }
+
+
+            .bottom-nav {
+
+                width: 620px;
+
+                left: 50%;
+
+                right: auto;
+
+                transform:
+                    translateX(-50%);
+
+                bottom: 18px;
+
+                height: 62px;
+
+                padding-bottom: 0;
+
+                border:
+                    1px solid rgba(255,255,255,0.08);
+
+                border-radius: 18px;
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL PHONE
+        ===================================================== */
+
+        @media (max-width: 430px) {
+
+            .top-header {
+
+                height: 60px;
+
+                padding: 0 12px;
+            }
+
+
+            .page-title {
+
+                font-size: 20px;
+            }
+
+
+            .person-card {
+
+                padding:
+                    12px 7px;
+            }
+
+
+            .avatar,
+            .avatar-fallback {
+
+                width: 51px;
+
+                height: 51px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="top-header">
+
+    <div class="header-left">
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-button"
+            aria-label="Back to Home"
+        >
+
+            <svg viewBox="0 0 24 24">
+
+                <path d="M19 12H5"></path>
+
+                <path d="M12 19l-7-7 7-7"></path>
+
+            </svg>
+
+        </a>
+
+
+        <div class="page-title">
+            Messages
+        </div>
+
+    </div>
+
+
+    <a
+        href="{{ url_for('find_people') }}"
+        class="new-chat"
+        aria-label="New chat"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="M12 5v14"></path>
+
+            <path d="M5 12h14"></path>
+
+        </svg>
+
+    </a>
+
+</header>
+
+
+
+<!-- =========================================================
+     SEARCH
+========================================================= -->
+
+<section class="search-area">
+
+    <div class="search-box">
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="11"
+                cy="11"
+                r="7"
+            ></circle>
+
+            <path
+                d="m20 20-4-4"
+            ></path>
+
+        </svg>
+
+
+        <input
+            type="text"
+            id="messageSearch"
+            placeholder="Search conversations..."
+            autocomplete="off"
+        >
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     MESSAGES
+========================================================= -->
+
+<main class="messages-container">
+
+    {% if people %}
+
+        <div id="peopleList">
+
+            {% for person in people %}
+
+                <a
+                    href="{{ url_for('conversation', user_id=person['id']) }}"
+                    class="person-card"
+                    data-name="{{ person['name']|lower }}"
+                    data-email="{{ person['email']|lower }}"
+                >
+
+                    <div class="avatar-wrapper">
+
+                        {% if person['profile_picture'] %}
+
+                            <img
+                                class="avatar"
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + person['profile_picture']
+                                ) }}"
+                                alt="{{ person['name'] }}"
+                            >
+
+                        {% else %}
+
+                            <div class="avatar-fallback">
+
+                                {{ person['name'][0]|upper }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="person-info">
+
+                        <span class="person-name">
+
+                            {{ person['name'] }}
+
+                        </span>
+
+
+                        <span class="last-message">
+
+                            {% if person['last_message'] %}
+
+                                {{ person['last_message'] }}
+
+                            {% else %}
+
+                                Start a conversation
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    {% if person['last_time'] %}
+
+                        <span class="message-time">
+
+                            {{ person['last_time'] }}
+
+                        </span>
+
+                    {% endif %}
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+
+        <div
+            id="noSearchResults"
+            class="empty"
+            style="display:none;"
+        >
+
+            <div class="empty-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                    ></circle>
+
+                    <path
+                        d="m20 20-4-4"
+                    ></path>
+
+                </svg>
+
+            </div>
+
+
+            <h2>
+                No conversations found
+            </h2>
+
+
+            <p>
+                Try searching for another person.
+            </p>
+
+        </div>
+
+    {% else %}
+
+        <section class="empty">
+
+            <div class="empty-icon">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"></path>
+
+                    <path d="M8.5 11.5h.01"></path>
+
+                    <path d="M12 11.5h.01"></path>
+
+                    <path d="M15.5 11.5h.01"></path>
+
+                </svg>
+
+            </div>
+
+
+            <h2>
+                No messages yet
+            </h2>
+
+
+            <p>
+                Connect with people and start your first conversation.
+            </p>
+
+
+            <a
+                href="{{ url_for('find_people') }}"
+                class="find-button"
+            >
+                Find People
+            </a>
+
+        </section>
+
+    {% endif %}
+
+</main>
+
+
+
+<!-- =========================================================
+     BOTTOM NAVIGATION
+========================================================= -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="m3 10 9-7 9 7"></path>
+
+            <path d="M5 9v11h14V9"></path>
+
+            <path d="M9 20v-6h6v6"></path>
+
+        </svg>
+
+        <span>Home</span>
+
+    </a>
+
+
+
+    <!-- PEOPLE -->
+
+    <a
+        href="{{ url_for('find_people') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="9"
+                cy="8"
+                r="3"
+            ></circle>
+
+            <path
+                d="M3 20a6 6 0 0 1 12 0"
+            ></path>
+
+            <circle
+                cx="17"
+                cy="9"
+                r="2.5"
+            ></circle>
+
+            <path
+                d="M17 14a5 5 0 0 1 4 4"
+            ></path>
+
+        </svg>
+
+        <span>People</span>
+
+    </a>
+
+
+
+    <!-- CHAT -->
+
+    <a
+        href="{{ url_for('messages') }}"
+        class="nav-item active"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2 1.5-4A7.5 7.5 0 1 1 20 11.5Z"
+            ></path>
+
+            <path
+                d="M8.5 11.5h.01"
+            ></path>
+
+            <path
+                d="M12 11.5h.01"
+            ></path>
+
+            <path
+                d="M15.5 11.5h.01"
+            ></path>
+
+        </svg>
+
+        <span>Chat</span>
+
+    </a>
+
+
+
+    <!-- REELS -->
+
+    <a
+        href="{{ url_for('reels') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+            ></rect>
+
+            <path
+                d="m8 4 3 5"
+            ></path>
+
+            <path
+                d="m14 4 3 5"
+            ></path>
+
+            <path
+                d="M10 12.5v3l4-1.5-4-1.5Z"
+            ></path>
+
+        </svg>
+
+        <span>Reels</span>
+
+    </a>
+
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="{{ url_for('profile') }}"
+        class="nav-item"
+    >
+
+        <svg viewBox="0 0 24 24">
+
+            <circle
+                cx="12"
+                cy="8"
+                r="3.5"
+            ></circle>
+
+            <path
+                d="M5 21a7 7 0 0 1 14 0"
+            ></path>
+
+        </svg>
+
+        <span>Profile</span>
+
+    </a>
+
+</nav>
+
+
+
+<script>
+
+/* =========================================================
+   SEARCH CONVERSATIONS
+========================================================= */
+
+const searchInput =
+    document.getElementById(
+        "messageSearch"
+    );
+
+const peopleList =
+    document.getElementById(
+        "peopleList"
+    );
+
+const noSearchResults =
+    document.getElementById(
+        "noSearchResults"
+    );
+
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+
+            const search =
+                this.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (!peopleList) {
+                return;
+            }
+
+
+            const cards =
+                peopleList.querySelectorAll(
+                    ".person-card"
+                );
+
+
+            let visibleCount = 0;
+
+
+            cards.forEach(
+                function (card) {
+
+                    const name =
+                        card.dataset.name || "";
+
+                    const email =
+                        card.dataset.email || "";
+
+
+                    if (
+                        name.includes(search)
+                        ||
+                        email.includes(search)
+                    ) {
+
+                        card.style.display =
+                            "flex";
+
+                        visibleCount++;
+
+                    } else {
+
+                        card.style.display =
+                            "none";
+                    }
+
+                }
+            );
+
+
+            if (noSearchResults) {
+
+                noSearchResults.style.display =
+                    visibleCount === 0
+                    ? "flex"
+                    : "none";
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

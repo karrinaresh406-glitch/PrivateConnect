@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Profile Views - PrivateConnect</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        .header {
+            background: white;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back {
+            text-decoration: none;
+            font-size: 24px;
+            color: #111827;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .view-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .profile-image {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .view-time {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .empty-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <a
+            href="{{ url_for('profile', user_id=session['user_id']) }}"
+            class="back"
+        >
+            ←
+        </a>
+
+        <h2>Profile Views</h2>
+
+    </div>
+
+
+    <div class="container">
+
+        {% if views %}
+
+            {% for view in views %}
+
+                <div class="view-card">
+
+                    {% if view['profile_picture'] %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='uploads/' + view['profile_picture']
+                            ) }}"
+                            class="profile-image"
+                        >
+
+                    {% else %}
+
+                        <div class="profile-image"></div>
+
+                    {% endif %}
+
+
+                    <div class="user-info">
+
+                        <div class="user-name">
+                            {{ view['name'] }}
+                        </div>
+
+                        <div class="view-time">
+                            Viewed your profile on
+                            {{ view['created_at'] }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    👀
+                </div>
+
+                <h3>No Profile Views Yet</h3>
+
+                <p>
+                    When someone views your profile,
+                    they will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

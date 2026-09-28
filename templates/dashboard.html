@@ -1,0 +1,3003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+>
+
+<meta name="theme-color" content="#07111f">
+
+<title>PrivateConnect</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: #07111f;
+    width: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    background: #07111f;
+    color: #ffffff;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    overflow-x: hidden;
+
+    padding-top:
+        calc(64px + env(safe-area-inset-top, 0px));
+
+    padding-bottom:
+        calc(76px + env(safe-area-inset-bottom, 0px));
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   ICON SYSTEM
+========================================================= */
+
+.icon {
+    width: 22px;
+    height: 22px;
+
+    display: block;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-fill {
+    fill: currentColor;
+    stroke: none;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height:
+        calc(64px + env(safe-area-inset-top, 0px));
+
+    padding:
+        env(safe-area-inset-top, 0px)
+        14px
+        0;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(7,17,31,.97);
+
+    border-bottom: 1px solid #1b3047;
+
+    z-index: 5000;
+}
+
+.logo {
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 800;
+
+    letter-spacing: -.7px;
+
+    white-space: nowrap;
+}
+
+.logo span {
+    color: #4da3ff;
+}
+
+.header-space {
+    flex: 1;
+}
+
+.header-action {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #e7f0fa;
+
+    text-decoration: none;
+
+    border-radius: 50%;
+}
+
+.header-action:active {
+    background: #142941;
+    transform: scale(.92);
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.notification-wrapper {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+
+    top: 0;
+    right: -1px;
+
+    min-width: 17px;
+    height: 17px;
+
+    padding: 0 4px;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    background: #ff365f;
+    color: #ffffff;
+
+    border: 2px solid #07111f;
+    border-radius: 20px;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+.notification-panel {
+    position: absolute;
+
+    top: 48px;
+    right: -5px;
+
+    width: 330px;
+    max-width: calc(100vw - 20px);
+
+    max-height: 450px;
+
+    background: #0b1a2c;
+
+    border: 1px solid #243e5a;
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.6);
+
+    display: none;
+
+    z-index: 9000;
+}
+
+.notification-panel.show {
+    display: block;
+}
+
+.notification-header {
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 14px;
+
+    border-bottom: 1px solid #20364e;
+}
+
+.notification-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.notification-read-button {
+    border: 0;
+    background: none;
+
+    color: #4da3ff;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.notification-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 13px;
+
+    color: #ffffff;
+    text-decoration: none;
+
+    border-bottom: 1px solid #172b40;
+}
+
+.notification-item.unread {
+    background: #102943;
+}
+
+.notification-avatar {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 1px solid #31587c;
+}
+
+.notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-message {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.notification-time {
+    margin-top: 3px;
+
+    color: #7890a8;
+
+    font-size: 9px;
+}
+
+.notification-unread-dot {
+    width: 7px;
+    height: 7px;
+
+    min-width: 7px;
+
+    border-radius: 50%;
+
+    background: #238cff;
+}
+
+.notification-empty,
+.notification-loading {
+    padding: 30px 15px;
+
+    text-align: center;
+
+    color: #7f94aa;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.container {
+    width: 100%;
+    max-width: 680px;
+
+    margin: 0 auto;
+
+    padding:
+        10px
+        0
+        30px;
+}
+
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome {
+    margin: 0 12px 14px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #1b3c5b;
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d2945,
+            #0b2036
+        );
+
+    font-size: 20px;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-menu {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 8px;
+
+    padding:
+        0 12px
+        18px;
+}
+
+.quick-menu a {
+    min-width: 0;
+
+    height: 76px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    color: #dce9f5;
+
+    text-decoration: none;
+
+    background: #0b1b2d;
+
+    border: 1px solid #1e3851;
+    border-radius: 14px;
+
+    font-size: 10px;
+    font-weight: 650;
+}
+
+.quick-menu a:active {
+    transform: scale(.95);
+    background: #102941;
+}
+
+.quick-icon {
+    width: 23px;
+    height: 23px;
+
+    color: #68b1ff;
+}
+
+
+/* =========================================================
+   SECTION TITLES
+========================================================= */
+
+.section-title,
+.feed-title {
+    padding:
+        3px
+        14px
+        9px;
+
+    font-size: 18px;
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   PEOPLE
+========================================================= */
+
+.people {
+    display: flex;
+
+    gap: 13px;
+
+    overflow-x: auto;
+
+    padding:
+        2px
+        14px
+        18px;
+
+    scrollbar-width: none;
+}
+
+.people::-webkit-scrollbar {
+    display: none;
+}
+
+.person {
+    width: 62px;
+    min-width: 62px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    color: #ffffff;
+
+    text-decoration: none;
+}
+
+.person-image-wrapper {
+    width: 58px;
+    height: 58px;
+
+    padding: 2px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #238cff,
+            #7b61ff
+        );
+
+    margin-bottom: 5px;
+}
+
+.person img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 2px solid #07111f;
+}
+
+.person-name {
+    width: 62px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    text-align: center;
+
+    font-size: 10px;
+
+    color: #dbe6f1;
+}
+
+
+/* =========================================================
+   CREATE POST
+========================================================= */
+
+.create-post {
+    margin:
+        2px
+        12px
+        17px;
+
+    padding: 14px;
+
+    background: #0b1b2d;
+
+    border: 1px solid #1d3853;
+
+    border-radius: 17px;
+}
+
+.create-post textarea {
+    width: 100%;
+
+    min-height: 90px;
+
+    resize: vertical;
+
+    padding: 13px;
+
+    border: 1px solid #294663;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: #071625;
+    color: #ffffff;
+
+    font-size: 14px;
+}
+
+.create-post textarea::placeholder {
+    color: #71869c;
+}
+
+.create-bottom {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.file-label {
+    flex: 1;
+
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    background: #10253c;
+
+    border: 1px solid #294663;
+    border-radius: 10px;
+
+    color: #cbd9e7;
+
+    font-size: 11px;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.file-label input {
+    display: none;
+}
+
+.post-button {
+    width: 78px;
+
+    border: 0;
+    border-radius: 10px;
+
+    background: #238cff;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+.post-button:active {
+    transform: scale(.95);
+}
+
+
+/* =========================================================
+   POST
+========================================================= */
+
+.post {
+    width: 100%;
+
+    margin-bottom: 13px;
+
+    background: #0b1b2d;
+
+    border-top: 1px solid #1b344c;
+    border-bottom: 1px solid #1b344c;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   POST HEADER
+========================================================= */
+
+.post-header {
+    min-height: 62px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 10px 13px;
+}
+
+.post-avatar {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    margin-right: 10px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 1px solid #345d80;
+}
+
+.post-user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.post-user {
+    font-size: 14px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-time {
+    margin-top: 3px;
+
+    color: #7d94aa;
+
+    font-size: 10px;
+}
+
+.post-more {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #8ca2b8;
+}
+
+
+/* =========================================================
+   CAPTION
+========================================================= */
+
+.post-caption {
+    padding:
+        0
+        13px
+        12px;
+
+    color: #e9f1f8;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   MEDIA
+========================================================= */
+
+.post-media {
+    display: block;
+
+    width: 100%;
+
+    max-height: 760px;
+
+    background: #000;
+
+    object-fit: cover;
+}
+
+img.post-media,
+video.post-media {
+    aspect-ratio: 4 / 5;
+}
+
+
+/* =========================================================
+   REAL SOCIAL MEDIA ACTION BAR
+========================================================= */
+
+.post-actions {
+    min-height: 50px;
+
+    display: flex;
+    align-items: center;
+
+    padding:
+        4px
+        8px;
+
+    border-top: 1px solid rgba(255,255,255,.04);
+}
+
+.action-form {
+    margin: 0;
+}
+
+.action-button {
+    min-width: 48px;
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    padding:
+        0
+        8px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #dce8f4;
+
+    cursor: pointer;
+}
+
+.action-button:active {
+    transform: scale(.88);
+}
+
+.action-button:hover {
+    background: rgba(255,255,255,.05);
+}
+
+.action-icon {
+    width: 23px;
+    height: 23px;
+}
+
+.like-icon {
+    color: #e0eaf4;
+}
+
+.liked {
+    color: #ff3d68;
+}
+
+.liked .like-icon {
+    color: #ff3d68;
+}
+
+.like-count,
+.comment-count {
+    color: #a9bacb;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.share-button {
+    color: #dce8f4;
+}
+
+.delete-button {
+    margin-left: auto;
+
+    color: #ff6578;
+}
+
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+.comments {
+    padding:
+        0
+        13px
+        13px;
+}
+
+.comment {
+    margin-bottom: 8px;
+
+    color: #d8e4ef;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.comment strong {
+    color: #62adff;
+
+    margin-right: 4px;
+}
+
+.comment-form {
+    display: flex;
+
+    gap: 7px;
+
+    margin-top: 8px;
+}
+
+.comment-form input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 39px;
+
+    padding: 0 13px;
+
+    background: #071625;
+
+    border: 1px solid #294663;
+    border-radius: 20px;
+
+    outline: none;
+
+    color: #ffffff;
+
+    font-size: 12px;
+}
+
+.comment-form input::placeholder {
+    color: #71869c;
+}
+
+.comment-form button {
+    width: 58px;
+    height: 39px;
+
+    border: 0;
+    border-radius: 20px;
+
+    background: #238cff;
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty-posts {
+    margin:
+        10px
+        12px;
+
+    padding: 40px 15px;
+
+    text-align: center;
+
+    background: #0b1b2d;
+
+    border: 1px solid #1d3853;
+    border-radius: 17px;
+
+    color: #8ba0b5;
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   BOTTOM NAVIGATION
+   IMPORTANT:
+   Home | People | Chat | Reels | Profile
+========================================================= */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height:
+        calc(64px + env(safe-area-inset-bottom, 0px));
+
+    padding-bottom:
+        env(safe-area-inset-bottom, 0px);
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(7,17,31,.98);
+
+    border-top: 1px solid #1d344b;
+
+    box-shadow:
+        0 -8px 25px rgba(0,0,0,.30);
+
+    z-index: 6000;
+}
+
+.bottom-nav a {
+    flex: 1;
+
+    height: 64px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    color: #748ba1;
+
+    text-decoration: none;
+
+    font-size: 9px;
+    font-weight: 650;
+}
+
+.bottom-nav .nav-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.bottom-nav a.active {
+    color: #4da3ff;
+}
+
+.bottom-nav a:active {
+    transform: scale(.90);
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media (min-width: 700px) {
+
+    body {
+        padding-top: 64px;
+        padding-bottom: 20px;
+    }
+
+    .header {
+        height: 64px;
+        min-height: 64px;
+        padding: 0 15px;
+    }
+
+    .container {
+        padding-top: 10px;
+    }
+
+    .post {
+        border: 1px solid #1b344c;
+        border-radius: 14px;
+    }
+
+    .bottom-nav {
+        left: 50%;
+        right: auto;
+        bottom: 15px;
+
+        width: 500px;
+        height: 58px;
+
+        transform: translateX(-50%);
+
+        border:
+            1px solid #29435c;
+
+        border-radius: 18px;
+
+        padding: 0;
+
+        box-shadow:
+            0 12px 40px rgba(0,0,0,.45);
+    }
+
+    .bottom-nav a {
+        height: 56px;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 380px) {
+
+    .logo {
+        font-size: 19px;
+    }
+
+    .quick-menu {
+        gap: 5px;
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .quick-menu a {
+        height: 72px;
+        font-size: 9px;
+    }
+
+    .quick-icon {
+        width: 21px;
+        height: 21px;
+    }
+
+    .action-button {
+        min-width: 42px;
+        padding: 0 6px;
+    }
+
+    .share-button span {
+        display: none;
+    }
+
+    .bottom-nav a {
+        font-size: 8px;
+    }
+
+    .bottom-nav .nav-icon {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+
+/* =========================================================
+   NOTIFICATION MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .notification-panel {
+        position: fixed;
+
+        top:
+            calc(
+                64px
+                + env(safe-area-inset-top, 0px)
+                + 5px
+            );
+
+        left: 10px;
+        right: 10px;
+
+        width: auto;
+        max-width: none;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="header">
+
+    <div class="logo">
+        Private<span>Connect</span>
+    </div>
+
+
+    <div class="header-space"></div>
+
+
+    <!-- CHAT -->
+
+    <a
+        href="{{ url_for('messages') }}"
+        class="header-action"
+        aria-label="Messages"
+    >
+
+        <svg
+            class="icon"
+            viewBox="0 0 24 24"
+        >
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+            ></path>
+
+            <circle
+                cx="9"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="15"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+        </svg>
+
+    </a>
+
+
+    <!-- SEARCH -->
+
+    <a
+        href="{{ url_for('find_people') }}"
+        class="header-action"
+        aria-label="Search"
+    >
+
+        <svg
+            class="icon"
+            viewBox="0 0 24 24"
+        >
+
+            <circle
+                cx="10.8"
+                cy="10.8"
+                r="6.8"
+            ></circle>
+
+            <path
+                d="M16 16l5 5"
+            ></path>
+
+        </svg>
+
+    </a>
+
+
+    <!-- NOTIFICATIONS -->
+
+    <div class="notification-wrapper">
+
+        <button
+            type="button"
+            class="header-action"
+            onclick="toggleNotifications()"
+            aria-label="Notifications"
+        >
+
+            <svg
+                class="icon"
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
+                ></path>
+
+                <path
+                    d="M10 21h4"
+                ></path>
+
+            </svg>
+
+
+            <span
+                id="notificationBadge"
+                class="notification-badge"
+            >
+                0
+            </span>
+
+        </button>
+
+
+        <div
+            id="notificationPanel"
+            class="notification-panel"
+        >
+
+            <div class="notification-header">
+
+                <span class="notification-title">
+                    Notifications
+                </span>
+
+                <button
+                    type="button"
+                    class="notification-read-button"
+                    onclick="markNotificationsRead()"
+                >
+                    Mark all read
+                </button>
+
+            </div>
+
+
+            <div
+                id="notificationList"
+                class="notification-list"
+            >
+
+                <div class="notification-loading">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="container">
+
+
+    <div class="welcome">
+        Welcome
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="quick-menu">
+
+
+        <!-- SEARCH -->
+
+        <a href="{{ url_for('find_people') }}">
+
+            <svg
+                class="icon quick-icon"
+                viewBox="0 0 24 24"
+            >
+
+                <circle
+                    cx="10.8"
+                    cy="10.8"
+                    r="6.8"
+                ></circle>
+
+                <path d="M16 16l5 5"></path>
+
+            </svg>
+
+            <strong>Search</strong>
+
+        </a>
+
+
+        <!-- CHAT -->
+
+        <a href="{{ url_for('messages') }}">
+
+            <svg
+                class="icon quick-icon"
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+                ></path>
+
+                <circle
+                    cx="9"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
+                <circle
+                    cx="15"
+                    cy="12"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                ></circle>
+
+            </svg>
+
+            <strong>Chats</strong>
+
+        </a>
+
+
+        <!-- MATCH -->
+
+        <a href="{{ url_for('match') }}">
+
+            <svg
+                class="icon quick-icon"
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    d="M20.8 8.7c0 5.5-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5z"
+                ></path>
+
+            </svg>
+
+            <strong>Match</strong>
+
+        </a>
+
+
+        <!-- CONNECTIONS -->
+
+        <a href="{{ url_for('connections') }}">
+
+            <svg
+                class="icon quick-icon"
+                viewBox="0 0 24 24"
+            >
+
+                <circle
+                    cx="9"
+                    cy="8"
+                    r="3"
+                ></circle>
+
+                <circle
+                    cx="17"
+                    cy="9"
+                    r="2.5"
+                ></circle>
+
+                <path
+                    d="M3 19c0-3 2.7-5 6-5s6 2 6 5"
+                ></path>
+
+                <path
+                    d="M15 14c3 0 5 1.8 5 4"
+                ></path>
+
+            </svg>
+
+            <strong>Connections</strong>
+
+        </a>
+
+    </div>
+
+
+    <!-- PEOPLE -->
+
+    <div class="section-title">
+        People Near You
+    </div>
+
+
+    <div class="people">
+
+        {% if users %}
+
+            {% for user in users %}
+
+                <a
+                    href="{{ url_for('profile', user_id=user.id) }}"
+                    class="person"
+                >
+
+                    <div class="person-image-wrapper">
+
+                        {% if user.profile_picture %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + user.profile_picture
+                                ) }}"
+                                alt="{{ user.name }}"
+                            >
+
+                        {% else %}
+
+                            <img
+                                src="https://via.placeholder.com/100"
+                                alt="{{ user.name }}"
+                            >
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="person-name">
+                        {{ user.name }}
+                    </div>
+
+                </a>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div
+                style="
+                    color:#8298ad;
+                    font-size:12px;
+                    padding:0 12px 12px;
+                "
+            >
+                No other users yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- CREATE POST -->
+
+    <div class="create-post">
+
+        <form
+            method="POST"
+            action="{{ url_for('create_post') }}"
+            enctype="multipart/form-data"
+        >
+
+            <textarea
+                name="caption"
+                placeholder="What's on your mind?"
+                maxlength="2000"
+            ></textarea>
+
+
+            <div class="create-bottom">
+
+                <label class="file-label">
+
+                    <svg
+                        class="icon"
+                        viewBox="0 0 24 24"
+                    >
+
+                        <rect
+                            x="3"
+                            y="5"
+                            width="18"
+                            height="14"
+                            rx="2"
+                        ></rect>
+
+                        <circle
+                            cx="8.5"
+                            cy="10"
+                            r="1.5"
+                        ></circle>
+
+                        <path
+                            d="M21 15l-4-4-7 7"
+                        ></path>
+
+                    </svg>
+
+                    Add photo/video
+
+                    <input
+                        type="file"
+                        name="media"
+                        accept="
+                            image/png,
+                            image/jpeg,
+                            image/gif,
+                            image/webp,
+                            video/mp4,
+                            video/webm,
+                            video/quicktime
+                        "
+                    >
+
+                </label>
+
+
+                <button
+                    type="submit"
+                    class="post-button"
+                >
+                    Post
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- POSTS -->
+
+    <div class="feed-title">
+        Posts
+    </div>
+
+
+    {% if posts %}
+
+        {% for post in posts %}
+
+            <article
+                class="post"
+                id="post-{{ post.id }}"
+            >
+
+
+                <!-- POST HEADER -->
+
+                <div class="post-header">
+
+                    {% if post.profile_picture %}
+
+                        <img
+                            class="post-avatar"
+                            src="{{ url_for(
+                                'static',
+                                filename='uploads/' + post.profile_picture
+                            ) }}"
+                            alt="{{ post.name }}"
+                        >
+
+                    {% else %}
+
+                        <img
+                            class="post-avatar"
+                            src="https://via.placeholder.com/100"
+                            alt="{{ post.name }}"
+                        >
+
+                    {% endif %}
+
+
+                    <div class="post-user-info">
+
+                        <div class="post-user">
+                            {{ post.name }}
+                        </div>
+
+                        <div class="post-time">
+                            {{ post.created_at }}
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="post-more"
+                        aria-label="Post options"
+                    >
+
+                        <svg
+                            class="icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <circle
+                                cx="5"
+                                cy="12"
+                                r="1"
+                                fill="currentColor"
+                                stroke="none"
+                            ></circle>
+
+                            <circle
+                                cx="12"
+                                cy="12"
+                                r="1"
+                                fill="currentColor"
+                                stroke="none"
+                            ></circle>
+
+                            <circle
+                                cx="19"
+                                cy="12"
+                                r="1"
+                                fill="currentColor"
+                                stroke="none"
+                            ></circle>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+
+                <!-- CAPTION -->
+
+                {% if post.caption %}
+
+                    <div class="post-caption">
+                        {{ post.caption }}
+                    </div>
+
+                {% endif %}
+
+
+                <!-- MEDIA -->
+
+                {% if post.media %}
+
+                    {% if
+                        post.media.lower().endswith('.mp4')
+                        or
+                        post.media.lower().endswith('.webm')
+                        or
+                        post.media.lower().endswith('.mov')
+                    %}
+
+                        <video
+                            class="post-media"
+                            controls
+                            playsinline
+                            preload="metadata"
+                        >
+
+                            <source
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + post.media
+                                ) }}"
+                            >
+
+                        </video>
+
+                    {% else %}
+
+                        <img
+                            class="post-media"
+                            src="{{ url_for(
+                                'static',
+                                filename='uploads/' + post.media
+                            ) }}"
+                            alt="Post"
+                            loading="lazy"
+                        >
+
+                    {% endif %}
+
+                {% endif %}
+
+
+                <!-- ACTIONS -->
+
+                <div class="post-actions">
+
+
+                    <!-- LIKE -->
+
+                    <button
+                        type="button"
+                        class="
+                            action-button
+                            like-button
+                            {% if post.user_liked %}liked{% endif %}
+                        "
+                        onclick="
+                            likePost({{ post.id }}, this);
+                            return false;
+                        "
+                        aria-label="Like"
+                    >
+
+                        <svg
+                            class="icon action-icon like-icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="M20.8 8.7c0 5.5-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.7A4.7 4.7 0 0 1 12 6.2a4.7 4.7 0 0 1 8.8 2.5z"
+                                {% if post.user_liked %}
+                                    fill="currentColor"
+                                {% endif %}
+                            ></path>
+
+                        </svg>
+
+                        <span class="like-count">
+                            {{ post.like_count }}
+                        </span>
+
+                    </button>
+
+
+                    <!-- COMMENT -->
+
+                    <button
+                        type="button"
+                        class="action-button comment-button"
+                        onclick="
+                            focusComment({{ post.id }});
+                            return false;
+                        "
+                        aria-label="Comment"
+                    >
+
+                        <svg
+                            class="icon action-icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <path
+                                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+                            ></path>
+
+                        </svg>
+
+                        <span class="comment-count">
+                            {{ post.comment_count }}
+                        </span>
+
+                    </button>
+
+
+                    <!-- SHARE -->
+
+                    <button
+                        type="button"
+                        class="action-button share-button"
+                        onclick="
+                            sharePost({{ post.id }});
+                            return false;
+                        "
+                        aria-label="Share"
+                    >
+
+                        <svg
+                            class="icon action-icon"
+                            viewBox="0 0 24 24"
+                        >
+
+                            <circle
+                                cx="18"
+                                cy="5"
+                                r="2.5"
+                            ></circle>
+
+                            <circle
+                                cx="6"
+                                cy="12"
+                                r="2.5"
+                            ></circle>
+
+                            <circle
+                                cx="18"
+                                cy="19"
+                                r="2.5"
+                            ></circle>
+
+                            <path
+                                d="M8.3 10.8l7.4-4.1"
+                            ></path>
+
+                            <path
+                                d="M8.3 13.2l7.4 4.1"
+                            ></path>
+
+                        </svg>
+
+                        <span>
+                            Share
+                        </span>
+
+                    </button>
+
+
+                    <!-- DELETE -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'delete_post',
+                            post_id=post.id
+                        ) }}"
+                        class="action-form delete-button"
+                        onsubmit="
+                            return confirm('Delete this post?');
+                        "
+                    >
+
+                        <button
+                            type="submit"
+                            class="action-button delete-button"
+                            aria-label="Delete"
+                        >
+
+                            <svg
+                                class="icon action-icon"
+                                viewBox="0 0 24 24"
+                            >
+
+                                <path d="M4 7h16"></path>
+
+                                <path d="M10 11v6"></path>
+
+                                <path d="M14 11v6"></path>
+
+                                <path d="M6 7l1 13h10l1-13"></path>
+
+                                <path d="M9 7V4h6v3"></path>
+
+                            </svg>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+
+                <!-- COMMENTS -->
+
+                <div
+                    class="comments"
+                    id="comments-{{ post.id }}"
+                >
+
+                    {% for comment in post.comments %}
+
+                        <div class="comment">
+
+                            <strong>
+                                {{ comment.name }}
+                            </strong>
+
+                            {{ comment.comment }}
+
+                        </div>
+
+                    {% endfor %}
+
+
+                    <form
+                        class="comment-form"
+                        onsubmit="
+                            submitComment(
+                                event,
+                                {{ post.id }},
+                                this
+                            );
+                            return false;
+                        "
+                    >
+
+                        <input
+                            type="text"
+                            name="comment"
+                            placeholder="Write a comment..."
+                            maxlength="500"
+                            required
+                        >
+
+                        <button type="submit">
+                            Send
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </article>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <div class="empty-posts">
+
+            No posts yet.
+
+            <br>
+
+            Create the first post!
+
+        </div>
+
+    {% endif %}
+
+</main>
+
+
+<!-- =========================================================
+     BOTTOM NAVIGATION
+========================================================= -->
+
+<nav class="bottom-nav">
+
+
+    <!-- HOME -->
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="active"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <path
+                d="M3 10.5L12 3l9 7.5"
+            ></path>
+
+            <path
+                d="M5 9v11h14V9"
+            ></path>
+
+            <path
+                d="M9 20v-6h6v6"
+            ></path>
+
+        </svg>
+
+        <span>Home</span>
+
+    </a>
+
+
+    <!-- PEOPLE -->
+
+    <a
+        href="{{ url_for('find_people') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <circle
+                cx="9"
+                cy="8"
+                r="3"
+            ></circle>
+
+            <circle
+                cx="17"
+                cy="9"
+                r="2.5"
+            ></circle>
+
+            <path
+                d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"
+            ></path>
+
+            <path
+                d="M15 15c3 0 5 1.7 5 4"
+            ></path>
+
+        </svg>
+
+        <span>People</span>
+
+    </a>
+
+
+    <!-- CHAT
+         THIS NOW GOES DIRECTLY TO /messages
+    -->
+
+    <a
+        href="{{ url_for('messages') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 3v-6a7.5 7.5 0 1 1 17-4.5z"
+            ></path>
+
+            <circle
+                cx="9"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="12"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+            <circle
+                cx="15"
+                cy="12"
+                r="1"
+                fill="currentColor"
+                stroke="none"
+            ></circle>
+
+        </svg>
+
+        <span>Chat</span>
+
+    </a>
+
+
+    <!-- REELS -->
+
+    <a
+        href="{{ url_for('reels') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <rect
+                x="3"
+                y="4"
+                width="18"
+                height="16"
+                rx="2"
+            ></rect>
+
+            <path
+                d="M8 4l3 4"
+            ></path>
+
+            <path
+                d="M14 4l3 4"
+            ></path>
+
+            <path
+                d="M10 11l5 3-5 3z"
+                fill="currentColor"
+                stroke="none"
+            ></path>
+
+        </svg>
+
+        <span>Reels</span>
+
+    </a>
+
+
+    <!-- PROFILE -->
+
+    <a
+        href="{{ url_for('profile') }}"
+    >
+
+        <svg
+            class="icon nav-icon"
+            viewBox="0 0 24 24"
+        >
+
+            <circle
+                cx="12"
+                cy="8"
+                r="4"
+            ></circle>
+
+            <path
+                d="M4 21c.7-4.1 3.5-6 8-6s7.3 1.9 8 6"
+            ></path>
+
+        </svg>
+
+        <span>Profile</span>
+
+    </a>
+
+</nav>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+
+/* =========================================================
+   COMMENT
+========================================================= */
+
+function focusComment(postId) {
+
+    const input =
+        document.querySelector(
+            "#comments-" +
+            postId +
+            " input"
+        );
+
+    if (!input) {
+        return;
+    }
+
+    input.focus();
+
+    setTimeout(function () {
+
+        input.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+    }, 100);
+}
+
+
+/* =========================================================
+   LIKE
+========================================================= */
+
+function likePost(postId, button) {
+
+    fetch(
+        "/like/" + postId,
+        {
+            method: "POST",
+
+            headers: {
+                "X-Requested-With":
+                    "XMLHttpRequest"
+            }
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error("Like failed");
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to like post."
+            );
+
+            return;
+        }
+
+        const icon =
+            button.querySelector(
+                ".like-icon"
+            );
+
+        const count =
+            button.querySelector(
+                ".like-count"
+            );
+
+
+        if (data.liked) {
+
+            button.classList.add("liked");
+
+            if (icon) {
+                icon.style.fill =
+                    "currentColor";
+            }
+
+        } else {
+
+            button.classList.remove("liked");
+
+            if (icon) {
+                icon.style.fill =
+                    "none";
+            }
+        }
+
+
+        if (count) {
+            count.textContent =
+                data.like_count;
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to like post."
+        );
+
+    });
+}
+
+
+/* =========================================================
+   COMMENT
+========================================================= */
+
+function submitComment(
+    event,
+    postId,
+    form
+) {
+
+    event.preventDefault();
+
+    const input =
+        form.querySelector(
+            "input[name='comment']"
+        );
+
+    const button =
+        form.querySelector(
+            "button"
+        );
+
+    if (!input || !button) {
+        return false;
+    }
+
+    const text =
+        input.value.trim();
+
+    if (!text) {
+        return false;
+    }
+
+    button.disabled = true;
+    button.textContent = "…";
+
+
+    fetch(
+        "/comment/" + postId,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/x-www-form-urlencoded",
+
+                "X-Requested-With":
+                    "XMLHttpRequest"
+            },
+
+            body:
+                new URLSearchParams({
+                    comment: text
+                })
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error(
+                "Comment failed"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                data.message ||
+                "Unable to add comment."
+            );
+
+            return;
+        }
+
+
+        const commentsBox =
+            document.querySelector(
+                "#comments-" +
+                postId
+            );
+
+        if (!commentsBox) {
+            return;
+        }
+
+
+        const commentForm =
+            commentsBox.querySelector(
+                ".comment-form"
+            );
+
+
+        const newComment =
+            document.createElement(
+                "div"
+            );
+
+        newComment.className =
+            "comment";
+
+
+        const name =
+            document.createElement(
+                "strong"
+            );
+
+        name.textContent =
+            data.name;
+
+
+        const commentText =
+            document.createTextNode(
+                " " +
+                data.comment
+            );
+
+
+        newComment.appendChild(name);
+
+        newComment.appendChild(
+            commentText
+        );
+
+
+        commentsBox.insertBefore(
+            newComment,
+            commentForm
+        );
+
+
+        input.value = "";
+
+
+        const post =
+            document.querySelector(
+                "#post-" +
+                postId
+            );
+
+
+        if (post) {
+
+            const count =
+                post.querySelector(
+                    ".comment-count"
+                );
+
+            if (
+                count &&
+                data.comment_count !==
+                undefined
+            ) {
+
+                count.textContent =
+                    data.comment_count;
+
+            }
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to add comment."
+        );
+
+    })
+
+    .finally(function() {
+
+        button.disabled = false;
+        button.textContent = "Send";
+
+    });
+
+
+    return false;
+}
+
+
+/* =========================================================
+   SHARE
+========================================================= */
+
+function sharePost(postId) {
+
+    fetch(
+        "/share/" + postId,
+        {
+            method: "POST"
+        }
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error(
+                "Share failed"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (!data.success) {
+
+            alert(
+                data.error ||
+                "Unable to share."
+            );
+
+            return;
+        }
+
+
+        if (
+            navigator.share
+        ) {
+
+            navigator.share({
+                title:
+                    "PrivateConnect",
+                text:
+                    "Check out this post",
+                url:
+                    data.url
+            })
+
+            .catch(function() {});
+
+            return;
+        }
+
+
+        if (
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ) {
+
+            navigator.clipboard.writeText(
+                data.url
+            )
+
+            .then(function() {
+
+                alert(
+                    "Post link copied!"
+                );
+
+            })
+
+            .catch(function() {
+
+                prompt(
+                    "Copy this link:",
+                    data.url
+                );
+
+            });
+
+        } else {
+
+            prompt(
+                "Copy this link:",
+                data.url
+            );
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to share post."
+        );
+
+    });
+}
+
+
+/* =========================================================
+   NOTIFICATION BADGE
+========================================================= */
+
+function updateNotificationBadge() {
+
+    fetch(
+        "/notification-count"
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error(
+                "Notification count failed"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        const badge =
+            document.getElementById(
+                "notificationBadge"
+            );
+
+        if (!badge) {
+            return;
+        }
+
+
+        const count =
+            Number(
+                data.count || 0
+            );
+
+
+        if (count > 0) {
+
+            badge.textContent =
+                count > 99
+                    ? "99+"
+                    : count;
+
+            badge.style.display =
+                "flex";
+
+        } else {
+
+            badge.style.display =
+                "none";
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Notification:",
+            error
+        );
+
+    });
+}
+
+
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
+
+function toggleNotifications() {
+
+    const panel =
+        document.getElementById(
+            "notificationPanel"
+        );
+
+    if (!panel) {
+        return;
+    }
+
+
+    panel.classList.toggle(
+        "show"
+    );
+
+
+    if (
+        panel.classList.contains(
+            "show"
+        )
+    ) {
+
+        loadNotifications();
+    }
+}
+
+
+function loadNotifications() {
+
+    const list =
+        document.getElementById(
+            "notificationList"
+        );
+
+    if (!list) {
+        return;
+    }
+
+
+    list.innerHTML = `
+        <div class="notification-loading">
+            Loading notifications...
+        </div>
+    `;
+
+
+    fetch(
+        "/notifications"
+    )
+
+    .then(function(response) {
+
+        if (!response.ok) {
+            throw new Error(
+                "Notifications failed"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (
+            !data.notifications ||
+            data.notifications.length === 0
+        ) {
+
+            list.innerHTML = `
+                <div class="notification-empty">
+                    No notifications yet.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        list.innerHTML = "";
+
+
+        data.notifications.forEach(
+            function(notification) {
+
+                const item =
+                    document.createElement(
+                        "a"
+                    );
+
+                item.className =
+                    "notification-item";
+
+
+                if (
+                    !notification.is_read
+                ) {
+
+                    item.classList.add(
+                        "unread"
+                    );
+                }
+
+
+                item.href =
+                    notification.url ||
+                    "#";
+
+
+                const avatar =
+                    notification.sender_picture
+                    ? "/static/uploads/" +
+                      notification.sender_picture
+                    : "https://via.placeholder.com/100";
+
+
+                const avatarElement =
+                    document.createElement(
+                        "img"
+                    );
+
+                avatarElement.className =
+                    "notification-avatar";
+
+                avatarElement.src =
+                    avatar;
+
+                avatarElement.alt =
+                    "Profile";
+
+
+                const content =
+                    document.createElement(
+                        "div"
+                    );
+
+                content.className =
+                    "notification-content";
+
+
+                const message =
+                    document.createElement(
+                        "div"
+                    );
+
+                message.className =
+                    "notification-message";
+
+                message.textContent =
+                    notification.message ||
+                    "New notification";
+
+
+                const time =
+                    document.createElement(
+                        "div"
+                    );
+
+                time.className =
+                    "notification-time";
+
+                time.textContent =
+                    notification.created_at ||
+                    "";
+
+
+                content.appendChild(
+                    message
+                );
+
+                content.appendChild(
+                    time
+                );
+
+
+                item.appendChild(
+                    avatarElement
+                );
+
+                item.appendChild(
+                    content
+                );
+
+
+                if (
+                    !notification.is_read
+                ) {
+
+                    const dot =
+                        document.createElement(
+                            "span"
+                        );
+
+                    dot.className =
+                        "notification-unread-dot";
+
+                    item.appendChild(
+                        dot
+                    );
+                }
+
+
+                list.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    })
+
+    .catch(function(error) {
+
+        console.error(error);
+
+        list.innerHTML = `
+            <div class="notification-empty">
+                Notifications are temporarily unavailable.
+            </div>
+        `;
+
+    });
+}
+
+
+/* =========================================================
+   MARK READ
+========================================================= */
+
+function markNotificationsRead() {
+
+    fetch(
+        "/notifications/read",
+        {
+            method: "POST"
+        }
+    )
+
+    .then(function(response) {
+
+        return response.json();
+
+    })
+
+    .then(function(data) {
+
+        if (data.success) {
+
+            updateNotificationBadge();
+
+            loadNotifications();
+        }
+
+    })
+
+    .catch(function(error) {
+
+        console.error(
+            "Mark read:",
+            error
+        );
+
+    });
+}
+
+
+/* =========================================================
+   CLOSE NOTIFICATIONS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const wrapper =
+            document.querySelector(
+                ".notification-wrapper"
+            );
+
+        const panel =
+            document.getElementById(
+                "notificationPanel"
+            );
+
+
+        if (
+            wrapper &&
+            panel &&
+            !wrapper.contains(
+                event.target
+            )
+        ) {
+
+            panel.classList.remove(
+                "show"
+            );
+        }
+
+    }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        updateNotificationBadge();
+
+    }
+);
+
+
+setInterval(
+    updateNotificationBadge,
+    5000
+);
+
+</script>
+
+</body>
+</html>

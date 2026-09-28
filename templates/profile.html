@@ -1,0 +1,3344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               viewport-fit=cover">
+
+<title>
+{% if is_own_profile %}
+My Profile - PrivateConnect
+{% else %}
+{{ person["name"] }} - PrivateConnect
+{% endif %}
+</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+    background:#000;
+}
+
+body{
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color:#fff;
+    overflow-x:hidden;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button,
+a{
+    -webkit-tap-highlight-color:transparent;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app{
+    width:100%;
+    max-width:680px;
+    min-height:100vh;
+    margin:auto;
+    background:#000;
+    position:relative;
+    padding-bottom:30px;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar{
+    height:56px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 14px;
+
+    border-bottom:1px solid #202020;
+
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    background:rgba(0,0,0,.94);
+    backdrop-filter:blur(16px);
+}
+
+.topbar-left{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-width:0;
+}
+
+.username-title{
+    font-size:19px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.verified{
+    width:16px;
+    height:16px;
+
+    border-radius:50%;
+
+    background:#3797f0;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    flex-shrink:0;
+}
+
+.verified svg{
+    width:10px;
+    height:10px;
+
+    stroke:#fff;
+    fill:none;
+    stroke-width:3;
+}
+
+.topbar-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.icon-button{
+    width:38px;
+    height:38px;
+
+    border:0;
+    background:transparent;
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+}
+
+.icon-button svg{
+    width:24px;
+    height:24px;
+
+    stroke:currentColor;
+    fill:none;
+
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile-area{
+    padding:20px 14px 12px;
+}
+
+.profile-main{
+    display:flex;
+    gap:18px;
+    align-items:flex-start;
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.avatar-wrapper{
+    width:88px;
+    height:88px;
+
+    flex:0 0 88px;
+
+    position:relative;
+}
+
+.profile-picture,
+.default-picture{
+    width:88px;
+    height:88px;
+
+    border-radius:50%;
+
+    display:block;
+    object-fit:cover;
+
+    border:1px solid #444;
+}
+
+.default-picture{
+    background:#191919;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.default-picture svg{
+    width:42px;
+    height:42px;
+
+    stroke:#999;
+    fill:none;
+    stroke-width:1.6;
+}
+
+.online-dot{
+    position:absolute;
+
+    width:16px;
+    height:16px;
+
+    right:-1px;
+    bottom:1px;
+
+    border-radius:50%;
+
+    background:#18d860;
+
+    border:3px solid #000;
+}
+
+
+/* =========================================================
+   PROFILE DETAILS
+========================================================= */
+
+.profile-details{
+    flex:1;
+    min-width:0;
+}
+
+.profile-name{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    font-size:19px;
+    font-weight:700;
+
+    margin-bottom:13px;
+}
+
+.stats{
+    display:flex;
+    align-items:center;
+    gap:28px;
+}
+
+.stat{
+    border:0;
+    background:transparent;
+
+    color:#fff;
+
+    cursor:pointer;
+
+    text-align:center;
+}
+
+.stat-number{
+    display:block;
+
+    font-size:17px;
+    font-weight:700;
+}
+
+.stat-label{
+    display:block;
+
+    color:#aaa;
+
+    font-size:12px;
+
+    margin-top:3px;
+}
+
+.stat:active{
+    opacity:.55;
+}
+
+
+/* =========================================================
+   BIO
+========================================================= */
+
+.bio-area{
+    margin-top:15px;
+}
+
+.bio-name{
+    font-size:14px;
+    font-weight:700;
+
+    margin-bottom:4px;
+}
+
+.bio{
+    color:#ddd;
+
+    font-size:14px;
+    line-height:1.45;
+
+    white-space:pre-line;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.profile-buttons{
+    display:flex;
+
+    gap:7px;
+
+    margin-top:16px;
+}
+
+.profile-button{
+    flex:1;
+
+    min-width:0;
+    height:38px;
+
+    border:0;
+    border-radius:8px;
+
+    background:#262626;
+    color:#fff;
+
+    font-size:13px;
+    font-weight:700;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    cursor:pointer;
+}
+
+.profile-button.primary{
+    background:#3797f0;
+}
+
+.profile-button svg{
+    width:16px;
+    height:16px;
+
+    margin-right:5px;
+
+    stroke:currentColor;
+    fill:none;
+
+    stroke-width:2;
+}
+
+.more-button{
+    flex:0 0 42px;
+}
+
+.profile-button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+
+/* =========================================================
+   CHANGE PHOTO
+========================================================= */
+
+.change-picture-form{
+    margin-top:9px;
+}
+
+.change-picture-button{
+    width:100%;
+    height:36px;
+
+    border:0;
+    border-radius:8px;
+
+    background:#1c1c1c;
+    color:#fff;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+
+/* =========================================================
+   HIGHLIGHTS
+========================================================= */
+
+.highlights{
+    display:flex;
+
+    gap:17px;
+
+    overflow-x:auto;
+
+    padding:15px 14px 18px;
+
+    scrollbar-width:none;
+}
+
+.highlights::-webkit-scrollbar{
+    display:none;
+}
+
+.highlight{
+    width:68px;
+    flex:0 0 68px;
+
+    text-align:center;
+
+    cursor:pointer;
+}
+
+.highlight-circle{
+    width:64px;
+    height:64px;
+
+    padding:3px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    border:1px solid #777;
+}
+
+.highlight-inner{
+    width:100%;
+    height:100%;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#171717;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.highlight-inner img{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+.highlight-inner svg{
+    width:27px;
+    height:27px;
+
+    stroke:#ddd;
+    fill:none;
+
+    stroke-width:1.7;
+}
+
+.highlight-name{
+    margin-top:6px;
+
+    font-size:12px;
+
+    color:#eee;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs{
+    height:50px;
+
+    display:flex;
+
+    border-top:1px solid #222;
+    border-bottom:1px solid #222;
+}
+
+.tab{
+    flex:1;
+
+    height:50px;
+
+    border:0;
+
+    background:transparent;
+
+    color:#777;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+
+    position:relative;
+}
+
+.tab svg{
+    width:23px;
+    height:23px;
+
+    stroke:currentColor;
+    fill:none;
+
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.tab.active{
+    color:#fff;
+}
+
+.tab.active::after{
+    content:"";
+
+    position:absolute;
+
+    bottom:-1px;
+    left:0;
+
+    width:100%;
+    height:2px;
+
+    background:#fff;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.tab-content{
+    display:none;
+}
+
+.tab-content.active{
+    display:block;
+}
+
+
+/* =========================================================
+   MEDIA GRID
+========================================================= */
+
+.media-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,1fr);
+
+    gap:2px;
+
+    width:100%;
+}
+
+.media-item{
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:#111;
+
+    position:relative;
+
+    overflow:hidden;
+
+    cursor:pointer;
+}
+
+.media-item img,
+.media-item video{
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+}
+
+.media-item:active{
+    opacity:.75;
+}
+
+.reel-icon{
+    position:absolute;
+
+    top:8px;
+    right:8px;
+
+    width:22px;
+    height:22px;
+
+    filter:drop-shadow(
+        0 1px 4px #000
+    );
+}
+
+.reel-icon svg{
+    width:100%;
+    height:100%;
+
+    stroke:#fff;
+    fill:none;
+
+    stroke-width:2;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty-state{
+    padding:70px 20px;
+
+    text-align:center;
+
+    color:#888;
+}
+
+.empty-state svg{
+    width:52px;
+    height:52px;
+
+    stroke:#777;
+    fill:none;
+
+    stroke-width:1.4;
+
+    margin-bottom:15px;
+}
+
+.empty-title{
+    color:#fff;
+
+    font-size:19px;
+    font-weight:700;
+
+    margin-bottom:6px;
+}
+
+
+/* =========================================================
+   VIEWER
+========================================================= */
+
+.viewer{
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    background:rgba(0,0,0,.97);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:15px;
+}
+
+.viewer.show{
+    display:flex;
+}
+
+.viewer-close{
+    position:absolute;
+
+    top:15px;
+    right:15px;
+
+    width:44px;
+    height:44px;
+
+    border:0;
+    border-radius:50%;
+
+    background:rgba(255,255,255,.12);
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:5;
+
+    cursor:pointer;
+}
+
+.viewer-close svg{
+    width:24px;
+    height:24px;
+
+    stroke:#fff;
+    fill:none;
+
+    stroke-width:2;
+}
+
+.viewer-content{
+    width:100%;
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+}
+
+.viewer-content img{
+    max-width:96vw;
+    max-height:88vh;
+
+    object-fit:contain;
+
+    border-radius:4px;
+}
+
+.viewer-content video{
+    max-width:96vw;
+    max-height:88vh;
+
+    width:auto;
+    height:auto;
+
+    object-fit:contain;
+
+    background:#000;
+}
+
+
+/* =========================================================
+   FRIENDS MODAL
+========================================================= */
+
+.friends-modal{
+    position:fixed;
+
+    inset:0;
+
+    z-index:10000;
+
+    background:rgba(0,0,0,.78);
+
+    display:none;
+
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.friends-modal.show{
+    display:flex;
+}
+
+.friends-box{
+    width:100%;
+    max-width:680px;
+
+    max-height:82vh;
+
+    overflow-y:auto;
+
+    background:#151515;
+
+    border-radius:
+        20px
+        20px
+        0
+        0;
+}
+
+.friends-header{
+    position:sticky;
+
+    top:0;
+
+    background:#151515;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    padding:16px;
+
+    border-bottom:1px solid #292929;
+
+    z-index:2;
+}
+
+.friends-title{
+    font-size:18px;
+    font-weight:700;
+}
+
+.close-small{
+    width:36px;
+    height:36px;
+
+    border:0;
+    border-radius:50%;
+
+    background:#292929;
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+}
+
+.close-small svg{
+    width:20px;
+    height:20px;
+
+    stroke:#fff;
+    fill:none;
+}
+
+.friends-list{
+    padding:8px 14px 25px;
+}
+
+.friend-row{
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 4px;
+
+    border-bottom:1px solid #252525;
+
+    cursor:pointer;
+}
+
+.friend-row:last-child{
+    border-bottom:0;
+}
+
+.friend-photo{
+    width:52px;
+    height:52px;
+
+    flex:0 0 52px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    background:#292929;
+}
+
+.friend-default{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.friend-default svg{
+    width:25px;
+    height:25px;
+
+    stroke:#aaa;
+    fill:none;
+}
+
+.friend-name{
+    font-size:15px;
+    font-weight:600;
+}
+
+
+/* =========================================================
+   HIGHLIGHT VIEWER
+========================================================= */
+
+.highlight-viewer{
+    position:fixed;
+
+    inset:0;
+
+    z-index:10001;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:#000;
+}
+
+.highlight-viewer.show{
+    display:flex;
+}
+
+.highlight-viewer img{
+    width:100%;
+    max-width:680px;
+
+    max-height:85vh;
+
+    object-fit:contain;
+}
+
+.highlight-viewer-title{
+    position:absolute;
+
+    top:20px;
+    left:18px;
+
+    font-size:17px;
+    font-weight:700;
+
+    z-index:3;
+}
+
+
+/* =========================================================
+   NEW HIGHLIGHT MODAL
+========================================================= */
+
+.modal{
+    position:fixed;
+
+    inset:0;
+
+    z-index:10000;
+
+    background:rgba(0,0,0,.78);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:380px;
+
+    background:#1b1b1b;
+
+    border-radius:16px;
+
+    padding:22px;
+}
+
+.modal-title{
+    font-size:20px;
+    font-weight:700;
+
+    margin-bottom:8px;
+}
+
+.modal-subtitle{
+    color:#aaa;
+
+    font-size:13px;
+    line-height:1.4;
+
+    margin-bottom:18px;
+}
+
+.modal-input{
+    width:100%;
+
+    min-height:44px;
+
+    border:1px solid #444;
+
+    border-radius:8px;
+
+    background:#111;
+
+    color:#fff;
+
+    padding:10px 12px;
+
+    outline:none;
+
+    margin-bottom:12px;
+}
+
+input[type="file"].modal-input{
+    padding:9px;
+}
+
+.modal-buttons{
+    display:flex;
+
+    gap:8px;
+}
+
+.modal-button{
+    flex:1;
+
+    height:42px;
+
+    border:0;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:700;
+}
+
+.modal-cancel{
+    background:#333;
+    color:#fff;
+}
+
+.modal-create{
+    background:#3797f0;
+    color:#fff;
+}
+
+.modal-create:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+.menu{
+    position:fixed;
+
+    inset:0;
+
+    z-index:10002;
+
+    background:rgba(0,0,0,.5);
+
+    display:none;
+
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.menu.show{
+    display:flex;
+}
+
+.menu-box{
+    width:100%;
+    max-width:680px;
+
+    background:#1c1c1c;
+
+    border-radius:
+        18px
+        18px
+        0
+        0;
+
+    overflow:hidden;
+}
+
+.menu-item{
+    width:100%;
+
+    min-height:52px;
+
+    border:0;
+
+    border-bottom:1px solid #333;
+
+    background:transparent;
+
+    color:#fff;
+
+    font-size:15px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    cursor:pointer;
+}
+
+.menu-item.danger{
+    color:#ff4d67;
+}
+
+
+/* =========================================================
+   CROP
+========================================================= */
+
+.crop-modal{
+    position:fixed;
+
+    inset:0;
+
+    z-index:11000;
+
+    background:rgba(0,0,0,.9);
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+}
+
+.crop-box{
+    width:100%;
+    max-width:420px;
+
+    background:#1c1c1c;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+}
+
+.crop-box h2{
+    font-size:19px;
+
+    margin-bottom:15px;
+}
+
+#cropCanvas{
+    max-width:100%;
+
+    border-radius:50%;
+}
+
+.crop-buttons{
+    display:flex;
+
+    gap:8px;
+
+    margin-top:15px;
+}
+
+.crop-buttons button{
+    flex:1;
+
+    height:42px;
+
+    border:0;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:700;
+}
+
+.crop-upload{
+    background:#3797f0;
+    color:#fff;
+}
+
+.crop-cancel{
+    background:#333;
+    color:#fff;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:480px){
+
+    .profile-area{
+        padding:16px 13px 10px;
+    }
+
+    .avatar-wrapper,
+    .profile-picture,
+    .default-picture{
+        width:84px;
+        height:84px;
+    }
+
+    .profile-main{
+        gap:15px;
+    }
+
+    .stats{
+        gap:18px;
+    }
+
+    .stat-number{
+        font-size:16px;
+    }
+
+    .stat-label{
+        font-size:11px;
+    }
+
+    .profile-button{
+        font-size:12px;
+    }
+
+    .highlights{
+        padding-left:13px;
+        padding-right:13px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <span class="username-title">
+            {{ person["name"] }}
+        </span>
+
+        <span class="verified">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M5 12l4 4L19 6"/>
+            </svg>
+
+        </span>
+
+    </div>
+
+
+    <div class="topbar-actions">
+
+        {% if is_own_profile %}
+
+        <button
+            class="icon-button"
+            onclick="openNewHighlight()"
+            title="Create">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+            </svg>
+
+        </button>
+
+        {% endif %}
+
+
+        <button
+            class="icon-button"
+            onclick="openMenu()"
+            title="Menu">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M4 6h16"/>
+                <path d="M4 12h16"/>
+                <path d="M4 18h16"/>
+            </svg>
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     PROFILE AREA
+========================================================= -->
+
+<section class="profile-area">
+
+    <div class="profile-main">
+
+        <div class="avatar-wrapper">
+
+            {% if person["profile_picture"] %}
+
+            <img
+                src="{{ url_for(
+                    'static',
+                    filename='uploads/' + person['profile_picture']
+                ) }}"
+                class="profile-picture"
+                alt="Profile Picture">
+
+            {% else %}
+
+            <div class="default-picture">
+
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+                </svg>
+
+            </div>
+
+            {% endif %}
+
+            <span class="online-dot"></span>
+
+        </div>
+
+
+        <div class="profile-details">
+
+            <div class="profile-name">
+
+                {{ person["name"] }}
+
+                <span class="verified">
+
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 12l4 4L19 6"/>
+                    </svg>
+
+                </span>
+
+            </div>
+
+
+            <div class="stats">
+
+                <button
+                    class="stat"
+                    onclick="openPosts()">
+
+                    <span class="stat-number">
+                        {{ posts|length }}
+                    </span>
+
+                    <span class="stat-label">
+                        Posts
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="stat"
+                    onclick="openFriends()">
+
+                    <span class="stat-number">
+                        {{ friends|length }}
+                    </span>
+
+                    <span class="stat-label">
+                        Friends
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="stat"
+                    onclick="openPosts()">
+
+                    <span class="stat-number">
+                        {{ posts|sum(attribute='like_count') }}
+                    </span>
+
+                    <span class="stat-label">
+                        Likes
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="bio-area">
+
+        <div class="bio-name">
+            {{ person["name"] }}
+        </div>
+
+        {% if person["bio"] %}
+
+        <div class="bio">
+            {{ person["bio"] }}
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         OWN PROFILE BUTTONS
+    ====================================================== -->
+
+    {% if is_own_profile %}
+
+    <div class="profile-buttons">
+
+        <a
+            href="{{ url_for('edit_profile') }}"
+            class="profile-button">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>
+            </svg>
+
+            Edit profile
+
+        </a>
+
+
+        <button
+            class="profile-button"
+            onclick="shareProfile()">
+
+            <svg viewBox="0 0 24 24">
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+                <path d="M8.6 13.5l6.8 4"/>
+                <path d="M15.4 6.5l-6.8 4"/>
+            </svg>
+
+            Share
+
+        </button>
+
+
+        <button
+            class="profile-button more-button"
+            onclick="openMenu()">
+
+            <svg viewBox="0 0 24 24">
+                <circle cx="5" cy="12" r="1"/>
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="19" cy="12" r="1"/>
+            </svg>
+
+        </button>
+
+    </div>
+
+
+    <!-- CHANGE PROFILE PICTURE -->
+
+    <form
+        id="profileForm"
+        class="change-picture-form"
+        action="{{ url_for('upload_profile_picture') }}"
+        method="POST"
+        enctype="multipart/form-data">
+
+        <input
+            type="file"
+            id="profileInput"
+            name="profile_picture"
+            accept="image/*"
+            hidden>
+
+        <input
+            type="hidden"
+            name="cropped_image"
+            id="croppedImage">
+
+        <button
+            type="button"
+            class="change-picture-button"
+            onclick="document.getElementById('profileInput').click()">
+
+            Change profile picture
+
+        </button>
+
+    </form>
+
+
+    {% else %}
+
+
+    <!-- OTHER USER -->
+
+    <div class="profile-buttons">
+
+        {% if relationship_status == "friends" %}
+
+        <a
+            href="{{ url_for(
+                'conversation',
+                user_id=person['id']
+            ) }}"
+            class="profile-button primary">
+
+            Message
+
+        </a>
+
+
+        <form
+            action="{{ url_for(
+                'unfriend',
+                user_id=person['id']
+            ) }}"
+            method="POST"
+            style="flex:1"
+            onsubmit="return confirm('Unfriend this person?');">
+
+            <button
+                type="submit"
+                class="profile-button"
+                style="width:100%;">
+
+                Friends
+
+            </button>
+
+        </form>
+
+
+        {% elif relationship_status == "sent" %}
+
+        <button
+            class="profile-button"
+            disabled>
+
+            Request sent
+
+        </button>
+
+
+        <form
+            action="{{ url_for(
+                'cancel_request',
+                user_id=person['id']
+            ) }}"
+            method="POST"
+            style="flex:1">
+
+            <button
+                type="submit"
+                class="profile-button"
+                style="width:100%;">
+
+                Cancel
+
+            </button>
+
+        </form>
+
+
+        {% elif relationship_status == "received" %}
+
+        <a
+            href="{{ url_for('requests') }}"
+            class="profile-button primary">
+
+            View request
+
+        </a>
+
+
+        {% else %}
+
+        <form
+            action="{{ url_for(
+                'send_request',
+                user_id=person['id']
+            ) }}"
+            method="POST"
+            style="flex:1">
+
+            <button
+                type="submit"
+                class="profile-button primary"
+                style="width:100%;">
+
+                Add friend
+
+            </button>
+
+        </form>
+
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     HIGHLIGHTS
+========================================================= -->
+
+<div
+    class="highlights"
+    id="highlights">
+
+
+    {% if is_own_profile %}
+
+    <!-- NEW HIGHLIGHT -->
+
+    <div
+        class="highlight"
+        onclick="openNewHighlight()">
+
+        <div class="highlight-circle">
+
+            <div class="highlight-inner">
+
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 5v14"/>
+                    <path d="M5 12h14"/>
+                </svg>
+
+            </div>
+
+        </div>
+
+        <div class="highlight-name">
+            New
+        </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- SAVED DATABASE HIGHLIGHTS -->
+
+    {% for highlight in highlights %}
+
+    <div
+        class="highlight"
+        onclick="openHighlight(
+            '{{ url_for(
+                "static",
+                filename="uploads/" + highlight["image"]
+            ) }}',
+            '{{ highlight["name"]|e }}'
+        )">
+
+        <div class="highlight-circle">
+
+            <div class="highlight-inner">
+
+                <img
+                    src="{{ url_for(
+                        'static',
+                        filename='uploads/' + highlight['image']
+                    ) }}"
+                    alt="{{ highlight['name'] }}"
+                    loading="lazy">
+
+            </div>
+
+        </div>
+
+        <div class="highlight-name">
+            {{ highlight["name"] }}
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+
+</div>
+
+
+<!-- =========================================================
+     TABS
+========================================================= -->
+
+<div class="tabs">
+
+    <button
+        class="tab active"
+        id="photosTab"
+        onclick="showTab('photos')">
+
+        <svg viewBox="0 0 24 24">
+            <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"/>
+
+            <circle
+                cx="8.5"
+                cy="8.5"
+                r="1.5"/>
+
+            <path d="M21 15l-5-5L5 21"/>
+        </svg>
+
+    </button>
+
+
+    <button
+        class="tab"
+        id="reelsTab"
+        onclick="showTab('reels')">
+
+        <svg viewBox="0 0 24 24">
+
+            <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"/>
+
+            <path d="M8 3l4 6"/>
+            <path d="M14 3l4 6"/>
+            <path d="M3 9h18"/>
+            <path d="M10 13l5 3-5 3z"/>
+
+        </svg>
+
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     CONTENT
+========================================================= -->
+
+<main>
+
+
+<!-- =========================================================
+     PHOTOS
+========================================================= -->
+
+<section
+    id="photosContent"
+    class="tab-content active">
+
+    <div class="media-grid">
+
+        {% set photo_count = 0 %}
+
+        {% for post in posts %}
+
+            {% if post["media"]
+               and not post["media"].lower().endswith(
+                   ('.mp4','.webm','.mov')
+               ) %}
+
+                {% set photo_count = photo_count + 1 %}
+
+                <div
+                    class="media-item"
+                    onclick="openPhoto(
+                        '{{ url_for(
+                            "static",
+                            filename="uploads/" + post["media"]
+                        ) }}'
+                    )">
+
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' + post['media']
+                        ) }}"
+                        alt="Post"
+                        loading="lazy">
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+
+    {% if photo_count == 0 %}
+
+    <div class="empty-state">
+
+        <svg viewBox="0 0 24 24">
+
+            <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"/>
+
+            <circle
+                cx="8.5"
+                cy="8.5"
+                r="1.5"/>
+
+            <path d="M21 15l-5-5L5 21"/>
+
+        </svg>
+
+        <div class="empty-title">
+            No photos yet
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     REELS
+========================================================= -->
+
+<section
+    id="reelsContent"
+    class="tab-content">
+
+    <div class="media-grid">
+
+        {% set reel_count = 0 %}
+
+        {% for post in posts %}
+
+            {% if post["media"]
+               and post["media"].lower().endswith(
+                   ('.mp4','.webm','.mov')
+               ) %}
+
+                {% set reel_count = reel_count + 1 %}
+
+                <div
+                    class="media-item"
+                    onclick="openReel(
+                        '{{ url_for(
+                            "static",
+                            filename="uploads/" + post["media"]
+                        ) }}'
+                    )">
+
+                    <video
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' + post['media']
+                        ) }}"
+                        muted
+                        playsinline
+                        preload="metadata">
+                    </video>
+
+                    <div class="reel-icon">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <rect
+                                x="3"
+                                y="3"
+                                width="18"
+                                height="18"
+                                rx="2"/>
+
+                            <path d="M10 8l6 4-6 4z"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+
+    {% if reel_count == 0 %}
+
+    <div class="empty-state">
+
+        <svg viewBox="0 0 24 24">
+
+            <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="2"/>
+
+            <path d="M10 8l6 4-6 4z"/>
+
+        </svg>
+
+        <div class="empty-title">
+            No reels yet
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- =========================================================
+     MEDIA VIEWER
+========================================================= -->
+
+<div
+    class="viewer"
+    id="viewer"
+    onclick="closeViewer(event)">
+
+    <button
+        class="viewer-close"
+        onclick="closeViewer()">
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="M6 6l12 12"/>
+            <path d="M18 6L6 18"/>
+
+        </svg>
+
+    </button>
+
+
+    <div
+        id="viewerContent"
+        class="viewer-content"
+        onclick="event.stopPropagation()">
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     FRIENDS MODAL
+========================================================= -->
+
+<div
+    class="friends-modal"
+    id="friendsModal"
+    onclick="closeFriends(event)">
+
+    <div
+        class="friends-box"
+        onclick="event.stopPropagation()">
+
+        <div class="friends-header">
+
+            <div class="friends-title">
+
+                {{ person["name"] }}'s Friends
+
+            </div>
+
+
+            <button
+                class="close-small"
+                onclick="closeFriends()">
+
+                <svg viewBox="0 0 24 24">
+
+                    <path d="M6 6l12 12"/>
+                    <path d="M18 6L6 18"/>
+
+                </svg>
+
+            </button>
+
+        </div>
+
+
+        <div class="friends-list">
+
+            {% if friends %}
+
+                {% for friend in friends %}
+
+                <div
+                    class="friend-row"
+                    onclick="openFriendProfile(
+                        '{{ friend["id"] }}'
+                    )">
+
+                    {% if friend["profile_picture"] %}
+
+                    <img
+                        class="friend-photo"
+                        src="{{ url_for(
+                            'static',
+                            filename='uploads/' + friend['profile_picture']
+                        ) }}"
+                        alt="Friend">
+
+                    {% else %}
+
+                    <div
+                        class="friend-photo friend-default">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <circle
+                                cx="12"
+                                cy="8"
+                                r="4"/>
+
+                            <path
+                                d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+
+                        </svg>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <div class="friend-name">
+                        {{ friend["name"] }}
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+            <div class="empty-state">
+                No friends yet.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     HIGHLIGHT VIEWER
+========================================================= -->
+
+<div
+    class="highlight-viewer"
+    id="highlightViewer"
+    onclick="closeHighlightViewer()">
+
+    <div
+        class="highlight-viewer-title"
+        id="highlightViewerTitle">
+    </div>
+
+
+    <button
+        class="viewer-close"
+        onclick="closeHighlightViewer()">
+
+        <svg viewBox="0 0 24 24">
+
+            <path d="M6 6l12 12"/>
+            <path d="M18 6L6 18"/>
+
+        </svg>
+
+    </button>
+
+
+    <img
+        id="highlightViewerImage"
+        src=""
+        alt="Highlight">
+
+</div>
+
+
+<!-- =========================================================
+     NEW HIGHLIGHT MODAL
+========================================================= -->
+
+{% if is_own_profile %}
+
+<div
+    class="modal"
+    id="highlightModal">
+
+    <div class="modal-box">
+
+        <div class="modal-title">
+            Create new
+        </div>
+
+        <div class="modal-subtitle">
+            Create a profile highlight and add your own cover image.
+        </div>
+
+
+        <input
+            type="text"
+            id="highlightName"
+            class="modal-input"
+            placeholder="Highlight name"
+            maxlength="20">
+
+
+        <input
+            type="file"
+            id="highlightImage"
+            class="modal-input"
+            accept="image/*">
+
+
+        <div class="modal-buttons">
+
+            <button
+                type="button"
+                class="modal-button modal-cancel"
+                onclick="closeNewHighlight()">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                class="modal-button modal-create"
+                onclick="createHighlight()">
+
+                Create
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     MENU
+========================================================= -->
+
+<div
+    class="menu"
+    id="menu"
+    onclick="closeMenu(event)">
+
+    <div
+        class="menu-box"
+        onclick="event.stopPropagation()">
+
+        {% if is_own_profile %}
+
+        <a
+            href="{{ url_for('settings') }}"
+            class="menu-item">
+
+            Settings
+
+        </a>
+
+
+        <a
+            href="{{ url_for('requests') }}"
+            class="menu-item">
+
+            Requests
+
+        </a>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="menu-item danger">
+
+            Log out
+
+        </a>
+
+        {% else %}
+
+        <form
+            action="{{ url_for(
+                'block_user',
+                user_id=person['id']
+            ) }}"
+            method="POST">
+
+            <button
+                class="menu-item danger"
+                type="submit"
+                onclick="return confirm('Block this user?');">
+
+                Block user
+
+            </button>
+
+        </form>
+
+        {% endif %}
+
+
+        <button
+            type="button"
+            class="menu-item"
+            onclick="closeMenu()">
+
+            Cancel
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     PROFILE CROP
+========================================================= -->
+
+{% if is_own_profile %}
+
+<div
+    class="crop-modal"
+    id="cropModal">
+
+    <div class="crop-box">
+
+        <h2>
+            Crop profile picture
+        </h2>
+
+        <canvas id="cropCanvas"></canvas>
+
+
+        <div class="crop-buttons">
+
+            <button
+                type="button"
+                class="crop-upload"
+                onclick="cropImage()">
+
+                Crop & Upload
+
+            </button>
+
+
+            <button
+                type="button"
+                class="crop-cancel"
+                onclick="closeCrop()">
+
+                Cancel
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<script>
+
+/* =========================================================
+   TAB SWITCH
+========================================================= */
+
+function showTab(tab){
+
+    const photos =
+        document.getElementById("photosContent");
+
+    const reels =
+        document.getElementById("reelsContent");
+
+    const photosTab =
+        document.getElementById("photosTab");
+
+    const reelsTab =
+        document.getElementById("reelsTab");
+
+
+    if(tab === "photos"){
+
+        photos.classList.add("active");
+        reels.classList.remove("active");
+
+        photosTab.classList.add("active");
+        reelsTab.classList.remove("active");
+
+    }
+    else{
+
+        photos.classList.remove("active");
+        reels.classList.add("active");
+
+        photosTab.classList.remove("active");
+        reelsTab.classList.add("active");
+
+    }
+
+}
+
+
+/* =========================================================
+   POSTS CLICK
+========================================================= */
+
+function openPosts(){
+
+    showTab("photos");
+
+    setTimeout(function(){
+
+        const tabs =
+            document.querySelector(".tabs");
+
+        if(tabs){
+
+            tabs.scrollIntoView({
+                behavior:"smooth",
+                block:"start"
+            });
+
+        }
+
+    },100);
+
+}
+
+
+/* =========================================================
+   FRIENDS CLICK
+========================================================= */
+
+function openFriends(){
+
+    const modal =
+        document.getElementById("friendsModal");
+
+    if(!modal){
+        return;
+    }
+
+    modal.classList.add("show");
+
+    document.body.style.overflow="hidden";
+
+}
+
+
+/* =========================================================
+   CLOSE FRIENDS
+========================================================= */
+
+function closeFriends(event){
+
+    if(
+        event &&
+        event.target &&
+        event.target.id !== "friendsModal"
+    ){
+        return;
+    }
+
+    const modal =
+        document.getElementById("friendsModal");
+
+    if(modal){
+
+        modal.classList.remove("show");
+
+    }
+
+    document.body.style.overflow="";
+
+}
+
+
+/* =========================================================
+   FRIEND PROFILE
+========================================================= */
+
+function openFriendProfile(id){
+
+    window.location.href =
+        "/profile/" + id;
+
+}
+
+
+/* =========================================================
+   PHOTO VIEWER
+========================================================= */
+
+function openPhoto(src){
+
+    const viewer =
+        document.getElementById("viewer");
+
+    const content =
+        document.getElementById("viewerContent");
+
+
+    content.innerHTML="";
+
+
+    const image =
+        document.createElement("img");
+
+    image.src=src;
+
+    image.alt="Photo";
+
+
+    content.appendChild(image);
+
+
+    viewer.classList.add("show");
+
+    document.body.style.overflow="hidden";
+
+}
+
+
+/* =========================================================
+   REEL VIEWER
+========================================================= */
+
+function openReel(src){
+
+    const viewer =
+        document.getElementById("viewer");
+
+    const content =
+        document.getElementById("viewerContent");
+
+
+    content.innerHTML="";
+
+
+    const video =
+        document.createElement("video");
+
+
+    video.src=src;
+
+    video.controls=true;
+
+    video.autoplay=true;
+
+    video.playsInline=true;
+
+    video.loop=true;
+
+
+    content.appendChild(video);
+
+
+    viewer.classList.add("show");
+
+    document.body.style.overflow="hidden";
+
+
+    video.play().catch(function(){});
+
+}
+
+
+/* =========================================================
+   CLOSE MEDIA VIEWER
+========================================================= */
+
+function closeViewer(event){
+
+    if(
+        event &&
+        event.target &&
+        event.target.id !== "viewer" &&
+        !event.target.closest(".viewer-close")
+    ){
+        return;
+    }
+
+
+    const viewer =
+        document.getElementById("viewer");
+
+    const content =
+        document.getElementById("viewerContent");
+
+
+    if(!viewer || !content){
+        return;
+    }
+
+
+    const video =
+        content.querySelector("video");
+
+
+    if(video){
+
+        video.pause();
+
+        video.removeAttribute("src");
+
+        video.load();
+
+    }
+
+
+    content.innerHTML="";
+
+    viewer.classList.remove("show");
+
+    document.body.style.overflow="";
+
+}
+
+
+/* =========================================================
+   SHARE PROFILE
+========================================================= */
+
+function shareProfile(){
+
+    const profileUrl =
+        window.location.href;
+
+
+    if(navigator.share){
+
+        navigator.share({
+
+            title:
+                "{{ person['name'] }} - PrivateConnect",
+
+            text:
+                "Check out this profile on PrivateConnect.",
+
+            url:
+                profileUrl
+
+        }).catch(function(){});
+
+    }
+    else{
+
+        if(
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ){
+
+            navigator.clipboard
+            .writeText(profileUrl)
+            .then(function(){
+
+                alert("Profile link copied.");
+
+            })
+            .catch(function(){
+
+                prompt(
+                    "Copy profile link:",
+                    profileUrl
+                );
+
+            });
+
+        }
+        else{
+
+            prompt(
+                "Copy profile link:",
+                profileUrl
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function openMenu(){
+
+    const menu =
+        document.getElementById("menu");
+
+    if(menu){
+
+        menu.classList.add("show");
+
+    }
+
+}
+
+
+function closeMenu(event){
+
+    if(
+        event &&
+        event.target &&
+        event.target.id !== "menu"
+    ){
+        return;
+    }
+
+
+    const menu =
+        document.getElementById("menu");
+
+    if(menu){
+
+        menu.classList.remove("show");
+
+    }
+
+}
+
+
+/* =========================================================
+   NEW HIGHLIGHT
+========================================================= */
+
+function openNewHighlight(){
+
+    const modal =
+        document.getElementById("highlightModal");
+
+    if(!modal){
+        return;
+    }
+
+    modal.classList.add("show");
+
+    document.body.style.overflow="hidden";
+
+
+    const nameInput =
+        document.getElementById("highlightName");
+
+    if(nameInput){
+
+        setTimeout(function(){
+
+            nameInput.focus();
+
+        },100);
+
+    }
+
+}
+
+
+function closeNewHighlight(){
+
+    const modal =
+        document.getElementById("highlightModal");
+
+    if(!modal){
+        return;
+    }
+
+    modal.classList.remove("show");
+
+    document.body.style.overflow="";
+
+
+    const nameInput =
+        document.getElementById("highlightName");
+
+    const imageInput =
+        document.getElementById("highlightImage");
+
+
+    if(nameInput){
+        nameInput.value="";
+    }
+
+    if(imageInput){
+        imageInput.value="";
+    }
+
+}
+
+
+/* =========================================================
+   CREATE HIGHLIGHT
+   SAVES TO FLASK + SQLITE
+========================================================= */
+
+async function createHighlight(){
+
+    const nameInput =
+        document.getElementById("highlightName");
+
+    const imageInput =
+        document.getElementById("highlightImage");
+
+
+    if(!nameInput || !imageInput){
+
+        return;
+
+    }
+
+
+    const name =
+        nameInput.value.trim();
+
+
+    const file =
+        imageInput.files[0];
+
+
+    /* ---------------------------------------------
+       CHECK NAME
+    --------------------------------------------- */
+
+    if(!name){
+
+        alert(
+            "Enter a highlight name."
+        );
+
+        nameInput.focus();
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       CHECK IMAGE
+    --------------------------------------------- */
+
+    if(!file){
+
+        alert(
+            "Choose a cover image."
+        );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       CHECK IMAGE TYPE
+    --------------------------------------------- */
+
+    if(!file.type.startsWith("image/")){
+
+        alert(
+            "Please choose an image."
+        );
+
+        return;
+
+    }
+
+
+    /* ---------------------------------------------
+       FORM DATA
+    --------------------------------------------- */
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "name",
+        name
+    );
+
+    formData.append(
+        "image",
+        file
+    );
+
+
+    /* ---------------------------------------------
+       CREATE BUTTON
+    --------------------------------------------- */
+
+    const createButton =
+        document.querySelector(
+            ".modal-create"
+        );
+
+
+    if(createButton){
+
+        createButton.disabled=true;
+
+        createButton.textContent=
+            "Uploading...";
+
+    }
+
+
+    /* ---------------------------------------------
+       SEND TO FLASK
+    --------------------------------------------- */
+
+    try{
+
+        const response =
+            await fetch(
+                "{{ url_for('create_highlight') }}",
+                {
+                    method:"POST",
+                    body:formData
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        /* -----------------------------------------
+           ERROR
+        ----------------------------------------- */
+
+        if(
+            !response.ok ||
+            !result.success
+        ){
+
+            alert(
+                result.message ||
+                "Could not create highlight."
+            );
+
+            return;
+
+        }
+
+
+        /* -----------------------------------------
+           SUCCESS
+        ----------------------------------------- */
+
+        alert(
+            "Highlight created successfully."
+        );
+
+
+        /* -----------------------------------------
+           CLOSE
+        ----------------------------------------- */
+
+        closeNewHighlight();
+
+
+        /* -----------------------------------------
+           RELOAD PROFILE
+           Database highlights are loaded by Flask.
+        ----------------------------------------- */
+
+        window.location.reload();
+
+    }
+    catch(error){
+
+        console.error(
+            "CREATE HIGHLIGHT ERROR:",
+            error
+        );
+
+        alert(
+            "Something went wrong while uploading the highlight."
+        );
+
+    }
+    finally{
+
+        if(createButton){
+
+            createButton.disabled=false;
+
+            createButton.textContent=
+                "Create";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN HIGHLIGHT
+========================================================= */
+
+function openHighlight(image,name){
+
+    const viewer =
+        document.getElementById(
+            "highlightViewer"
+        );
+
+    const imageElement =
+        document.getElementById(
+            "highlightViewerImage"
+        );
+
+    const title =
+        document.getElementById(
+            "highlightViewerTitle"
+        );
+
+
+    if(!viewer || !imageElement){
+        return;
+    }
+
+
+    imageElement.src=image;
+
+    if(title){
+
+        title.textContent=name;
+
+    }
+
+
+    viewer.classList.add("show");
+
+    document.body.style.overflow="hidden";
+
+}
+
+
+/* =========================================================
+   CLOSE HIGHLIGHT
+========================================================= */
+
+function closeHighlightViewer(){
+
+    const viewer =
+        document.getElementById(
+            "highlightViewer"
+        );
+
+    const image =
+        document.getElementById(
+            "highlightViewerImage"
+        );
+
+
+    if(image){
+
+        image.src="";
+
+    }
+
+
+    if(viewer){
+
+        viewer.classList.remove("show");
+
+    }
+
+    document.body.style.overflow="";
+
+}
+
+
+/* =========================================================
+   PROFILE PHOTO CROP
+========================================================= */
+
+{% if is_own_profile %}
+
+const profileInput =
+    document.getElementById(
+        "profileInput"
+    );
+
+const cropModal =
+    document.getElementById(
+        "cropModal"
+    );
+
+const cropCanvas =
+    document.getElementById(
+        "cropCanvas"
+    );
+
+const croppedImage =
+    document.getElementById(
+        "croppedImage"
+    );
+
+const profileForm =
+    document.getElementById(
+        "profileForm"
+    );
+
+
+let selectedImage =
+    new Image();
+
+
+if(profileInput){
+
+    profileInput.addEventListener(
+        "change",
+        function(){
+
+            const file =
+                this.files[0];
+
+
+            if(!file){
+                return;
+            }
+
+
+            if(!file.type.startsWith("image/")){
+
+                alert(
+                    "Please select an image."
+                );
+
+                this.value="";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload=function(event){
+
+                selectedImage.onload=function(){
+
+                    const size =
+                        Math.min(
+                            selectedImage.width,
+                            selectedImage.height
+                        );
+
+
+                    cropCanvas.width=400;
+
+                    cropCanvas.height=400;
+
+
+                    const ctx =
+                        cropCanvas.getContext("2d");
+
+
+                    const sx =
+                        (
+                            selectedImage.width-size
+                        )/2;
+
+
+                    const sy =
+                        (
+                            selectedImage.height-size
+                        )/2;
+
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        400,
+                        400
+                    );
+
+
+                    ctx.drawImage(
+                        selectedImage,
+                        sx,
+                        sy,
+                        size,
+                        size,
+                        0,
+                        0,
+                        400,
+                        400
+                    );
+
+
+                    cropModal.style.display=
+                        "flex";
+
+                };
+
+
+                selectedImage.src=
+                    event.target.result;
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+function cropImage(){
+
+    if(!cropCanvas || !croppedImage){
+        return;
+    }
+
+
+    const imageData =
+        cropCanvas.toDataURL(
+            "image/jpeg",
+            .9
+        );
+
+
+    croppedImage.value=
+        imageData;
+
+
+    profileForm.submit();
+
+}
+
+
+function closeCrop(){
+
+    if(cropModal){
+
+        cropModal.style.display=
+            "none";
+
+    }
+
+    if(profileInput){
+
+        profileInput.value="";
+
+    }
+
+    if(croppedImage){
+
+        croppedImage.value="";
+
+    }
+
+}
+
+{% endif %}
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeViewer();
+
+            closeFriends();
+
+            closeHighlightViewer();
+
+            closeNewHighlight();
+
+            closeMenu();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   HIGHLIGHT MODAL BACKDROP
+========================================================= */
+
+const highlightModal =
+    document.getElementById(
+        "highlightModal"
+    );
+
+
+if(highlightModal){
+
+    highlightModal.addEventListener(
+        "click",
+        function(event){
+
+            if(
+                event.target ===
+                highlightModal
+            ){
+
+                closeNewHighlight();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   HIGHLIGHT IMAGE ERROR
+========================================================= */
+
+document
+.querySelectorAll(
+    ".highlight-inner img"
+)
+.forEach(function(image){
+
+    image.addEventListener(
+        "error",
+        function(){
+
+            this.style.display="none";
+
+        }
+    );
+
+});
+
+</script>
+
+</body>
+
+</html>

@@ -84,11 +84,6 @@ a {
     stroke-linejoin: round;
 }
 
-.icon-fill {
-    fill: currentColor;
-    stroke: none;
-}
-
 
 /* =========================================================
    HEADER
@@ -150,7 +145,12 @@ a {
 
     text-decoration: none;
 
+    border: 0;
+    background: transparent;
+
     border-radius: 50%;
+
+    cursor: pointer;
 }
 
 .header-action:active {
@@ -160,7 +160,7 @@ a {
 
 
 /* =========================================================
-   NOTIFICATION
+   NOTIFICATIONS
 ========================================================= */
 
 .notification-wrapper {
@@ -568,6 +568,11 @@ a {
     color: #71869c;
 }
 
+
+/* =========================================================
+   CREATE POST BOTTOM
+========================================================= */
+
 .create-bottom {
     display: flex;
 
@@ -578,6 +583,8 @@ a {
 
 .file-label {
     flex: 1;
+
+    min-width: 0;
 
     height: 42px;
 
@@ -598,11 +605,102 @@ a {
     font-weight: 650;
 
     cursor: pointer;
+
+    overflow: hidden;
 }
 
 .file-label input {
     display: none;
 }
+
+.file-selected-name {
+    max-width: 45%;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color: #7f96ad;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   MEDIA PREVIEW
+========================================================= */
+
+.media-preview-container {
+    display: none;
+
+    position: relative;
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    border: 1px solid #294663;
+
+    background: #000;
+}
+
+.media-preview-container.show {
+    display: block;
+}
+
+.media-preview-image,
+.media-preview-video {
+    display: block;
+
+    width: 100%;
+
+    max-height: 500px;
+
+    object-fit: contain;
+
+    background: #000;
+}
+
+.preview-remove {
+    position: absolute;
+
+    top: 9px;
+    right: 9px;
+
+    z-index: 10;
+
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.75);
+
+    color: #ffffff;
+
+    font-size: 24px;
+
+    line-height: 36px;
+
+    cursor: pointer;
+}
+
+.preview-remove:active {
+    transform: scale(.9);
+}
+
+
+/* =========================================================
+   POST BUTTON
+========================================================= */
 
 .post-button {
     width: 78px;
@@ -621,6 +719,11 @@ a {
 
 .post-button:active {
     transform: scale(.95);
+}
+
+.post-button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
 }
 
 
@@ -730,7 +833,7 @@ a {
 
 
 /* =========================================================
-   MEDIA
+   POST MEDIA
 ========================================================= */
 
 .post-media {
@@ -752,7 +855,7 @@ video.post-media {
 
 
 /* =========================================================
-   REAL SOCIAL MEDIA ACTION BAR
+   ACTIONS
 ========================================================= */
 
 .post-actions {
@@ -809,15 +912,7 @@ video.post-media {
     height: 23px;
 }
 
-.like-icon {
-    color: #e0eaf4;
-}
-
 .liked {
-    color: #ff3d68;
-}
-
-.liked .like-icon {
     color: #ff3d68;
 }
 
@@ -829,14 +924,8 @@ video.post-media {
     font-weight: 600;
 }
 
-.share-button {
-    color: #dce8f4;
-}
-
 .delete-button {
     margin-left: auto;
-
-    color: #ff6578;
 }
 
 
@@ -940,9 +1029,7 @@ video.post-media {
 
 
 /* =========================================================
-   BOTTOM NAVIGATION
-   IMPORTANT:
-   Home | People | Chat | Reels | Profile
+   BOTTOM NAV
 ========================================================= */
 
 .bottom-nav {
@@ -1023,10 +1110,6 @@ video.post-media {
         padding: 0 15px;
     }
 
-    .container {
-        padding-top: 10px;
-    }
-
     .post {
         border: 1px solid #1b344c;
         border-radius: 14px;
@@ -1060,53 +1143,7 @@ video.post-media {
 
 
 /* =========================================================
-   SMALL PHONES
-========================================================= */
-
-@media (max-width: 380px) {
-
-    .logo {
-        font-size: 19px;
-    }
-
-    .quick-menu {
-        gap: 5px;
-        padding-left: 9px;
-        padding-right: 9px;
-    }
-
-    .quick-menu a {
-        height: 72px;
-        font-size: 9px;
-    }
-
-    .quick-icon {
-        width: 21px;
-        height: 21px;
-    }
-
-    .action-button {
-        min-width: 42px;
-        padding: 0 6px;
-    }
-
-    .share-button span {
-        display: none;
-    }
-
-    .bottom-nav a {
-        font-size: 8px;
-    }
-
-    .bottom-nav .nav-icon {
-        width: 21px;
-        height: 21px;
-    }
-}
-
-
-/* =========================================================
-   NOTIFICATION MOBILE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 500px) {
@@ -1129,8 +1166,37 @@ video.post-media {
     }
 }
 
-</style>
 
+@media (max-width: 380px) {
+
+    .logo {
+        font-size: 19px;
+    }
+
+    .quick-menu {
+        gap: 5px;
+
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+    .quick-menu a {
+        height: 72px;
+        font-size: 9px;
+    }
+
+    .action-button {
+        min-width: 42px;
+        padding: 0 6px;
+    }
+
+    .bottom-nav a {
+        font-size: 8px;
+    }
+
+}
+
+</style>
 </head>
 
 
@@ -1146,7 +1212,6 @@ video.post-media {
     <div class="logo">
         Private<span>Connect</span>
     </div>
-
 
     <div class="header-space"></div>
 
@@ -1216,9 +1281,7 @@ video.post-media {
                 r="6.8"
             ></circle>
 
-            <path
-                d="M16 16l5 5"
-            ></path>
+            <path d="M16 16l5 5"></path>
 
         </svg>
 
@@ -1245,12 +1308,9 @@ video.post-media {
                     d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"
                 ></path>
 
-                <path
-                    d="M10 21h4"
-                ></path>
+                <path d="M10 21h4"></path>
 
             </svg>
-
 
             <span
                 id="notificationBadge"
@@ -1314,12 +1374,12 @@ video.post-media {
     </div>
 
 
-    <!-- QUICK ACTIONS -->
+    <!-- =====================================================
+         QUICK MENU
+    ====================================================== -->
 
     <div class="quick-menu">
 
-
-        <!-- SEARCH -->
 
         <a href="{{ url_for('find_people') }}">
 
@@ -1342,8 +1402,6 @@ video.post-media {
 
         </a>
 
-
-        <!-- CHAT -->
 
         <a href="{{ url_for('messages') }}">
 
@@ -1387,8 +1445,6 @@ video.post-media {
         </a>
 
 
-        <!-- MATCH -->
-
         <a href="{{ url_for('match') }}">
 
             <svg
@@ -1406,8 +1462,6 @@ video.post-media {
 
         </a>
 
-
-        <!-- CONNECTIONS -->
 
         <a href="{{ url_for('connections') }}">
 
@@ -1445,7 +1499,9 @@ video.post-media {
     </div>
 
 
-    <!-- PEOPLE -->
+    <!-- =====================================================
+         PEOPLE
+    ====================================================== -->
 
     <div class="section-title">
         People Near You
@@ -1477,10 +1533,21 @@ video.post-media {
 
                         {% else %}
 
-                            <img
-                                src="https://via.placeholder.com/100"
-                                alt="{{ user.name }}"
+                            <div
+                                style="
+                                    width:100%;
+                                    height:100%;
+                                    border-radius:50%;
+                                    background:#10253c;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    color:#7fa4c8;
+                                    font-size:20px;
+                                "
                             >
+                                👤
+                            </div>
 
                         {% endif %}
 
@@ -1511,11 +1578,14 @@ video.post-media {
     </div>
 
 
-    <!-- CREATE POST -->
+    <!-- =====================================================
+         CREATE POST
+    ====================================================== -->
 
     <div class="create-post">
 
         <form
+            id="createPostForm"
             method="POST"
             action="{{ url_for('create_post') }}"
             enctype="multipart/form-data"
@@ -1528,7 +1598,47 @@ video.post-media {
             ></textarea>
 
 
+            <!-- PREVIEW -->
+
+            <div
+                id="mediaPreviewContainer"
+                class="media-preview-container"
+            >
+
+                <button
+                    type="button"
+                    id="removePreviewButton"
+                    class="preview-remove"
+                    aria-label="Remove selected media"
+                >
+                    ×
+                </button>
+
+
+                <img
+                    id="mediaImagePreview"
+                    class="media-preview-image"
+                    alt="Selected image preview"
+                    style="display:none;"
+                >
+
+
+                <video
+                    id="mediaVideoPreview"
+                    class="media-preview-video"
+                    controls
+                    playsinline
+                    preload="metadata"
+                    style="display:none;"
+                ></video>
+
+            </div>
+
+
             <div class="create-bottom">
+
+
+                <!-- FILE PICKER -->
 
                 <label class="file-label">
 
@@ -1557,11 +1667,16 @@ video.post-media {
 
                     </svg>
 
-                    Add photo/video
+
+                    <span>
+                        Add photo/video
+                    </span>
+
 
                     <input
                         type="file"
                         name="media"
+                        id="postMediaInput"
                         accept="
                             image/png,
                             image/jpeg,
@@ -1576,8 +1691,17 @@ video.post-media {
                 </label>
 
 
+                <span
+                    id="selectedFileName"
+                    class="file-selected-name"
+                ></span>
+
+
+                <!-- POST -->
+
                 <button
                     type="submit"
+                    id="postButton"
                     class="post-button"
                 >
                     Post
@@ -1590,7 +1714,9 @@ video.post-media {
     </div>
 
 
-    <!-- POSTS -->
+    <!-- =====================================================
+         POSTS
+    ====================================================== -->
 
     <div class="feed-title">
         Posts
@@ -1624,11 +1750,19 @@ video.post-media {
 
                     {% else %}
 
-                        <img
+                        <div
                             class="post-avatar"
-                            src="https://via.placeholder.com/100"
-                            alt="{{ post.name }}"
+                            style="
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                background:#10253c;
+                                color:#7fa4c8;
+                                font-size:18px;
+                            "
                         >
+                            👤
+                        </div>
 
                     {% endif %}
 
@@ -1762,11 +1896,10 @@ video.post-media {
                             likePost({{ post.id }}, this);
                             return false;
                         "
-                        aria-label="Like"
                     >
 
                         <svg
-                            class="icon action-icon like-icon"
+                            class="icon action-icon"
                             viewBox="0 0 24 24"
                         >
 
@@ -1790,12 +1923,11 @@ video.post-media {
 
                     <button
                         type="button"
-                        class="action-button comment-button"
+                        class="action-button"
                         onclick="
                             focusComment({{ post.id }});
                             return false;
                         "
-                        aria-label="Comment"
                     >
 
                         <svg
@@ -1820,12 +1952,11 @@ video.post-media {
 
                     <button
                         type="button"
-                        class="action-button share-button"
+                        class="action-button"
                         onclick="
                             sharePost({{ post.id }});
                             return false;
                         "
-                        aria-label="Share"
                     >
 
                         <svg
@@ -1884,7 +2015,7 @@ video.post-media {
 
                         <button
                             type="submit"
-                            class="action-button delete-button"
+                            class="action-button"
                             aria-label="Delete"
                         >
 
@@ -1966,7 +2097,6 @@ video.post-media {
 
         {% endfor %}
 
-
     {% else %}
 
         <div class="empty-posts">
@@ -1985,13 +2115,11 @@ video.post-media {
 
 
 <!-- =========================================================
-     BOTTOM NAVIGATION
+     BOTTOM NAV
 ========================================================= -->
 
 <nav class="bottom-nav">
 
-
-    <!-- HOME -->
 
     <a
         href="{{ url_for('dashboard') }}"
@@ -2003,17 +2131,11 @@ video.post-media {
             viewBox="0 0 24 24"
         >
 
-            <path
-                d="M3 10.5L12 3l9 7.5"
-            ></path>
+            <path d="M3 10.5L12 3l9 7.5"></path>
 
-            <path
-                d="M5 9v11h14V9"
-            ></path>
+            <path d="M5 9v11h14V9"></path>
 
-            <path
-                d="M9 20v-6h6v6"
-            ></path>
+            <path d="M9 20v-6h6v6"></path>
 
         </svg>
 
@@ -2022,11 +2144,7 @@ video.post-media {
     </a>
 
 
-    <!-- PEOPLE -->
-
-    <a
-        href="{{ url_for('find_people') }}"
-    >
+    <a href="{{ url_for('find_people') }}">
 
         <svg
             class="icon nav-icon"
@@ -2060,13 +2178,7 @@ video.post-media {
     </a>
 
 
-    <!-- CHAT
-         THIS NOW GOES DIRECTLY TO /messages
-    -->
-
-    <a
-        href="{{ url_for('messages') }}"
-    >
+    <a href="{{ url_for('messages') }}">
 
         <svg
             class="icon nav-icon"
@@ -2108,11 +2220,7 @@ video.post-media {
     </a>
 
 
-    <!-- REELS -->
-
-    <a
-        href="{{ url_for('reels') }}"
-    >
+    <a href="{{ url_for('reels') }}">
 
         <svg
             class="icon nav-icon"
@@ -2127,13 +2235,9 @@ video.post-media {
                 rx="2"
             ></rect>
 
-            <path
-                d="M8 4l3 4"
-            ></path>
+            <path d="M8 4l3 4"></path>
 
-            <path
-                d="M14 4l3 4"
-            ></path>
+            <path d="M14 4l3 4"></path>
 
             <path
                 d="M10 11l5 3-5 3z"
@@ -2148,11 +2252,7 @@ video.post-media {
     </a>
 
 
-    <!-- PROFILE -->
-
-    <a
-        href="{{ url_for('profile') }}"
-    >
+    <a href="{{ url_for('profile') }}">
 
         <svg
             class="icon nav-icon"
@@ -2184,9 +2284,358 @@ video.post-media {
 
 <script>
 
+/* =========================================================
+   POST MEDIA PREVIEW
+========================================================= */
+
+const postMediaInput =
+    document.getElementById(
+        "postMediaInput"
+    );
+
+const mediaPreviewContainer =
+    document.getElementById(
+        "mediaPreviewContainer"
+    );
+
+const mediaImagePreview =
+    document.getElementById(
+        "mediaImagePreview"
+    );
+
+const mediaVideoPreview =
+    document.getElementById(
+        "mediaVideoPreview"
+    );
+
+const removePreviewButton =
+    document.getElementById(
+        "removePreviewButton"
+    );
+
+const selectedFileName =
+    document.getElementById(
+        "selectedFileName"
+    );
+
+const createPostForm =
+    document.getElementById(
+        "createPostForm"
+    );
+
+const postButton =
+    document.getElementById(
+        "postButton"
+    );
+
+
+let previewObjectURL = null;
+
 
 /* =========================================================
-   COMMENT
+   FILE SELECT
+========================================================= */
+
+if (postMediaInput) {
+
+    postMediaInput.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                this.files &&
+                this.files[0];
+
+
+            if (!file) {
+
+                clearMediaPreview();
+
+                return;
+            }
+
+
+            /*
+             * Maximum 100 MB
+             */
+
+            const maxSize =
+                100 * 1024 * 1024;
+
+
+            if (file.size > maxSize) {
+
+                alert(
+                    "This file is too large. Maximum size is 100 MB."
+                );
+
+                this.value = "";
+
+                clearMediaPreview();
+
+                return;
+            }
+
+
+            /*
+             * Allowed types
+             */
+
+            const allowedTypes = [
+
+                "image/png",
+                "image/jpeg",
+                "image/gif",
+                "image/webp",
+
+                "video/mp4",
+                "video/webm",
+                "video/quicktime"
+
+            ];
+
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
+                alert(
+                    "Please select a valid JPG, PNG, GIF, WEBP, MP4, WEBM or MOV file."
+                );
+
+                this.value = "";
+
+                clearMediaPreview();
+
+                return;
+            }
+
+
+            /*
+             * Remove old object URL
+             */
+
+            if (previewObjectURL) {
+
+                URL.revokeObjectURL(
+                    previewObjectURL
+                );
+
+            }
+
+
+            /*
+             * Create local browser preview.
+             *
+             * IMPORTANT:
+             * This does NOT upload the file.
+             */
+
+            previewObjectURL =
+                URL.createObjectURL(
+                    file
+                );
+
+
+            /*
+             * Show file name
+             */
+
+            if (selectedFileName) {
+
+                selectedFileName.textContent =
+                    file.name;
+
+            }
+
+
+            /*
+             * Show preview container
+             */
+
+            mediaPreviewContainer.classList.add(
+                "show"
+            );
+
+
+            /*
+             * IMAGE
+             */
+
+            if (
+                file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                mediaImagePreview.src =
+                    previewObjectURL;
+
+                mediaImagePreview.style.display =
+                    "block";
+
+
+                mediaVideoPreview.pause();
+
+                mediaVideoPreview.removeAttribute(
+                    "src"
+                );
+
+                mediaVideoPreview.style.display =
+                    "none";
+
+            }
+
+
+            /*
+             * VIDEO
+             */
+
+            else if (
+                file.type.startsWith(
+                    "video/"
+                )
+            ) {
+
+                mediaVideoPreview.src =
+                    previewObjectURL;
+
+                mediaVideoPreview.style.display =
+                    "block";
+
+
+                mediaImagePreview.removeAttribute(
+                    "src"
+                );
+
+                mediaImagePreview.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   REMOVE SELECTED MEDIA
+========================================================= */
+
+if (removePreviewButton) {
+
+    removePreviewButton.addEventListener(
+        "click",
+        function () {
+
+            if (postMediaInput) {
+
+                postMediaInput.value =
+                    "";
+
+            }
+
+            clearMediaPreview();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR PREVIEW
+========================================================= */
+
+function clearMediaPreview() {
+
+    if (!mediaPreviewContainer) {
+        return;
+    }
+
+
+    mediaPreviewContainer.classList.remove(
+        "show"
+    );
+
+
+    mediaImagePreview.style.display =
+        "none";
+
+    mediaVideoPreview.style.display =
+        "none";
+
+
+    mediaImagePreview.removeAttribute(
+        "src"
+    );
+
+
+    mediaVideoPreview.pause();
+
+    mediaVideoPreview.removeAttribute(
+        "src"
+    );
+
+
+    if (selectedFileName) {
+
+        selectedFileName.textContent =
+            "";
+
+    }
+
+
+    if (previewObjectURL) {
+
+        URL.revokeObjectURL(
+            previewObjectURL
+        );
+
+        previewObjectURL =
+            null;
+
+    }
+
+}
+
+
+/* =========================================================
+   POST SUBMIT
+========================================================= */
+
+if (createPostForm) {
+
+    createPostForm.addEventListener(
+        "submit",
+        function () {
+
+            /*
+             * Only here does the browser actually
+             * send the selected file to Flask.
+             */
+
+            if (postButton) {
+
+                postButton.disabled =
+                    true;
+
+                postButton.textContent =
+                    "Posting...";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   COMMENT FOCUS
 ========================================================= */
 
 function focusComment(postId) {
@@ -2198,20 +2647,27 @@ function focusComment(postId) {
             " input"
         );
 
+
     if (!input) {
         return;
     }
 
+
     input.focus();
 
-    setTimeout(function () {
 
-        input.scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
+    setTimeout(
+        function () {
 
-    }, 100);
+            input.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        },
+        100
+    );
+
 }
 
 
@@ -2219,7 +2675,10 @@ function focusComment(postId) {
    LIKE
 ========================================================= */
 
-function likePost(postId, button) {
+function likePost(
+    postId,
+    button
+) {
 
     fetch(
         "/like/" + postId,
@@ -2233,76 +2692,105 @@ function likePost(postId, button) {
         }
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        if (!response.ok) {
-            throw new Error("Like failed");
+            if (!response.ok) {
+
+                throw new Error(
+                    "Like failed"
+                );
+
+            }
+
+            return response.json();
+
         }
+    )
 
-        return response.json();
+    .then(
+        function (data) {
 
-    })
+            if (!data.success) {
 
-    .then(function(data) {
+                alert(
+                    data.error ||
+                    data.message ||
+                    "Unable to like post."
+                );
 
-        if (!data.success) {
+                return;
+            }
+
+
+            const icon =
+                button.querySelector(
+                    ".like-icon"
+                );
+
+            const count =
+                button.querySelector(
+                    ".like-count"
+                );
+
+
+            if (data.liked) {
+
+                button.classList.add(
+                    "liked"
+                );
+
+
+                if (icon) {
+
+                    icon.style.fill =
+                        "currentColor";
+
+                }
+
+            } else {
+
+                button.classList.remove(
+                    "liked"
+                );
+
+
+                if (icon) {
+
+                    icon.style.fill =
+                        "none";
+
+                }
+
+            }
+
+
+            if (
+                count &&
+                data.like_count !==
+                undefined
+            ) {
+
+                count.textContent =
+                    data.like_count;
+
+            }
+
+        }
+    )
+
+    .catch(
+        function (error) {
+
+            console.error(error);
 
             alert(
-                data.error ||
-                data.message ||
                 "Unable to like post."
             );
 
-            return;
         }
+    );
 
-        const icon =
-            button.querySelector(
-                ".like-icon"
-            );
-
-        const count =
-            button.querySelector(
-                ".like-count"
-            );
-
-
-        if (data.liked) {
-
-            button.classList.add("liked");
-
-            if (icon) {
-                icon.style.fill =
-                    "currentColor";
-            }
-
-        } else {
-
-            button.classList.remove("liked");
-
-            if (icon) {
-                icon.style.fill =
-                    "none";
-            }
-        }
-
-
-        if (count) {
-            count.textContent =
-                data.like_count;
-        }
-
-    })
-
-    .catch(function(error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to like post."
-        );
-
-    });
 }
 
 
@@ -2318,6 +2806,7 @@ function submitComment(
 
     event.preventDefault();
 
+
     const input =
         form.querySelector(
             "input[name='comment']"
@@ -2328,19 +2817,30 @@ function submitComment(
             "button"
         );
 
+
     if (!input || !button) {
+
         return false;
+
     }
+
 
     const text =
         input.value.trim();
 
+
     if (!text) {
+
         return false;
+
     }
 
-    button.disabled = true;
-    button.textContent = "…";
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        "…";
 
 
     fetch(
@@ -2349,151 +2849,180 @@ function submitComment(
             method: "POST",
 
             headers: {
+
                 "Content-Type":
                     "application/x-www-form-urlencoded",
 
                 "X-Requested-With":
                     "XMLHttpRequest"
+
             },
 
             body:
                 new URLSearchParams({
                     comment: text
                 })
+
         }
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        if (!response.ok) {
-            throw new Error(
-                "Comment failed"
-            );
+            if (!response.ok) {
+
+                throw new Error(
+                    "Comment failed"
+                );
+
+            }
+
+            return response.json();
+
         }
+    )
 
-        return response.json();
+    .then(
+        function (data) {
 
-    })
+            if (!data.success) {
 
-    .then(function(data) {
+                alert(
+                    data.error ||
+                    data.message ||
+                    "Unable to add comment."
+                );
 
-        if (!data.success) {
+                return;
+
+            }
+
+
+            const commentsBox =
+                document.querySelector(
+                    "#comments-" +
+                    postId
+                );
+
+
+            if (!commentsBox) {
+
+                return;
+
+            }
+
+
+            const commentForm =
+                commentsBox.querySelector(
+                    ".comment-form"
+                );
+
+
+            const newComment =
+                document.createElement(
+                    "div"
+                );
+
+
+            newComment.className =
+                "comment";
+
+
+            const name =
+                document.createElement(
+                    "strong"
+                );
+
+
+            name.textContent =
+                data.name ||
+                "You";
+
+
+            newComment.appendChild(
+                name
+            );
+
+
+            newComment.appendChild(
+                document.createTextNode(
+                    " " +
+                    (
+                        data.comment ||
+                        text
+                    )
+                )
+            );
+
+
+            commentsBox.insertBefore(
+                newComment,
+                commentForm
+            );
+
+
+            input.value =
+                "";
+
+
+            const post =
+                document.querySelector(
+                    "#post-" +
+                    postId
+                );
+
+
+            if (post) {
+
+                const count =
+                    post.querySelector(
+                        ".comment-count"
+                    );
+
+
+                if (
+                    count &&
+                    data.comment_count !==
+                    undefined
+                ) {
+
+                    count.textContent =
+                        data.comment_count;
+
+                }
+
+            }
+
+        }
+    )
+
+    .catch(
+        function (error) {
+
+            console.error(error);
 
             alert(
-                data.error ||
-                data.message ||
                 "Unable to add comment."
             );
 
-            return;
         }
+    )
 
+    .finally(
+        function () {
 
-        const commentsBox =
-            document.querySelector(
-                "#comments-" +
-                postId
-            );
+            button.disabled =
+                false;
 
-        if (!commentsBox) {
-            return;
+            button.textContent =
+                "Send";
+
         }
-
-
-        const commentForm =
-            commentsBox.querySelector(
-                ".comment-form"
-            );
-
-
-        const newComment =
-            document.createElement(
-                "div"
-            );
-
-        newComment.className =
-            "comment";
-
-
-        const name =
-            document.createElement(
-                "strong"
-            );
-
-        name.textContent =
-            data.name;
-
-
-        const commentText =
-            document.createTextNode(
-                " " +
-                data.comment
-            );
-
-
-        newComment.appendChild(name);
-
-        newComment.appendChild(
-            commentText
-        );
-
-
-        commentsBox.insertBefore(
-            newComment,
-            commentForm
-        );
-
-
-        input.value = "";
-
-
-        const post =
-            document.querySelector(
-                "#post-" +
-                postId
-            );
-
-
-        if (post) {
-
-            const count =
-                post.querySelector(
-                    ".comment-count"
-                );
-
-            if (
-                count &&
-                data.comment_count !==
-                undefined
-            ) {
-
-                count.textContent =
-                    data.comment_count;
-
-            }
-        }
-
-    })
-
-    .catch(function(error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to add comment."
-        );
-
-    })
-
-    .finally(function() {
-
-        button.disabled = false;
-        button.textContent = "Send";
-
-    });
+    );
 
 
     return false;
+
 }
 
 
@@ -2510,95 +3039,115 @@ function sharePost(postId) {
         }
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        if (!response.ok) {
-            throw new Error(
-                "Share failed"
-            );
-        }
+            if (!response.ok) {
 
-        return response.json();
-
-    })
-
-    .then(function(data) {
-
-        if (!data.success) {
-
-            alert(
-                data.error ||
-                "Unable to share."
-            );
-
-            return;
-        }
-
-
-        if (
-            navigator.share
-        ) {
-
-            navigator.share({
-                title:
-                    "PrivateConnect",
-                text:
-                    "Check out this post",
-                url:
-                    data.url
-            })
-
-            .catch(function() {});
-
-            return;
-        }
-
-
-        if (
-            navigator.clipboard &&
-            navigator.clipboard.writeText
-        ) {
-
-            navigator.clipboard.writeText(
-                data.url
-            )
-
-            .then(function() {
-
-                alert(
-                    "Post link copied!"
+                throw new Error(
+                    "Share failed"
                 );
 
-            })
+            }
 
-            .catch(function() {
+            return response.json();
+
+        }
+    )
+
+    .then(
+        function (data) {
+
+            if (!data.success) {
+
+                alert(
+                    data.error ||
+                    "Unable to share."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                navigator.share
+            ) {
+
+                navigator.share({
+
+                    title:
+                        "PrivateConnect",
+
+                    text:
+                        "Check out this post",
+
+                    url:
+                        data.url
+
+                }).catch(
+                    function () {}
+                );
+
+                return;
+
+            }
+
+
+            if (
+                navigator.clipboard &&
+                navigator.clipboard.writeText
+            ) {
+
+                navigator.clipboard.writeText(
+                    data.url
+                )
+
+                .then(
+                    function () {
+
+                        alert(
+                            "Post link copied!"
+                        );
+
+                    }
+                )
+
+                .catch(
+                    function () {
+
+                        prompt(
+                            "Copy this link:",
+                            data.url
+                        );
+
+                    }
+                );
+
+            } else {
 
                 prompt(
                     "Copy this link:",
                     data.url
                 );
 
-            });
+            }
 
-        } else {
-
-            prompt(
-                "Copy this link:",
-                data.url
-            );
         }
+    )
 
-    })
+    .catch(
+        function (error) {
 
-    .catch(function(error) {
+            console.error(error);
 
-        console.error(error);
+            alert(
+                "Unable to share post."
+            );
 
-        alert(
-            "Unable to share post."
-        );
+        }
+    );
 
-    });
 }
 
 
@@ -2612,67 +3161,80 @@ function updateNotificationBadge() {
         "/notification-count"
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        if (!response.ok) {
-            throw new Error(
-                "Notification count failed"
-            );
+            if (!response.ok) {
+
+                throw new Error(
+                    "Notification count failed"
+                );
+
+            }
+
+            return response.json();
+
         }
+    )
 
-        return response.json();
+    .then(
+        function (data) {
 
-    })
+            const badge =
+                document.getElementById(
+                    "notificationBadge"
+                );
 
-    .then(function(data) {
 
-        const badge =
-            document.getElementById(
-                "notificationBadge"
+            if (!badge) {
+
+                return;
+
+            }
+
+
+            const count =
+                Number(
+                    data.count || 0
+                );
+
+
+            if (count > 0) {
+
+                badge.textContent =
+                    count > 99
+                        ? "99+"
+                        : count;
+
+                badge.style.display =
+                    "flex";
+
+            } else {
+
+                badge.style.display =
+                    "none";
+
+            }
+
+        }
+    )
+
+    .catch(
+        function (error) {
+
+            console.error(
+                "Notification:",
+                error
             );
 
-        if (!badge) {
-            return;
         }
+    );
 
-
-        const count =
-            Number(
-                data.count || 0
-            );
-
-
-        if (count > 0) {
-
-            badge.textContent =
-                count > 99
-                    ? "99+"
-                    : count;
-
-            badge.style.display =
-                "flex";
-
-        } else {
-
-            badge.style.display =
-                "none";
-        }
-
-    })
-
-    .catch(function(error) {
-
-        console.error(
-            "Notification:",
-            error
-        );
-
-    });
 }
 
 
 /* =========================================================
-   NOTIFICATIONS
+   NOTIFICATION PANEL
 ========================================================= */
 
 function toggleNotifications() {
@@ -2682,8 +3244,11 @@ function toggleNotifications() {
             "notificationPanel"
         );
 
+
     if (!panel) {
+
         return;
+
     }
 
 
@@ -2699,9 +3264,15 @@ function toggleNotifications() {
     ) {
 
         loadNotifications();
+
     }
+
 }
 
+
+/* =========================================================
+   LOAD NOTIFICATIONS
+========================================================= */
 
 function loadNotifications() {
 
@@ -2710,8 +3281,11 @@ function loadNotifications() {
             "notificationList"
         );
 
+
     if (!list) {
+
         return;
+
     }
 
 
@@ -2726,183 +3300,247 @@ function loadNotifications() {
         "/notifications"
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        if (!response.ok) {
-            throw new Error(
-                "Notifications failed"
-            );
-        }
+            if (!response.ok) {
 
-        return response.json();
-
-    })
-
-    .then(function(data) {
-
-        if (
-            !data.notifications ||
-            data.notifications.length === 0
-        ) {
-
-            list.innerHTML = `
-                <div class="notification-empty">
-                    No notifications yet.
-                </div>
-            `;
-
-            return;
-        }
-
-
-        list.innerHTML = "";
-
-
-        data.notifications.forEach(
-            function(notification) {
-
-                const item =
-                    document.createElement(
-                        "a"
-                    );
-
-                item.className =
-                    "notification-item";
-
-
-                if (
-                    !notification.is_read
-                ) {
-
-                    item.classList.add(
-                        "unread"
-                    );
-                }
-
-
-                item.href =
-                    notification.url ||
-                    "#";
-
-
-                const avatar =
-                    notification.sender_picture
-                    ? "/static/uploads/" +
-                      notification.sender_picture
-                    : "https://via.placeholder.com/100";
-
-
-                const avatarElement =
-                    document.createElement(
-                        "img"
-                    );
-
-                avatarElement.className =
-                    "notification-avatar";
-
-                avatarElement.src =
-                    avatar;
-
-                avatarElement.alt =
-                    "Profile";
-
-
-                const content =
-                    document.createElement(
-                        "div"
-                    );
-
-                content.className =
-                    "notification-content";
-
-
-                const message =
-                    document.createElement(
-                        "div"
-                    );
-
-                message.className =
-                    "notification-message";
-
-                message.textContent =
-                    notification.message ||
-                    "New notification";
-
-
-                const time =
-                    document.createElement(
-                        "div"
-                    );
-
-                time.className =
-                    "notification-time";
-
-                time.textContent =
-                    notification.created_at ||
-                    "";
-
-
-                content.appendChild(
-                    message
-                );
-
-                content.appendChild(
-                    time
-                );
-
-
-                item.appendChild(
-                    avatarElement
-                );
-
-                item.appendChild(
-                    content
-                );
-
-
-                if (
-                    !notification.is_read
-                ) {
-
-                    const dot =
-                        document.createElement(
-                            "span"
-                        );
-
-                    dot.className =
-                        "notification-unread-dot";
-
-                    item.appendChild(
-                        dot
-                    );
-                }
-
-
-                list.appendChild(
-                    item
+                throw new Error(
+                    "Notifications failed"
                 );
 
             }
-        );
 
-    })
+            return response.json();
 
-    .catch(function(error) {
+        }
+    )
 
-        console.error(error);
+    .then(
+        function (data) {
 
-        list.innerHTML = `
-            <div class="notification-empty">
-                Notifications are temporarily unavailable.
-            </div>
-        `;
+            if (
+                !data.notifications ||
+                data.notifications.length === 0
+            ) {
 
-    });
+                list.innerHTML = `
+                    <div class="notification-empty">
+                        No notifications yet.
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            list.innerHTML =
+                "";
+
+
+            data.notifications.forEach(
+                function (notification) {
+
+                    const item =
+                        document.createElement(
+                            "a"
+                        );
+
+
+                    item.className =
+                        "notification-item";
+
+
+                    if (
+                        !notification.is_read
+                    ) {
+
+                        item.classList.add(
+                            "unread"
+                        );
+
+                    }
+
+
+                    item.href =
+                        notification.url ||
+                        "#";
+
+
+                    const avatar =
+                        notification.sender_picture
+                        ? "/static/uploads/" +
+                          notification.sender_picture
+                        : "";
+
+
+                    const avatarElement =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    avatarElement.className =
+                        "notification-avatar";
+
+
+                    avatarElement.style.display =
+                        "flex";
+
+
+                    avatarElement.style.alignItems =
+                        "center";
+
+
+                    avatarElement.style.justifyContent =
+                        "center";
+
+
+                    avatarElement.style.background =
+                        "#10253c";
+
+
+                    avatarElement.textContent =
+                        "👤";
+
+
+                    if (avatar) {
+
+                        const image =
+                            document.createElement(
+                                "img"
+                            );
+
+
+                        image.src =
+                            avatar;
+
+                        image.className =
+                            "notification-avatar";
+
+
+                        image.alt =
+                            "Profile";
+
+
+                        avatarElement.replaceWith(
+                            image
+                        );
+
+                    }
+
+
+                    const content =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    content.className =
+                        "notification-content";
+
+
+                    const message =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    message.className =
+                        "notification-message";
+
+
+                    message.textContent =
+                        notification.message ||
+                        "New notification";
+
+
+                    const time =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    time.className =
+                        "notification-time";
+
+
+                    time.textContent =
+                        notification.created_at ||
+                        "";
+
+
+                    content.appendChild(
+                        message
+                    );
+
+
+                    content.appendChild(
+                        time
+                    );
+
+
+                    item.appendChild(
+                        avatarElement
+                    );
+
+
+                    item.appendChild(
+                        content
+                    );
+
+
+                    if (
+                        !notification.is_read
+                    ) {
+
+                        const dot =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        dot.className =
+                            "notification-unread-dot";
+
+
+                        item.appendChild(
+                            dot
+                        );
+
+                    }
+
+
+                    list.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+    )
+
+    .catch(
+        function (error) {
+
+            console.error(error);
+
+            list.innerHTML = `
+                <div class="notification-empty">
+                    Notifications are temporarily unavailable.
+                </div>
+            `;
+
+        }
+    );
+
 }
 
 
 /* =========================================================
-   MARK READ
+   MARK NOTIFICATIONS READ
 ========================================================= */
 
 function markNotificationsRead() {
@@ -2914,90 +3552,40 @@ function markNotificationsRead() {
         }
     )
 
-    .then(function(response) {
+    .then(
+        function (response) {
 
-        return response.json();
+            return response.json();
 
-    })
-
-    .then(function(data) {
-
-        if (data.success) {
-
-            updateNotificationBadge();
-
-            loadNotifications();
         }
+    )
 
-    })
+    .then(
+        function (data) {
 
-    .catch(function(error) {
+            if (data.success) {
 
-        console.error(
-            "Mark read:",
-            error
-        );
+                updateNotificationBadge();
 
-    });
+                loadNotifications();
+
+            }
+
+        }
+    )
+
+    .catch(
+        function (error) {
+
+            console.error(
+                "Mark read:",
+                error
+            );
+
+        }
+    );
+
 }
 
 
-/* =========================================================
-   CLOSE NOTIFICATIONS
-========================================================= */
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        const wrapper =
-            document.querySelector(
-                ".notification-wrapper"
-            );
-
-        const panel =
-            document.getElementById(
-                "notificationPanel"
-            );
-
-
-        if (
-            wrapper &&
-            panel &&
-            !wrapper.contains(
-                event.target
-            )
-        ) {
-
-            panel.classList.remove(
-                "show"
-            );
-        }
-
-    }
-);
-
-
-/* =========================================================
-   START
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        updateNotificationBadge();
-
-    }
-);
-
-
-setInterval(
-    updateNotificationBadge,
-    5000
-);
-
-</script>
-
-</body>
-</html>
+/* ================================================

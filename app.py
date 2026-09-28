@@ -622,215 +622,688 @@ def dashboard():
 # =========================================================
 
 def save_uploaded_file(file):
-    """Validate and save an uploaded media file with a unique safe filename."""
+    """Validate and save an uploaded media file safely."""
+
     if not file or not file.filename:
         return None
 
     original = secure_filename(file.filename)
+
     if not original:
         raise ValueError("Invalid filename.")
 
     if not allowed_file(original):
         raise ValueError(
-            "Unsupported file type. Use PNG, JPG, JPEG, GIF, WEBP, MP4, WEBM or MOV."
+            "Unsupported file type. "
+            "Use PNG, JPG, JPEG, GIF, WEBP, MP4, WEBM or MOV."
         )
 
     extension = os.path.splitext(original)[1].lower()
+
     filename = f"{secrets.token_hex(16)}{extension}"
-    destination = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+
+    os.makedirs(
+        app.config["UPLOAD_FOLDER"],
+        exist_ok=True
+    )
+
+    destination = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        filename
+    )
 
     try:
-        file.save(destination)
-    except Exception as exc:
-        app.logger.exception("Upload save failed")
-        raise ValueError("Could not save the uploaded file.") from exc
 
-    if not os.path.isfile(destination) or os.path.getsize(destination) == 0:
+        file.save(destination)
+
+    except Exception as exc:
+
+        app.logger.exception(
+            "Upload save failed"
+        )
+
+        raise ValueError(
+            "Could not save the uploaded file."
+        ) from exc
+
+    if (
+        not os.path.isfile(destination)
+        or os.path.getsize(destination) == 0
+    ):
+
         try:
             os.remove(destination)
         except OSError:
             pass
-        raise ValueError("The uploaded file was empty or could not be saved.")
+
+        raise ValueError(
+            "The uploaded file was empty or could not be saved."
+        )
 
     return filename
 
 
+# =========================================================
+# CREATE POST
+# =========================================================
 
 @app.route("/create-post", methods=["POST"])
 def create_post():
-    if not login_required():
-        return redirect(url_for("login"))
 
-    caption = request.form.get("caption", "").strip()
-    file = request.files.get("media")
-
-    try:
-        filename = save_uploaded_file(file)
-    except ValueError as exc:
-        return str(exc), 400
-
-    if not caption and not filename:
-        return "Please add a caption or photo/video.", 400
-
-    conn = get_db()
-    conn.execute("""
-        INSERT INTO posts (user_id, caption, media)
-        VALUES (?, ?, ?)
-    """, (session["user_id"], caption, filename))
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("dashboard"))
-
-
-@app.route("/upload-reel", methods=["POST"])
-def upload_reel():
-    if not login_required():
-        return redirect(url_for("login"))
-
-    caption = request.form.get("caption", "").strip()
-    file = request.files.get("reel")
-
-    if not file or not file.filename:
-        return "Please select a video.", 400
-
-    original = secure_filename(file.filename)
-    if not original:
-        return "Invalid video filename.", 400
-
-    extension = os.path.splitext(original)[1].lower()
-    if extension not in {".mp4", ".webm", ".mov"}:
-        return "Only MP4, WEBM and MOV videos are allowed.", 400
-
-    try:
-        filename = save_uploaded_file(file)
-    except ValueError as exc:
-        return str(exc), 400
-
-    conn = get_db()
-    conn.execute("""
-        INSERT INTO posts (user_id, caption, media)
-        VALUES (?, ?, ?)
-    """, (session["user_id"], caption, filename))
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("reels"))
-
-
-@app.route("/delete-post/<int:post_id>", methods=["POST"])
-def delete_post(post_id):
-    if not login_required():
-        return redirect(url_for("login"))
-
-    conn = get_db()
-    cursor = conn.cursor()
-
-    post = cursor.execute("""
-        SELECT media FROM posts
-        WHERE id = ? AND user_id = ?
-    """, (post_id, session["user_id"])).fetchone()
-
-    if not post:
-        conn.close()
-        return "Post not found or you don't have permission to delete it.", 404
-
-    cursor.execute("DELETE FROM likes WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM comments WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM shares WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM posts WHERE id = ?", (post_id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("profile"))
-
-
-@app.route("/delete-reel/<int:post_id>", methods=["POST"])
-def delete_reel(post_id):
-    if not login_required():
-        return redirect(url_for("login"))
-
-    conn = get_db()
-    cursor = conn.cursor()
-
-    reel = cursor.execute("""
-        SELECT media FROM posts
-        WHERE id = ?
-        AND user_id = ?
-        AND (
-            LOWER(media) LIKE '%.mp4'
-            OR LOWER(media) LIKE '%.webm'
-            OR LOWER(media) LIKE '%.mov'
-        )
-    """, (post_id, session["user_id"])).fetchone()
-
-    if not reel:
-        conn.close()
-        return "You cannot delete this reel.", 403
-
-    if reel["media"]:
-        path = os.path.join(app.config["UPLOAD_FOLDER"], reel["media"])
-        if os.path.exists(path):
-            try:
-                os.remove(path)
-            except OSError:
-                pass
-
-    cursor.execute("DELETE FROM likes WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM comments WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM shares WHERE post_id = ?", (post_id,))
-    cursor.execute("DELETE FROM posts WHERE id = ?", (post_id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("reels"))
-
-
-@app.route("/reels")
-def reels():
     if not login_required():
         return redirect(url_for("login"))
 
     current_user = session["user_id"]
+
+    caption = request.form.get(
+        "caption",
+        ""
+    ).strip()
+
+    file = request.files.get("media")
+
+    try:
+
+        filename = save_uploaded_file(file)
+
+    except ValueError as exc:
+
+        return str(exc), 400
+
+    # Prevent completely empty posts
+    if not caption and not filename:
+
+        return (
+            "Please add a caption or photo/video.",
+            400
+        )
+
+    conn = get_db()
+
+    try:
+
+        conn.execute(
+            """
+            INSERT INTO posts
+            (
+                user_id,
+                caption,
+                media
+            )
+            VALUES (?, ?, ?)
+            """,
+            (
+                current_user,
+                caption,
+                filename
+            )
+        )
+
+        conn.commit()
+
+    except Exception:
+
+        conn.rollback()
+
+        # Remove uploaded file if database insert failed
+        if filename:
+
+            path = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                filename
+            )
+
+            if os.path.exists(path):
+
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+
+        raise
+
+    finally:
+
+        conn.close()
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+# =========================================================
+# UPLOAD REEL
+# =========================================================
+
+@app.route("/upload-reel", methods=["POST"])
+def upload_reel():
+
+    if not login_required():
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    caption = request.form.get(
+        "caption",
+        ""
+    ).strip()
+
+    file = request.files.get("reel")
+
+    if not file or not file.filename:
+
+        return (
+            "Please select a video.",
+            400
+        )
+
+    original = secure_filename(
+        file.filename
+    )
+
+    if not original:
+
+        return (
+            "Invalid video filename.",
+            400
+        )
+
+    extension = os.path.splitext(
+        original
+    )[1].lower()
+
+    if extension not in {
+        ".mp4",
+        ".webm",
+        ".mov"
+    }:
+
+        return (
+            "Only MP4, WEBM and MOV videos are allowed.",
+            400
+        )
+
+    try:
+
+        filename = save_uploaded_file(
+            file
+        )
+
+    except ValueError as exc:
+
+        return str(exc), 400
+
+    conn = get_db()
+
+    try:
+
+        conn.execute(
+            """
+            INSERT INTO posts
+            (
+                user_id,
+                caption,
+                media
+            )
+            VALUES (?, ?, ?)
+            """,
+            (
+                current_user,
+                caption,
+                filename
+            )
+        )
+
+        conn.commit()
+
+    except Exception:
+
+        conn.rollback()
+
+        if filename:
+
+            path = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                filename
+            )
+
+            if os.path.exists(path):
+
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
+
+        raise
+
+    finally:
+
+        conn.close()
+
+    return redirect(
+        url_for("reels")
+    )
+
+
+# =========================================================
+# DELETE POST
+# =========================================================
+
+@app.route(
+    "/delete-post/<int:post_id>",
+    methods=["POST"]
+)
+def delete_post(post_id):
+
+    if not login_required():
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
     conn = get_db()
     cursor = conn.cursor()
 
-    rows = cursor.execute("""
-        SELECT
-            posts.id, posts.user_id, posts.caption, posts.media,
-            posts.created_at, users.name, users.profile_picture,
-            (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count,
-            (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-            (SELECT COUNT(*) FROM shares WHERE shares.post_id = posts.id) AS share_count,
-            EXISTS(
-                SELECT 1 FROM likes
-                WHERE likes.post_id = posts.id AND likes.user_id = ?
-            ) AS user_liked
-        FROM posts
-        JOIN users ON users.id = posts.user_id
-        WHERE LOWER(posts.media) LIKE '%.mp4'
-           OR LOWER(posts.media) LIKE '%.webm'
-           OR LOWER(posts.media) LIKE '%.mov'
-        ORDER BY posts.created_at DESC
-    """, (current_user,)).fetchall()
+    # -----------------------------------------------------
+    # STEP 1: Find the post by ID only
+    # -----------------------------------------------------
 
-    reels_list = []
-    for row in rows:
-        item = dict(row)
-        item["comments"] = cursor.execute("""
-            SELECT comments.id, comments.comment,
-                   comments.created_at, users.name
-            FROM comments
-            JOIN users ON users.id = comments.user_id
-            WHERE comments.post_id = ?
-            ORDER BY comments.created_at ASC
-        """, (row["id"],)).fetchall()
-        reels_list.append(item)
+    post = cursor.execute(
+        """
+        SELECT
+            id,
+            user_id,
+            media
+        FROM posts
+        WHERE id = ?
+        """,
+        (post_id,)
+    ).fetchone()
+
+    if not post:
+
+        conn.close()
+
+        return (
+            "Post not found.",
+            404
+        )
+
+    # -----------------------------------------------------
+    # STEP 2: Check ownership separately
+    # -----------------------------------------------------
+
+    try:
+
+        post_owner = int(
+            post["user_id"]
+        )
+
+        logged_user = int(
+            current_user
+        )
+
+    except (TypeError, ValueError):
+
+        conn.close()
+
+        return (
+            "Invalid user information.",
+            400
+        )
+
+    if post_owner != logged_user:
+
+        conn.close()
+
+        return (
+            "You can delete only your own posts.",
+            403
+        )
+
+    media = post["media"]
+
+    # -----------------------------------------------------
+    # STEP 3: Delete related records
+    # -----------------------------------------------------
+
+    try:
+
+        cursor.execute(
+            "DELETE FROM likes WHERE post_id = ?",
+            (post_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM comments WHERE post_id = ?",
+            (post_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM shares WHERE post_id = ?",
+            (post_id,)
+        )
+
+        # -------------------------------------------------
+        # STEP 4: Delete post
+        # -------------------------------------------------
+
+        cursor.execute(
+            "DELETE FROM posts WHERE id = ?",
+            (post_id,)
+        )
+
+        conn.commit()
+
+    except Exception:
+
+        conn.rollback()
+
+        conn.close()
+
+        raise
 
     conn.close()
-    return render_template("reels.html", reels=reels_list)
+
+    # -----------------------------------------------------
+    # STEP 5: Delete uploaded media file
+    # -----------------------------------------------------
+
+    if media:
+
+        media_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            media
+        )
+
+        if os.path.exists(media_path):
+
+            try:
+
+                os.remove(media_path)
+
+            except OSError:
+
+                app.logger.warning(
+                    "Could not delete media file: %s",
+                    media_path
+                )
+
+    # -----------------------------------------------------
+    # STEP 6: Return to dashboard
+    # -----------------------------------------------------
+
+    return redirect(
+        url_for("dashboard")
+    )
+
+
+# =========================================================
+# DELETE REEL
+# =========================================================
+
+@app.route(
+    "/delete-reel/<int:post_id>",
+    methods=["POST"]
+)
+def delete_reel(post_id):
+
+    if not login_required():
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    # -----------------------------------------------------
+    # Find reel
+    # -----------------------------------------------------
+
+    reel = cursor.execute(
+        """
+        SELECT
+            id,
+            user_id,
+            media
+        FROM posts
+        WHERE id = ?
+        """,
+        (post_id,)
+    ).fetchone()
+
+    if not reel:
+
+        conn.close()
+
+        return (
+            "Reel not found.",
+            404
+        )
+
+    # -----------------------------------------------------
+    # Check ownership
+    # -----------------------------------------------------
+
+    try:
+
+        reel_owner = int(
+            reel["user_id"]
+        )
+
+        logged_user = int(
+            current_user
+        )
+
+    except (TypeError, ValueError):
+
+        conn.close()
+
+        return (
+            "Invalid user information.",
+            400
+        )
+
+    if reel_owner != logged_user:
+
+        conn.close()
+
+        return (
+            "You can delete only your own reels.",
+            403
+        )
+
+    media = reel["media"] or ""
+
+    extension = os.path.splitext(
+        media
+    )[1].lower()
+
+    # -----------------------------------------------------
+    # Confirm this is actually a video
+    # -----------------------------------------------------
+
+    if extension not in {
+        ".mp4",
+        ".webm",
+        ".mov"
+    }:
+
+        conn.close()
+
+        return (
+            "This post is not a reel.",
+            400
+        )
+
+    # -----------------------------------------------------
+    # Delete related records
+    # -----------------------------------------------------
+
+    try:
+
+        cursor.execute(
+            "DELETE FROM likes WHERE post_id = ?",
+            (post_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM comments WHERE post_id = ?",
+            (post_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM shares WHERE post_id = ?",
+            (post_id,)
+        )
+
+        cursor.execute(
+            "DELETE FROM posts WHERE id = ?",
+            (post_id,)
+        )
+
+        conn.commit()
+
+    except Exception:
+
+        conn.rollback()
+
+        conn.close()
+
+        raise
+
+    conn.close()
+
+    # -----------------------------------------------------
+    # Delete video file
+    # -----------------------------------------------------
+
+    if media:
+
+        media_path = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            media
+        )
+
+        if os.path.exists(media_path):
+
+            try:
+
+                os.remove(media_path)
+
+            except OSError:
+
+                app.logger.warning(
+                    "Could not delete reel file: %s",
+                    media_path
+                )
+
+    return redirect(
+        url_for("reels")
+    )
+
+
+# =========================================================
+# REELS
+# =========================================================
+
+@app.route("/reels")
+def reels():
+
+    if not login_required():
+        return redirect(url_for("login"))
+
+    current_user = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    rows = cursor.execute(
+        """
+        SELECT
+            posts.id,
+            posts.user_id,
+            posts.caption,
+            posts.media,
+            posts.created_at,
+            users.name,
+            users.profile_picture,
+
+            (
+                SELECT COUNT(*)
+                FROM likes
+                WHERE likes.post_id = posts.id
+            ) AS like_count,
+
+            (
+                SELECT COUNT(*)
+                FROM comments
+                WHERE comments.post_id = posts.id
+            ) AS comment_count,
+
+            (
+                SELECT COUNT(*)
+                FROM shares
+                WHERE shares.post_id = posts.id
+            ) AS share_count,
+
+            EXISTS(
+                SELECT 1
+                FROM likes
+                WHERE likes.post_id = posts.id
+                AND likes.user_id = ?
+            ) AS user_liked
+
+        FROM posts
+
+        JOIN users
+        ON users.id = posts.user_id
+
+        WHERE
+            LOWER(posts.media) LIKE '%.mp4'
+            OR LOWER(posts.media) LIKE '%.webm'
+            OR LOWER(posts.media) LIKE '%.mov'
+
+        ORDER BY posts.created_at DESC
+        """,
+        (current_user,)
+    ).fetchall()
+
+    reels_list = []
+
+    for row in rows:
+
+        item = dict(row)
+
+        item["comments"] = cursor.execute(
+            """
+            SELECT
+                comments.id,
+                comments.comment,
+                comments.created_at,
+                users.name
+
+            FROM comments
+
+            JOIN users
+            ON users.id = comments.user_id
+
+            WHERE comments.post_id = ?
+
+            ORDER BY comments.created_at ASC
+            """,
+            (row["id"],)
+        ).fetchall()
+
+        reels_list.append(
+            item
+        )
+
+    conn.close()
+
+    return render_template(
+        "reels.html",
+        reels=reels_list
+    )
 
 
 @app.route("/like/<int:post_id>", methods=["POST"])

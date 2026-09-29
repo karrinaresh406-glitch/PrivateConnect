@@ -1,21 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Login - PrivateConnect</title>
 
     <style>
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+
         body {
             font-family: Arial, sans-serif;
+
             background: #071426;
+
             color: white;
 
             min-height: 100vh;
@@ -26,6 +35,7 @@
 
             padding: 20px;
         }
+
 
         .login-container {
             width: 100%;
@@ -39,19 +49,23 @@
 
             border: 1px solid #193858;
 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            box-shadow:
+                0 10px 30px rgba(0,0,0,0.35);
         }
+
 
         .logo {
             text-align: center;
 
             font-size: 28px;
+
             font-weight: bold;
 
             color: #4da3ff;
 
             margin-bottom: 8px;
         }
+
 
         .subtitle {
             text-align: center;
@@ -63,11 +77,13 @@
             margin-bottom: 28px;
         }
 
+
         h2 {
             text-align: center;
 
             margin-bottom: 22px;
         }
+
 
         label {
             display: block;
@@ -78,6 +94,7 @@
 
             color: #dce8f5;
         }
+
 
         input {
             width: 100%;
@@ -99,11 +116,101 @@
             outline: none;
         }
 
+
         input:focus {
             border-color: #238cff;
         }
 
-        button {
+
+        /* =====================================================
+           PASSWORD FIELD
+        ===================================================== */
+
+        .password-wrapper {
+            position: relative;
+
+            width: 100%;
+        }
+
+
+        .password-wrapper input {
+            padding-right: 50px;
+        }
+
+
+        /* =====================================================
+           SOCIAL MEDIA STYLE EYE
+        ===================================================== */
+
+        .password-eye {
+            position: absolute;
+
+            right: 10px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 34px;
+
+            height: 34px;
+
+            padding: 0;
+
+            margin: 0;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            color: #8fa3b8;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            cursor: pointer;
+
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        .password-eye:hover {
+            background: transparent;
+
+            color: #4da3ff;
+        }
+
+
+        .password-eye:active {
+            transform:
+                translateY(-50%)
+                scale(0.92);
+        }
+
+
+        .password-eye svg {
+            width: 21px;
+
+            height: 21px;
+
+            fill: none;
+
+            stroke: currentColor;
+
+            stroke-width: 1.8;
+
+            stroke-linecap: round;
+
+            stroke-linejoin: round;
+        }
+
+
+        button[type="submit"] {
             width: 100%;
 
             padding: 13px;
@@ -123,17 +230,22 @@
             cursor: pointer;
         }
 
-        button:hover {
+
+        button[type="submit"]:hover {
             background: #1478df;
         }
 
-        /* Forgot Password */
+
+        /* =====================================================
+           FORGOT PASSWORD
+        ===================================================== */
 
         .forgot-password {
             text-align: center;
 
             margin-top: 14px;
         }
+
 
         .forgot-password a {
             color: #4da3ff;
@@ -143,9 +255,15 @@
             font-size: 14px;
         }
 
+
         .forgot-password a:hover {
             text-decoration: underline;
         }
+
+
+        /* =====================================================
+           SIGN UP
+        ===================================================== */
 
         .signup-link {
             text-align: center;
@@ -157,6 +275,7 @@
             font-size: 14px;
         }
 
+
         .signup-link a {
             color: #4da3ff;
 
@@ -165,9 +284,15 @@
             font-weight: bold;
         }
 
+
         .signup-link a:hover {
             text-decoration: underline;
         }
+
+
+        /* =====================================================
+           HOME
+        ===================================================== */
 
         .home-link {
             display: block;
@@ -183,31 +308,51 @@
             font-size: 13px;
         }
 
+
         .home-link:hover {
             color: #4da3ff;
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
     <div class="login-container">
+
 
         <div class="logo">
             PrivateConnect
         </div>
 
+
         <div class="subtitle">
             Connect privately. Connect better.
         </div>
 
-        <h2>Login</h2>
 
-        <form method="POST" action="{{ url_for('login') }}">
+        <h2>
+            Login
+        </h2>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('login') }}"
+        >
+
+
+            <!-- =================================================
+                 EMAIL
+            ================================================== -->
 
             <label for="email">
                 Email
             </label>
+
 
             <input
                 type="email"
@@ -217,38 +362,151 @@
                 required
             >
 
+
+            <!-- =================================================
+                 PASSWORD
+            ================================================== -->
+
             <label for="password">
                 Password
             </label>
 
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-            >
+
+            <div class="password-wrapper">
+
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+
+                <button
+                    type="button"
+                    class="password-eye"
+                    id="passwordEye"
+                    onclick="togglePassword()"
+                    aria-label="Show password"
+                >
+
+
+                    <!-- OPEN EYE -->
+
+                    <svg
+                        id="eyeOpen"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+
+                        <path
+                            d="M2.5 12
+                               S6 5.5 12 5.5
+                               S21.5 12 21.5 12
+                               S18 18.5 12 18.5
+                               S2.5 12 2.5 12Z"
+                        ></path>
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="2.8"
+                        ></circle>
+
+                    </svg>
+
+
+                    <!-- CLOSED EYE -->
+
+                    <svg
+                        id="eyeClosed"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        style="display: none;"
+                    >
+
+                        <path
+                            d="M3 3L21 21"
+                        ></path>
+
+                        <path
+                            d="M10.6 10.6
+                               A2 2 0 0 0
+                               13.4 13.4"
+                        ></path>
+
+                        <path
+                            d="M9.4 5.8
+                               A10.7 10.7 0 0 1
+                               12 5.5
+                               C18 5.5 21.5 12
+                               21.5 12
+                               C20.5 13.8 19.3 15.2 18
+                               16.3"
+                        ></path>
+
+                        <path
+                            d="M6.2 6.2
+                               C3.7 8.2 2.5 12
+                               2.5 12
+                               S6 18.5 12 18.5
+                               C13.7 18.5 15.2 18.1 16.5 17.5"
+                        ></path>
+
+                    </svg>
+
+
+                </button>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 LOGIN BUTTON
+            ================================================== -->
 
             <button type="submit">
                 Login
             </button>
 
+
         </form>
 
-        <!-- Forgot Password -->
+
+        <!-- =====================================================
+             FORGOT PASSWORD
+        ====================================================== -->
 
         <div class="forgot-password">
+
             <a href="{{ url_for('forgot_password') }}">
                 Forgot Password?
             </a>
+
         </div>
 
+
+        <!-- =====================================================
+             SIGN UP
+        ====================================================== -->
+
         <div class="signup-link">
+
             Don't have an account?
+
             <a href="{{ url_for('signup') }}">
                 Sign Up
             </a>
+
         </div>
+
+
+        <!-- =====================================================
+             HOME
+        ====================================================== -->
 
         <a
             href="{{ url_for('home') }}"
@@ -257,7 +515,65 @@
             ← Back to Home
         </a>
 
+
     </div>
+
+
+    <!-- =========================================================
+         PASSWORD EYE JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const eyeOpen =
+                document.getElementById("eyeOpen");
+
+            const eyeClosed =
+                document.getElementById("eyeClosed");
+
+            const eyeButton =
+                document.getElementById("passwordEye");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eyeOpen.style.display = "none";
+
+                eyeClosed.style.display = "block";
+
+                eyeButton.setAttribute(
+                    "aria-label",
+                    "Hide password"
+                );
+
+            }
+
+            else {
+
+                password.type = "password";
+
+                eyeOpen.style.display = "block";
+
+                eyeClosed.style.display = "none";
+
+                eyeButton.setAttribute(
+                    "aria-label",
+                    "Show password"
+                );
+
+            }
+
+        }
+
+    </script>
+
 
 </body>
 </html>

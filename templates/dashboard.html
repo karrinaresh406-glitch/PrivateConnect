@@ -2288,46 +2288,14 @@ video.post-media {
    POST MEDIA PREVIEW
 ========================================================= */
 
-const postMediaInput =
-    document.getElementById(
-        "postMediaInput"
-    );
-
-const mediaPreviewContainer =
-    document.getElementById(
-        "mediaPreviewContainer"
-    );
-
-const mediaImagePreview =
-    document.getElementById(
-        "mediaImagePreview"
-    );
-
-const mediaVideoPreview =
-    document.getElementById(
-        "mediaVideoPreview"
-    );
-
-const removePreviewButton =
-    document.getElementById(
-        "removePreviewButton"
-    );
-
-const selectedFileName =
-    document.getElementById(
-        "selectedFileName"
-    );
-
-const createPostForm =
-    document.getElementById(
-        "createPostForm"
-    );
-
-const postButton =
-    document.getElementById(
-        "postButton"
-    );
-
+const postMediaInput = document.getElementById("postMediaInput");
+const mediaPreviewContainer = document.getElementById("mediaPreviewContainer");
+const mediaImagePreview = document.getElementById("mediaImagePreview");
+const mediaVideoPreview = document.getElementById("mediaVideoPreview");
+const removePreviewButton = document.getElementById("removePreviewButton");
+const selectedFileName = document.getElementById("selectedFileName");
+const createPostForm = document.getElementById("createPostForm");
+const postButton = document.getElementById("postButton");
 
 let previewObjectURL = null;
 
@@ -2338,265 +2306,163 @@ let previewObjectURL = null;
 
 if (postMediaInput) {
 
-    postMediaInput.addEventListener(
-        "change",
-        function () {
+    postMediaInput.addEventListener("change", function () {
 
-            const file =
-                this.files &&
-                this.files[0];
+        const file = this.files && this.files[0];
 
+        if (!file) {
+            clearMediaPreview();
+            return;
+        }
 
-            if (!file) {
+        const maxSize = 100 * 1024 * 1024;
 
-                clearMediaPreview();
+        if (file.size > maxSize) {
 
-                return;
-            }
+            alert("This file is too large. Maximum size is 100 MB.");
 
+            this.value = "";
+            clearMediaPreview();
 
-            /*
-             * Maximum 100 MB
-             */
+            return;
+        }
 
-            const maxSize =
-                100 * 1024 * 1024;
+        const allowedTypes = [
+            "image/png",
+            "image/jpeg",
+            "image/gif",
+            "image/webp",
+            "video/mp4",
+            "video/webm",
+            "video/quicktime"
+        ];
 
+        if (!allowedTypes.includes(file.type)) {
 
-            if (file.size > maxSize) {
-
-                alert(
-                    "This file is too large. Maximum size is 100 MB."
-                );
-
-                this.value = "";
-
-                clearMediaPreview();
-
-                return;
-            }
-
-
-            /*
-             * Allowed types
-             */
-
-            const allowedTypes = [
-
-                "image/png",
-                "image/jpeg",
-                "image/gif",
-                "image/webp",
-
-                "video/mp4",
-                "video/webm",
-                "video/quicktime"
-
-            ];
-
-
-            if (
-                !allowedTypes.includes(
-                    file.type
-                )
-            ) {
-
-                alert(
-                    "Please select a valid JPG, PNG, GIF, WEBP, MP4, WEBM or MOV file."
-                );
-
-                this.value = "";
-
-                clearMediaPreview();
-
-                return;
-            }
-
-
-            /*
-             * Remove old object URL
-             */
-
-            if (previewObjectURL) {
-
-                URL.revokeObjectURL(
-                    previewObjectURL
-                );
-
-            }
-
-
-            /*
-             * Create local browser preview.
-             *
-             * IMPORTANT:
-             * This does NOT upload the file.
-             */
-
-            previewObjectURL =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            /*
-             * Show file name
-             */
-
-            if (selectedFileName) {
-
-                selectedFileName.textContent =
-                    file.name;
-
-            }
-
-
-            /*
-             * Show preview container
-             */
-
-            mediaPreviewContainer.classList.add(
-                "show"
+            alert(
+                "Please select a valid JPG, PNG, GIF, WEBP, MP4, WEBM or MOV file."
             );
 
+            this.value = "";
+            clearMediaPreview();
 
-            /*
-             * IMAGE
-             */
+            return;
+        }
 
-            if (
-                file.type.startsWith(
-                    "image/"
-                )
-            ) {
+        if (previewObjectURL) {
+            URL.revokeObjectURL(previewObjectURL);
+        }
 
-                mediaImagePreview.src =
-                    previewObjectURL;
+        previewObjectURL = URL.createObjectURL(file);
 
-                mediaImagePreview.style.display =
-                    "block";
+        if (selectedFileName) {
+            selectedFileName.textContent = file.name;
+        }
 
+        if (mediaPreviewContainer) {
+            mediaPreviewContainer.classList.add("show");
+        }
 
-                mediaVideoPreview.pause();
+        /* IMAGE */
 
-                mediaVideoPreview.removeAttribute(
-                    "src"
-                );
+        if (file.type.startsWith("image/")) {
 
-                mediaVideoPreview.style.display =
-                    "none";
+            if (mediaImagePreview) {
+
+                mediaImagePreview.src = previewObjectURL;
+                mediaImagePreview.style.display = "block";
 
             }
 
+            if (mediaVideoPreview) {
 
-            /*
-             * VIDEO
-             */
-
-            else if (
-                file.type.startsWith(
-                    "video/"
-                )
-            ) {
-
-                mediaVideoPreview.src =
-                    previewObjectURL;
-
-                mediaVideoPreview.style.display =
-                    "block";
-
-
-                mediaImagePreview.removeAttribute(
-                    "src"
-                );
-
-                mediaImagePreview.style.display =
-                    "none";
+                mediaVideoPreview.pause();
+                mediaVideoPreview.removeAttribute("src");
+                mediaVideoPreview.load();
+                mediaVideoPreview.style.display = "none";
 
             }
 
         }
-    );
+
+        /* VIDEO */
+
+        else if (file.type.startsWith("video/")) {
+
+            if (mediaVideoPreview) {
+
+                mediaVideoPreview.src = previewObjectURL;
+                mediaVideoPreview.style.display = "block";
+
+            }
+
+            if (mediaImagePreview) {
+
+                mediaImagePreview.removeAttribute("src");
+                mediaImagePreview.style.display = "none";
+
+            }
+
+        }
+
+    });
 
 }
 
 
 /* =========================================================
-   REMOVE SELECTED MEDIA
+   REMOVE MEDIA PREVIEW
 ========================================================= */
 
 if (removePreviewButton) {
 
-    removePreviewButton.addEventListener(
-        "click",
-        function () {
+    removePreviewButton.addEventListener("click", function () {
 
-            if (postMediaInput) {
-
-                postMediaInput.value =
-                    "";
-
-            }
-
-            clearMediaPreview();
-
+        if (postMediaInput) {
+            postMediaInput.value = "";
         }
-    );
+
+        clearMediaPreview();
+
+    });
 
 }
 
 
 /* =========================================================
-   CLEAR PREVIEW
+   CLEAR MEDIA PREVIEW
 ========================================================= */
 
 function clearMediaPreview() {
 
-    if (!mediaPreviewContainer) {
-        return;
+    if (mediaPreviewContainer) {
+        mediaPreviewContainer.classList.remove("show");
     }
 
+    if (mediaImagePreview) {
 
-    mediaPreviewContainer.classList.remove(
-        "show"
-    );
+        mediaImagePreview.style.display = "none";
+        mediaImagePreview.removeAttribute("src");
 
+    }
 
-    mediaImagePreview.style.display =
-        "none";
+    if (mediaVideoPreview) {
 
-    mediaVideoPreview.style.display =
-        "none";
+        mediaVideoPreview.pause();
+        mediaVideoPreview.style.display = "none";
+        mediaVideoPreview.removeAttribute("src");
+        mediaVideoPreview.load();
 
-
-    mediaImagePreview.removeAttribute(
-        "src"
-    );
-
-
-    mediaVideoPreview.pause();
-
-    mediaVideoPreview.removeAttribute(
-        "src"
-    );
-
+    }
 
     if (selectedFileName) {
-
-        selectedFileName.textContent =
-            "";
-
+        selectedFileName.textContent = "";
     }
-
 
     if (previewObjectURL) {
 
-        URL.revokeObjectURL(
-            previewObjectURL
-        );
-
-        previewObjectURL =
-            null;
+        URL.revokeObjectURL(previewObjectURL);
+        previewObjectURL = null;
 
     }
 
@@ -2604,32 +2470,21 @@ function clearMediaPreview() {
 
 
 /* =========================================================
-   POST SUBMIT
+   CREATE POST SUBMIT
 ========================================================= */
 
 if (createPostForm) {
 
-    createPostForm.addEventListener(
-        "submit",
-        function () {
+    createPostForm.addEventListener("submit", function () {
 
-            /*
-             * Only here does the browser actually
-             * send the selected file to Flask.
-             */
+        if (postButton) {
 
-            if (postButton) {
-
-                postButton.disabled =
-                    true;
-
-                postButton.textContent =
-                    "Posting...";
-
-            }
+            postButton.disabled = true;
+            postButton.textContent = "Posting...";
 
         }
-    );
+
+    });
 
 }
 
@@ -2640,386 +2495,297 @@ if (createPostForm) {
 
 function focusComment(postId) {
 
-    const input =
-        document.querySelector(
-            "#comments-" +
-            postId +
-            " input"
-        );
-
+    const input = document.querySelector(
+        "#comments-" + postId + " input[name='comment']"
+    );
 
     if (!input) {
         return;
     }
 
-
     input.focus();
 
+    setTimeout(function () {
 
-    setTimeout(
-        function () {
+        input.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
 
-            input.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
-            });
-
-        },
-        100
-    );
+    }, 100);
 
 }
 
 
 /* =========================================================
-   LIKE
+   LIKE POST
 ========================================================= */
 
-function likePost(
-    postId,
-    button
-) {
+async function likePost(postId, button) {
 
-    fetch(
-        "/like/" + postId,
-        {
-            method: "POST",
+    if (!button) {
+        return;
+    }
 
-            headers: {
-                "X-Requested-With":
-                    "XMLHttpRequest"
-            }
-        }
-    )
+    button.disabled = true;
 
-    .then(
-        function (response) {
+    try {
 
-            if (!response.ok) {
+        const response = await fetch(
+            "/like/" + encodeURIComponent(postId),
+            {
+                method: "POST",
+                credentials: "same-origin",
 
-                throw new Error(
-                    "Like failed"
-                );
-
-            }
-
-            return response.json();
-
-        }
-    )
-
-    .then(
-        function (data) {
-
-            if (!data.success) {
-
-                alert(
-                    data.error ||
-                    data.message ||
-                    "Unable to like post."
-                );
-
-                return;
-            }
-
-
-            const icon =
-                button.querySelector(
-                    ".like-icon"
-                );
-
-            const count =
-                button.querySelector(
-                    ".like-count"
-                );
-
-
-            if (data.liked) {
-
-                button.classList.add(
-                    "liked"
-                );
-
-
-                if (icon) {
-
-                    icon.style.fill =
-                        "currentColor";
-
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
                 }
-
-            } else {
-
-                button.classList.remove(
-                    "liked"
-                );
-
-
-                if (icon) {
-
-                    icon.style.fill =
-                        "none";
-
-                }
-
             }
+        );
 
+        const responseText = await response.text();
 
-            if (
-                count &&
-                data.like_count !==
-                undefined
-            ) {
+        let data;
 
-                count.textContent =
-                    data.like_count;
+        try {
 
-            }
+            data = JSON.parse(responseText);
 
-        }
-    )
+        } catch (error) {
 
-    .catch(
-        function (error) {
+            console.error(
+                "LIKE SERVER RESPONSE:",
+                responseText
+            );
 
-            console.error(error);
-
-            alert(
-                "Unable to like post."
+            throw new Error(
+                "Server returned an invalid response."
             );
 
         }
-    );
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.error || "Unable to like this post."
+            );
+
+        }
+
+        /* Update button */
+
+        if (data.liked) {
+
+            button.classList.add("liked");
+
+        } else {
+
+            button.classList.remove("liked");
+
+        }
+
+        /* Update count */
+
+        const count = button.querySelector(".like-count");
+
+        if (count) {
+
+            count.textContent =
+                data.like_count ?? 0;
+
+        }
+
+    } catch (error) {
+
+        console.error("LIKE ERROR:", error);
+
+        alert(
+            error.message ||
+            "Unable to like this post."
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+    }
 
 }
 
 
 /* =========================================================
-   COMMENT
+   SUBMIT COMMENT
 ========================================================= */
 
-function submitComment(
-    event,
-    postId,
-    form
-) {
+async function submitComment(event, postId, form) {
 
     event.preventDefault();
 
+    if (!form) {
+        return false;
+    }
 
-    const input =
-        form.querySelector(
-            "input[name='comment']"
-        );
+    const input = form.querySelector(
+        "input[name='comment']"
+    );
 
-    const button =
-        form.querySelector(
-            "button"
-        );
-
+    const button = form.querySelector(
+        "button[type='submit']"
+    );
 
     if (!input || !button) {
-
         return false;
-
     }
 
-
-    const text =
-        input.value.trim();
-
+    const text = input.value.trim();
 
     if (!text) {
-
         return false;
-
     }
 
+    button.disabled = true;
+    button.textContent = "...";
 
-    button.disabled =
-        true;
+    try {
 
-    button.textContent =
-        "…";
+        const body = new URLSearchParams();
 
+        body.append("comment", text);
 
-    fetch(
-        "/comment/" + postId,
-        {
-            method: "POST",
+        const response = await fetch(
+            "/comment/" + encodeURIComponent(postId),
+            {
+                method: "POST",
+                credentials: "same-origin",
 
-            headers: {
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8",
 
-                "Content-Type":
-                    "application/x-www-form-urlencoded",
+                    "X-Requested-With":
+                        "XMLHttpRequest"
+                },
 
-                "X-Requested-With":
-                    "XMLHttpRequest"
-
-            },
-
-            body:
-                new URLSearchParams({
-                    comment: text
-                })
-
-        }
-    )
-
-    .then(
-        function (response) {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Comment failed"
-                );
-
+                body: body.toString()
             }
+        );
 
-            return response.json();
+        const responseText = await response.text();
 
-        }
-    )
+        let data;
 
-    .then(
-        function (data) {
+        try {
 
-            if (!data.success) {
+            data = JSON.parse(responseText);
 
-                alert(
-                    data.error ||
-                    data.message ||
-                    "Unable to add comment."
-                );
+        } catch (error) {
 
-                return;
-
-            }
-
-
-            const commentsBox =
-                document.querySelector(
-                    "#comments-" +
-                    postId
-                );
-
-
-            if (!commentsBox) {
-
-                return;
-
-            }
-
-
-            const commentForm =
-                commentsBox.querySelector(
-                    ".comment-form"
-                );
-
-
-            const newComment =
-                document.createElement(
-                    "div"
-                );
-
-
-            newComment.className =
-                "comment";
-
-
-            const name =
-                document.createElement(
-                    "strong"
-                );
-
-
-            name.textContent =
-                data.name ||
-                "You";
-
-
-            newComment.appendChild(
-                name
+            console.error(
+                "COMMENT SERVER RESPONSE:",
+                responseText
             );
 
-
-            newComment.appendChild(
-                document.createTextNode(
-                    " " +
-                    (
-                        data.comment ||
-                        text
-                    )
-                )
+            throw new Error(
+                "Server returned an invalid response."
             );
-
-
-            commentsBox.insertBefore(
-                newComment,
-                commentForm
-            );
-
-
-            input.value =
-                "";
-
-
-            const post =
-                document.querySelector(
-                    "#post-" +
-                    postId
-                );
-
-
-            if (post) {
-
-                const count =
-                    post.querySelector(
-                        ".comment-count"
-                    );
-
-
-                if (
-                    count &&
-                    data.comment_count !==
-                    undefined
-                ) {
-
-                    count.textContent =
-                        data.comment_count;
-
-                }
-
-            }
 
         }
-    )
 
-    .catch(
-        function (error) {
+        if (!response.ok || !data.success) {
 
-            console.error(error);
-
-            alert(
+            throw new Error(
+                data.error ||
                 "Unable to add comment."
             );
 
         }
-    )
 
-    .finally(
-        function () {
+        /* Find comments box */
 
-            button.disabled =
-                false;
+        const commentsBox = document.querySelector(
+            "#comments-" + postId
+        );
 
-            button.textContent =
-                "Send";
+        if (commentsBox) {
+
+            const commentForm =
+                commentsBox.querySelector(".comment-form");
+
+            const newComment =
+                document.createElement("div");
+
+            newComment.className = "comment";
+
+            const name =
+                document.createElement("strong");
+
+            name.textContent =
+                data.name || "You";
+
+            newComment.appendChild(name);
+
+            newComment.appendChild(
+                document.createTextNode(
+                    " " + (data.comment || text)
+                )
+            );
+
+            if (commentForm) {
+
+                commentsBox.insertBefore(
+                    newComment,
+                    commentForm
+                );
+
+            } else {
+
+                commentsBox.appendChild(
+                    newComment
+                );
+
+            }
 
         }
-    );
 
+        /* Clear input */
+
+        input.value = "";
+
+        /* Update comment count */
+
+        const post = document.querySelector(
+            "#post-" + postId
+        );
+
+        if (post) {
+
+            const count =
+                post.querySelector(".comment-count");
+
+            if (count) {
+
+                count.textContent =
+                    data.comment_count ?? 0;
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error("COMMENT ERROR:", error);
+
+        alert(
+            error.message ||
+            "Unable to add comment."
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Send";
+
+    }
 
     return false;
 
@@ -3027,126 +2793,157 @@ function submitComment(
 
 
 /* =========================================================
-   SHARE
+   SHARE POST
 ========================================================= */
 
-function sharePost(postId) {
+async function sharePost(postId) {
 
-    fetch(
-        "/share/" + postId,
-        {
-            method: "POST"
-        }
-    )
+    try {
 
-    .then(
-        function (response) {
+        const response = await fetch(
+            "/share/" + encodeURIComponent(postId),
+            {
+                method: "POST",
+                credentials: "same-origin",
 
-            if (!response.ok) {
-
-                throw new Error(
-                    "Share failed"
-                );
-
+                headers: {
+                    "X-Requested-With":
+                        "XMLHttpRequest"
+                }
             }
+        );
 
-            return response.json();
+        const responseText = await response.text();
 
-        }
-    )
+        let data;
 
-    .then(
-        function (data) {
+        try {
 
-            if (!data.success) {
+            data = JSON.parse(responseText);
 
-                alert(
-                    data.error ||
-                    "Unable to share."
-                );
+        } catch (error) {
 
-                return;
+            console.error(
+                "SHARE SERVER RESPONSE:",
+                responseText
+            );
 
-            }
-
-
-            if (
-                navigator.share
-            ) {
-
-                navigator.share({
-
-                    title:
-                        "PrivateConnect",
-
-                    text:
-                        "Check out this post",
-
-                    url:
-                        data.url
-
-                }).catch(
-                    function () {}
-                );
-
-                return;
-
-            }
-
-
-            if (
-                navigator.clipboard &&
-                navigator.clipboard.writeText
-            ) {
-
-                navigator.clipboard.writeText(
-                    data.url
-                )
-
-                .then(
-                    function () {
-
-                        alert(
-                            "Post link copied!"
-                        );
-
-                    }
-                )
-
-                .catch(
-                    function () {
-
-                        prompt(
-                            "Copy this link:",
-                            data.url
-                        );
-
-                    }
-                );
-
-            } else {
-
-                prompt(
-                    "Copy this link:",
-                    data.url
-                );
-
-            }
-
-        }
-    )
-
-    .catch(
-        function (error) {
-
-            console.error(error);
-
-            alert(
-                "Unable to share post."
+            throw new Error(
+                "Server returned an invalid response."
             );
 
         }
-    );
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.error ||
+                "Unable to share this post."
+            );
+
+        }
+
+        /* Update share count if available */
+
+        const post = document.querySelector(
+            "#post-" + postId
+        );
+
+        if (post) {
+
+            const shareCount =
+                post.querySelector(".share-count");
+
+            if (shareCount) {
+
+                shareCount.textContent =
+                    data.count ?? 0;
+
+            }
+
+        }
+
+        /* Native share */
+
+        if (navigator.share && data.url) {
+
+            try {
+
+                await navigator.share({
+
+                    title: "PrivateConnect",
+
+                    text: "Check out this post",
+
+                    url: data.url
+
+                });
+
+                return;
+
+            } catch (shareError) {
+
+                if (
+                    shareError.name ===
+                    "AbortError"
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+        /* Clipboard */
+
+        if (
+            navigator.clipboard &&
+            data.url
+        ) {
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    data.url
+                );
+
+                alert("Post link copied!");
+
+                return;
+
+            } catch (clipboardError) {
+
+                console.error(
+                    clipboardError
+                );
+
+            }
+
+        }
+
+        /* Final fallback */
+
+        if (data.url) {
+
+            window.prompt(
+                "Copy this link:",
+                data.url
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error("SHARE ERROR:", error);
+
+        alert(
+            error.message ||
+            "Unable to share this post."
+        );
+
+    }
 
 }
 
@@ -3158,77 +2955,61 @@ function sharePost(postId) {
 function updateNotificationBadge() {
 
     fetch(
-        "/notification-count"
-    )
-
-    .then(
-        function (response) {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Notification count failed"
-                );
-
-            }
-
-            return response.json();
-
+        "/notification-count",
+        {
+            credentials: "same-origin"
         }
     )
 
-    .then(
-        function (data) {
+    .then(function (response) {
 
-            const badge =
-                document.getElementById(
-                    "notificationBadge"
-                );
-
-
-            if (!badge) {
-
-                return;
-
-            }
-
-
-            const count =
-                Number(
-                    data.count || 0
-                );
-
-
-            if (count > 0) {
-
-                badge.textContent =
-                    count > 99
-                        ? "99+"
-                        : count;
-
-                badge.style.display =
-                    "flex";
-
-            } else {
-
-                badge.style.display =
-                    "none";
-
-            }
-
+        if (!response.ok) {
+            throw new Error("Notification count failed");
         }
-    )
 
-    .catch(
-        function (error) {
+        return response.json();
 
-            console.error(
-                "Notification:",
-                error
+    })
+
+    .then(function (data) {
+
+        const badge =
+            document.getElementById(
+                "notificationBadge"
             );
 
+        if (!badge) {
+            return;
         }
-    );
+
+        const count =
+            Number(data.count || 0);
+
+        if (count > 0) {
+
+            badge.textContent =
+                count > 99 ? "99+" : count;
+
+            badge.style.display =
+                "flex";
+
+        } else {
+
+            badge.style.display =
+                "none";
+
+        }
+
+    })
+
+    .catch(function (error) {
+
+        console.error(
+            "Notification:",
+            error
+        );
+
+    });
 
 }
 
@@ -3244,23 +3025,14 @@ function toggleNotifications() {
             "notificationPanel"
         );
 
-
     if (!panel) {
-
         return;
-
     }
 
-
-    panel.classList.toggle(
-        "show"
-    );
-
+    panel.classList.toggle("show");
 
     if (
-        panel.classList.contains(
-            "show"
-        )
+        panel.classList.contains("show")
     ) {
 
         loadNotifications();
@@ -3281,13 +3053,9 @@ function loadNotifications() {
             "notificationList"
         );
 
-
     if (!list) {
-
         return;
-
     }
-
 
     list.innerHTML = `
         <div class="notification-loading">
@@ -3295,246 +3063,167 @@ function loadNotifications() {
         </div>
     `;
 
-
     fetch(
-        "/notifications"
-    )
-
-    .then(
-        function (response) {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Notifications failed"
-                );
-
-            }
-
-            return response.json();
-
+        "/notifications",
+        {
+            credentials: "same-origin"
         }
     )
 
-    .then(
-        function (data) {
+    .then(function (response) {
 
-            if (
-                !data.notifications ||
-                data.notifications.length === 0
-            ) {
+        if (!response.ok) {
+            throw new Error("Notifications failed");
+        }
 
-                list.innerHTML = `
-                    <div class="notification-empty">
-                        No notifications yet.
-                    </div>
-                `;
+        return response.json();
 
-                return;
+    })
 
-            }
+    .then(function (data) {
 
+        if (
+            !data.notifications ||
+            data.notifications.length === 0
+        ) {
 
-            list.innerHTML =
-                "";
+            list.innerHTML = `
+                <div class="notification-empty">
+                    No notifications yet.
+                </div>
+            `;
 
+            return;
 
-            data.notifications.forEach(
-                function (notification) {
+        }
 
-                    const item =
-                        document.createElement(
-                            "a"
-                        );
+        list.innerHTML = "";
 
+        data.notifications.forEach(
+            function (notification) {
 
-                    item.className =
-                        "notification-item";
+                const item =
+                    document.createElement("a");
 
+                item.className =
+                    "notification-item";
 
-                    if (
-                        !notification.is_read
-                    ) {
+                if (!notification.is_read) {
 
-                        item.classList.add(
-                            "unread"
-                        );
+                    item.classList.add("unread");
 
-                    }
+                }
 
+                item.href =
+                    notification.url || "#";
 
-                    item.href =
-                        notification.url ||
-                        "#";
-
-
-                    const avatar =
-                        notification.sender_picture
+                const avatar =
+                    notification.sender_picture
                         ? "/static/uploads/" +
                           notification.sender_picture
                         : "";
 
+                const avatarElement =
+                    document.createElement("div");
 
-                    const avatarElement =
-                        document.createElement(
-                            "div"
-                        );
+                avatarElement.className =
+                    "notification-avatar";
 
+                avatarElement.style.display =
+                    "flex";
 
-                    avatarElement.className =
+                avatarElement.style.alignItems =
+                    "center";
+
+                avatarElement.style.justifyContent =
+                    "center";
+
+                avatarElement.style.background =
+                    "#10253c";
+
+                avatarElement.textContent =
+                    "👤";
+
+                if (avatar) {
+
+                    const image =
+                        document.createElement("img");
+
+                    image.src = avatar;
+
+                    image.className =
                         "notification-avatar";
 
+                    image.alt = "Profile";
 
-                    avatarElement.style.display =
-                        "flex";
-
-
-                    avatarElement.style.alignItems =
-                        "center";
-
-
-                    avatarElement.style.justifyContent =
-                        "center";
-
-
-                    avatarElement.style.background =
-                        "#10253c";
-
-
-                    avatarElement.textContent =
-                        "👤";
-
-
-                    if (avatar) {
-
-                        const image =
-                            document.createElement(
-                                "img"
-                            );
-
-
-                        image.src =
-                            avatar;
-
-                        image.className =
-                            "notification-avatar";
-
-
-                        image.alt =
-                            "Profile";
-
-
-                        avatarElement.replaceWith(
-                            image
-                        );
-
-                    }
-
-
-                    const content =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    content.className =
-                        "notification-content";
-
-
-                    const message =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    message.className =
-                        "notification-message";
-
-
-                    message.textContent =
-                        notification.message ||
-                        "New notification";
-
-
-                    const time =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    time.className =
-                        "notification-time";
-
-
-                    time.textContent =
-                        notification.created_at ||
-                        "";
-
-
-                    content.appendChild(
-                        message
-                    );
-
-
-                    content.appendChild(
-                        time
-                    );
-
-
-                    item.appendChild(
-                        avatarElement
-                    );
-
-
-                    item.appendChild(
-                        content
-                    );
-
-
-                    if (
-                        !notification.is_read
-                    ) {
-
-                        const dot =
-                            document.createElement(
-                                "span"
-                            );
-
-
-                        dot.className =
-                            "notification-unread-dot";
-
-
-                        item.appendChild(
-                            dot
-                        );
-
-                    }
-
-
-                    list.appendChild(
-                        item
+                    avatarElement.replaceWith(
+                        image
                     );
 
                 }
-            );
 
-        }
-    )
+                const content =
+                    document.createElement("div");
 
-    .catch(
-        function (error) {
+                content.className =
+                    "notification-content";
 
-            console.error(error);
+                const message =
+                    document.createElement("div");
 
-            list.innerHTML = `
-                <div class="notification-empty">
-                    Notifications are temporarily unavailable.
-                </div>
-            `;
+                message.className =
+                    "notification-message";
 
-        }
-    );
+                message.textContent =
+                    notification.message ||
+                    "New notification";
+
+                const time =
+                    document.createElement("div");
+
+                time.className =
+                    "notification-time";
+
+                time.textContent =
+                    notification.created_at ||
+                    "";
+
+                content.appendChild(message);
+                content.appendChild(time);
+
+                item.appendChild(avatarElement);
+                item.appendChild(content);
+
+                if (!notification.is_read) {
+
+                    const dot =
+                        document.createElement("span");
+
+                    dot.className =
+                        "notification-unread-dot";
+
+                    item.appendChild(dot);
+
+                }
+
+                list.appendChild(item);
+
+            }
+        );
+
+    })
+
+    .catch(function (error) {
+
+        console.error(error);
+
+        list.innerHTML = `
+            <div class="notification-empty">
+                Notifications are temporarily unavailable.
+            </div>
+        `;
+
+    });
 
 }
 
@@ -3548,44 +3237,51 @@ function markNotificationsRead() {
     fetch(
         "/notifications/read",
         {
-            method: "POST"
+            method: "POST",
+            credentials: "same-origin"
         }
     )
 
-    .then(
-        function (response) {
+    .then(function (response) {
 
-            return response.json();
+        return response.json();
 
-        }
-    )
+    })
 
-    .then(
-        function (data) {
+    .then(function (data) {
 
-            if (data.success) {
+        if (data.success) {
 
-                updateNotificationBadge();
-
-                loadNotifications();
-
-            }
+            updateNotificationBadge();
+            loadNotifications();
 
         }
-    )
 
-    .catch(
-        function (error) {
+    })
 
-            console.error(
-                "Mark read:",
-                error
-            );
+    .catch(function (error) {
 
-        }
-    );
+        console.error(
+            "Mark read:",
+            error
+        );
+
+    });
 
 }
 
 
-/* ================================================
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        updateNotificationBadge();
+
+    }
+);
+
+</script>

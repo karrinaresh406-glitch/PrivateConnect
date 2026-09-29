@@ -557,19 +557,45 @@ def logout():
 
 @app.route("/dashboard")
 def dashboard():
+
     if not login_required():
         return redirect(url_for("login"))
 
     current_user = session["user_id"]
+
     conn = get_db()
     cursor = conn.cursor()
 
+    # ---------------------------------------------------------
+    # FIND PEOPLE
+    # ---------------------------------------------------------
+
     users = cursor.execute("""
-        SELECT id, name, profile_picture, bio, last_seen
+        SELECT
+            id,
+            name,
+            profile_picture,
+            bio,
+            last_seen
         FROM users
         WHERE id != ?
         ORDER BY id DESC
     """, (current_user,)).fetchall()
+
+
+    # ---------------------------------------------------------
+    # POSTS
+    #
+    # Privacy rule:
+    #
+    # 1. Your own posts are always visible to you.
+    #
+    # 2. Public profiles:
+    #    Their posts are visible.
+    #
+    # 3. Private profiles:
+    #    Their posts are hidden from other users.
+    # ---------------------------------------------------------
 
     posts_data = cursor.execute("""
         SELECT
@@ -578,37 +604,93 @@ def dashboard():
             posts.caption,
             posts.media,
             posts.created_at,
+
             users.name,
             users.profile_picture,
-            (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS like_count,
-            (SELECT COUNT(*) FROM comments WHERE comments.post_id = posts.id) AS comment_count,
-            (SELECT COUNT(*) FROM shares WHERE shares.post_id = posts.id) AS share_count,
+            users.profile_visibility,
+            users.posts_visibility,
+
+            (
+                SELECT COUNT(*)
+                FROM likes
+                WHERE likes.post_id = posts.id
+            ) AS like_count,
+
+            (
+                SELECT COUNT(*)
+                FROM comments
+                WHERE comments.post_id = posts.id
+            ) AS comment_count,
+
+            (
+                SELECT COUNT(*)
+                FROM shares
+                WHERE shares.post_id = posts.id
+            ) AS share_count,
+
             EXISTS(
-                SELECT 1 FROM likes
-                WHERE likes.post_id = posts.id AND likes.user_id = ?
+                SELECT 1
+                FROM likes
+                WHERE likes.post_id = posts.id
+                AND likes.user_id = ?
             ) AS user_liked
+
         FROM posts
-        JOIN users ON users.id = posts.user_id
+
+        JOIN users
+            ON users.id = posts.user_id
+
+        WHERE
+            posts.user_id = ?
+
+            OR
+
+            (
+                COALESCE(users.profile_visibility, 'public') = 'public'
+                AND
+                COALESCE(users.posts_visibility, 'public') = 'public'
+            )
+
         ORDER BY posts.created_at DESC
-    """, (current_user,)).fetchall()
+
+    """, (current_user, current_user)).fetchall()
+
+
+    # ---------------------------------------------------------
+    # LOAD COMMENTS
+    # ---------------------------------------------------------
 
     posts = []
 
     for post in posts_data:
+
         comments = cursor.execute("""
-            SELECT comments.id, comments.comment,
-                   comments.created_at, users.name
+            SELECT
+                comments.id,
+                comments.comment,
+                comments.created_at,
+                users.name
             FROM comments
-            JOIN users ON users.id = comments.user_id
+
+            JOIN users
+                ON users.id = comments.user_id
+
             WHERE comments.post_id = ?
+
             ORDER BY comments.created_at ASC
+
         """, (post["id"],)).fetchall()
 
+
         item = dict(post)
+
         item["comments"] = comments
+
         posts.append(item)
 
+
     conn.close()
+
 
     return render_template(
         "dashboard.html",
@@ -1225,8 +1307,11 @@ def reels():
             posts.caption,
             posts.media,
             posts.created_at,
+
             users.name,
             users.profile_picture,
+            users.profile_visibility,
+            users.posts_visibility,
 
             (
                 SELECT COUNT(*)
@@ -1259,13 +1344,29 @@ def reels():
         ON users.id = posts.user_id
 
         WHERE
-            LOWER(posts.media) LIKE '%.mp4'
-            OR LOWER(posts.media) LIKE '%.webm'
-            OR LOWER(posts.media) LIKE '%.mov'
+            (
+                posts.user_id = ?
+
+                OR
+
+                (
+                    COALESCE(users.profile_visibility, 'public') = 'public'
+                    AND
+                    COALESCE(users.posts_visibility, 'public') = 'public'
+                )
+            )
+
+            AND
+
+            (
+                LOWER(posts.media) LIKE '%.mp4'
+                OR LOWER(posts.media) LIKE '%.webm'
+                OR LOWER(posts.media) LIKE '%.mov'
+            )
 
         ORDER BY posts.created_at DESC
         """,
-        (current_user,)
+        (current_user, current_user)
     ).fetchall()
 
     reels_list = []
@@ -1294,9 +1395,7 @@ def reels():
             (row["id"],)
         ).fetchall()
 
-        reels_list.append(
-            item
-        )
+        reels_list.append(item)
 
     conn.close()
 
